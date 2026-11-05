@@ -2,13 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(npx shadcn@latest add *)",
-      "Bash(npx tsc --noEmit)",
-      "Bash(git status)",
+      "Bash(git status *)",
       "Bash(git diff *)",
-      "Bash(git log *)",
-      "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git log *)"
     ],
     "deny": [
       "Bash(rm -rf *)",
@@ -21,17 +17,40 @@
     "PreToolUse": [
       {
         "matcher": "Edit|Write",
-        "hook": ".claude/hooks/protect-files.sh"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-files.sh\"",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/scan-secrets.sh\"",
+            "timeout": 30
+          }
+        ]
       },
       {
         "matcher": "Bash",
-        "hook": ".claude/hooks/block-dangerous-commands.sh"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-dangerous-commands.sh\"",
+            "timeout": 30
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "hook": ".claude/hooks/lint-after-edit.sh"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/lint-after-edit.sh\"",
+            "timeout": 30
+          }
+        ]
       }
     ]
   }

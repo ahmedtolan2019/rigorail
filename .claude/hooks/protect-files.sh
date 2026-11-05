@@ -11,20 +11,9 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.filePath
 # Normalize path separators
 FILE_PATH=$(echo "$FILE_PATH" | sed 's|\\|/|g')
 
-# Protected patterns
-PROTECTED_PATTERNS=(
-  "package-lock.json"
-  "node_modules/"
-  "dist/"
-  ".claude/hooks/"
-  ".env"
-  ".env.local"
-  ".env.production"
-)
-
-for pattern in "${PROTECTED_PATTERNS[@]}"; do
-  if [[ "$FILE_PATH" == *"$pattern"* ]]; then
-    echo "{\"decision\": \"block\", \"reason\": \"Protected file: $FILE_PATH — do not edit directly\"}"
-    exit 2
-  fi
-done
+# Public template environment presets are editable; local/secret overrides are not.
+if [[ "$FILE_PATH" =~ (^|/)(package-lock\.json|node_modules|dist|\.claude/hooks)(/|$) ]] ||
+   [[ "$FILE_PATH" =~ (^|/)\.env($|\.) && ! "$FILE_PATH" =~ (^|/)\.env\.(example|development|demo)$ ]]; then
+  echo "Protected generated or secret file. Use the owning tool for generated files." >&2
+  exit 2
+fi

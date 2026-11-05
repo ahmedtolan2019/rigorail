@@ -1,15 +1,6 @@
-# Copilot Instructions
+# Repository instructions
 
-See [AGENTS.md](../AGENTS.md) for full project instructions.
-
-This project uses React 19, TypeScript 5.7 (strict), Vite 6, Tailwind CSS v4, and shadcn/ui (new-york style).
-
-Key rules:
-- Never `import React from 'react'` — named imports only (exception: shadcn component files may use `import * as React`)
-- `cn()` from `@/lib/utils` for class merging
-- Tailwind `size-*` over `w-*`/`h-*` for equal dimensions
-- No `tailwind.config.js` — config is CSS-first in `src/index.css` via `@theme`
-- Features go in `src/features/{name}/`
-- Add shadcn components via `npx shadcn@latest add <component>`
-- Run `npm run lint` then `npm run build` to verify
-- Conventional Commits for all commit messages
+Read and follow [AGENTS.md](../AGENTS.md), the shared repository instructions.
+Use its context map to load only the documents relevant to the current task.
+This is frontend-only; its backend belongs to a separate project.
+Verify changes using the commands in `package.json` and report actual results.

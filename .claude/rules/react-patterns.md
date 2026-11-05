@@ -4,12 +4,6 @@ paths:
   - "src/**/*.ts"
 ---
 
-# React Patterns
-
-- Function components only — no class components
-- Never `import React from 'react'` — use named imports: `useState`, `useEffect`, `use` (exception: shadcn component files may use `import * as React`)
-- Use the `use` hook for reading promises (Suspense integration) and context
-- Define props with TypeScript interfaces, never `any`
-- Extract reusable logic into hooks at `src/hooks/` or `src/features/{name}/hooks/`
-- Do not use `React.forwardRef` — pass ref as a normal prop (React 19)
-- Prefer `React.ComponentProps<"element">` for extending HTML element props
+Read `docs/architecture.md`, especially React and UI and external backend contract.
+Use the existing source as implementation evidence. This Vite SPA has no server
+components or server actions. Keep data promises stable when using Suspense.

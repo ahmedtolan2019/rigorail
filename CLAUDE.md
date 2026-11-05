@@ -1,10 +1,7 @@
-# CLAUDE.md
+@AGENTS.md
 
-See AGENTS.md for project instructions, commands, and conventions.
+## Claude Code
 
-## Claude Code-specific
-
-- Hooks in `.claude/settings.json` enforce lint-on-edit and protect sensitive files — do not disable them
-- Path-scoped rules in `.claude/rules/` load automatically near matching files
-- Run `npm run lint` then `npm run build` to verify changes (build includes typecheck)
-- Do not edit `package-lock.json`, `dist/`, or `.claude/hooks/` directly
+Project hooks in `.claude/settings.json` require Bash and jq. They provide limited
+edit/command checks, not a security sandbox. See `docs/agent-compatibility.md`.
+Use `npm run check` for verification; lint-on-edit is advisory.

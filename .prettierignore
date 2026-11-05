@@ -1,0 +1,4 @@
+src/modules/catalog/components.json
+docs/component-catalog.md
+dist/
+node_modules/

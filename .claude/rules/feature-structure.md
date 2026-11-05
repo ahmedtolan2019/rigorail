@@ -1,13 +1,7 @@
 ---
 paths:
-  - "src/features/**"
+  - "src/modules/**"
 ---
 
-# Feature Organization
-
-- Each feature lives at `src/features/{featureName}/`
-- Standard subdirs: `components/`, `hooks/`, `utils/`, `types.ts`
-- Use relative imports within a feature module
-- Use `@/` absolute imports for anything shared across features
-- Export public API from `index.ts` if the feature is consumed externally
-- Document features in `ai/docs/{featureName}.md`
+Read the ownership section in `docs/architecture.md` and the owning module
+`AGENTS.md` and `contract.md`. Create folders as needed; do not scaffold empty layers.

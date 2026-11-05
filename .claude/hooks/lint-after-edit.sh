@@ -1,18 +1,11 @@
 #!/usr/bin/env bash
-# Hook: lint-after-edit.sh
-# Runs ESLint on edited .ts/.tsx files after each edit.
-# Receives tool input as JSON on stdin.
-
+# Advisory only. Final verification is npm run check.
 set -euo pipefail
-
 INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.filePath // ""')
-
-# Normalize path separators
-FILE_PATH=$(echo "$FILE_PATH" | sed 's|\\|/|g')
-
-# Only lint TypeScript files
+FILE_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // .tool_input.filePath // ""')
 if [[ "$FILE_PATH" == *.ts || "$FILE_PATH" == *.tsx ]]; then
-  # Run eslint on the specific file, suppress exit code (advisory, not blocking)
-  npx eslint "$FILE_PATH" --fix --quiet 2>/dev/null || true
+  cd "${CLAUDE_PROJECT_DIR:-.}"
+  if [[ -f "$FILE_PATH" && -f node_modules/eslint/bin/eslint.js ]]; then
+    node node_modules/eslint/bin/eslint.js -- "$FILE_PATH" >&2 || true
+  fi
 fi

@@ -26,3 +26,16 @@ dist-ssr
 # AI agent local overrides (not committed)
 CLAUDE.local.md
 .claude/settings.local.json
+
+# Environment files can contain secrets; keep the public example tracked.
+.env
+.env.*
+!.env.example
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+!.env.development
+!.env.demo

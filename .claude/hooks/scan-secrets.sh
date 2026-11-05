@@ -6,7 +6,7 @@
 set -euo pipefail
 
 INPUT=$(cat)
-CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.newString // ""')
+CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.new_string // .tool_input.newString // ""')
 
 if [ -z "$CONTENT" ]; then
   exit 0
@@ -24,7 +24,7 @@ SECRET_PATTERNS=(
 
 for pattern in "${SECRET_PATTERNS[@]}"; do
   if echo "$CONTENT" | grep -qE "$pattern"; then
-    echo "{\"decision\": \"block\", \"reason\": \"Potential secret/credential detected in file content. Do not commit secrets to code.\"}"
+    echo "Potential secret/credential detected. Do not commit secrets to code." >&2
     exit 2
   fi
 done
