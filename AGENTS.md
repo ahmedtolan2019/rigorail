@@ -16,8 +16,7 @@ server actions, or fake production authentication here.
 `AGENTS.md` is the shared entry point. Claude and Gemini import it; Copilot points
 here; agents supporting AGENTS.md read it directly. Adapters must not duplicate
 architecture policy. Optional `.agents/skills/` guidance is secondary to these
-project instructions and must match the installed stack. Next.js, RSC, and
-server-only examples in imported skills do not apply to this SPA.
+project instructions. Skip any server-rendering advice in them; this is a Vite SPA.
 
 ## Commands
 
@@ -27,6 +26,7 @@ Use Node from `.nvmrc` and npm with the committed `package-lock.json`.
 npm ci
 npm run dev                 # localhost:5173
 npm run context -- requests # owning module contract, source map and checks
+npm run context -- compositions master-detail # one pattern source and guidance
 npm run check:fast           # lint, boundaries, catalog and types while editing
 npm run check               # full gate, demo/API builds and bundle budget
 npm run test:e2e            # browser tests; starts its own local Vite server
@@ -62,6 +62,18 @@ Report commands actually run and remaining gaps. Never hide failures.
 - Keep secrets out of source, logs, and `VITE_*` variables. Vite values reach browsers.
 - Frontend route guards are UX only. The external backend enforces authorization.
 - Use accessible controls, visible focus, and loading/error/empty/success states.
+- Before implementing UI workflows, consult `docs/pattern-coverage.md` and
+  `docs/composition-authoring.md`. Agents may reuse, adapt, combine or create
+  patterns needed by the assigned task; the catalog is not a fixed limit.
+- Compose sections under explicit state/action ownership. Keep business logic in
+  its domain; never import Compositions fixtures or route pages into product
+  modules. Extract shared UI only when it is domain-neutral with real consumers.
+- Document new reusable patterns and test interactions between combined sections,
+  including dirty work, permissions and recovery. A success toast alone does not
+  implement a download, save or restore. Follow the authoring guide for registration.
+- Never show internal identifiers (database IDs, UUIDs, technical keys) to users.
+  Display business references (`REQ-1042`), names or titles; keep IDs in URLs,
+  API calls and data attributes. Ask the backend for a reference when none exists.
 - Record enduring architecture decisions in `docs/architecture.md`; record task
   progress and next steps in `ai/plan.md`. Keep both concise and current.
 - Do not claim mocks are live backend integrations or generated types are runtime validation.
@@ -74,8 +86,6 @@ Report commands actually run and remaining gaps. Never hide failures.
 | Existing structure, React and styling rules | `docs/architecture.md` |
 | Product requirements and backend contract inputs | `ai/prd.md` |
 | Completed work, next steps, task handoff | `ai/plan.md` |
-| Latest whole-template review and agent efficiency | `docs/agent-efficiency-review.md` |
-| Initial template integration review | `docs/template-review.md` |
 | Enterprise extension guide and agent scaling | `docs/enterprise-architecture.md` |
 | Branding, layout customization, navigation and user feedback | `docs/customization-and-ux.md` |
 | Permission vocabulary, action checks and replaceable authorization | `docs/access-control.md` |
@@ -83,6 +93,10 @@ Report commands actually run and remaining gaps. Never hide failures.
 | Loading, failures and recovery patterns | `docs/error-handling.md` |
 | External API, session, AI and hosting contract | `docs/backend-contract.md` |
 | Installed component source and exports | `docs/component-catalog.md` |
+| UI patterns to copy (tokens, data tables, filters, exports, screens) | `/design-system`, `/compositions` routes and their module source |
+| Reusable artwork, ambient decoration and adding new illustrations | `/design-system?tab=illustrations`, `docs/illustrations.md` |
+| Composition inventory, find-by-need index and backend adaptation | `docs/pattern-coverage.md` |
+| Building a screen the template's way, quality bar, combining sections | `docs/composition-authoring.md` |
 | Task prompts and acceptance checklist | `ai/example-prompts.md` |
 
 Do not load all skills or copy this map into every adapter. Source and runnable

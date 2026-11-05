@@ -1,5 +1,9 @@
 import { expect, test } from 'vitest'
-import { createGrantAdapter, type Session } from './model'
+import {
+  composePermissionCatalog,
+  createGrantAdapter,
+  type Session,
+} from './model'
 const session: Session = {
   user: { id: 'a', name: 'A' },
   workspace: { id: 'north', name: 'North' },
@@ -27,4 +31,31 @@ test('fails closed for unknown, missing, foreign, unowned and excessive records'
     expect(access.decide('items.edit', { ...record, ...patch }).status).toBe(
       'denied',
     )
+})
+
+test('composes module permission catalogs and rejects collisions', () => {
+  const read = { action: 'items.read', labelKey: 'items:read' }
+  expect(
+    composePermissionCatalog([
+      { id: 'items', permissions: [read] },
+      { id: 'settings' },
+    ]),
+  ).toEqual([read])
+  expect(() =>
+    composePermissionCatalog([
+      { id: 'items', permissions: [read] },
+      { id: 'items' },
+    ]),
+  ).toThrow('registered twice')
+  expect(() =>
+    composePermissionCatalog([{ id: 'items', permissions: [read, read] }]),
+  ).toThrow('declared twice')
+  expect(() =>
+    composePermissionCatalog([{ id: 'orders', permissions: [read] }]),
+  ).toThrow('must start with "orders."')
+  expect(() =>
+    composePermissionCatalog([
+      { id: 'items', permissions: [{ ...read, labelKey: 'common:read' }] },
+    ]),
+  ).toThrow('"items" namespace')
 })

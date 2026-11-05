@@ -1,48 +1,122 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { Link, getRouteApi } from '@tanstack/react-router'
 import {
-  useReactTable,
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+import {
   getCoreRowModel,
-  flexRender,
+  useReactTable,
   type ColumnDef,
+  type ColumnPinningState,
+  type SortingState,
+  type VisibilityState,
 } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
-import { Plus } from 'lucide-react'
+import { toast } from 'sonner'
+import {
+  CheckCheck,
+  Copy,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  Send,
+} from 'lucide-react'
 import { useServices } from '@/shared/api/services'
 import { AccessBoundary } from '@/shared/auth/access'
 import { useCapability } from '@/shared/capabilities/hooks'
-import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
-import { NativeSelect, NativeSelectOption } from '@/shared/ui/native-select'
-import { Badge } from '@/shared/ui/badge'
+import { usePersistentState } from '@/shared/hooks/use-persistent-state'
+import { date, getCurrency, money, relativeDate } from '@/shared/lib/format'
+import { DataTable, selectionColumn } from '@/shared/data-table/data-table'
+import { DataTableColumnHeader } from '@/shared/data-table/column-header'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/shared/ui/table'
+  ActiveFilters,
+  DataTableFilters,
+  type FilterDefinition,
+} from '@/shared/data-table/filters'
+import { exportCsv } from '@/shared/export/csv'
+import { ExportMenu, type ExportKind } from '@/shared/export/export-menu'
+import type { ExportDocument, ExportSheet } from '@/shared/export/model'
+import { exportXlsx } from '@/shared/export/xlsx'
+import {
+  fromIsoDate,
+  standardPresets,
+  toIsoDate,
+} from '@/shared/ui/date-range-picker'
+import { DataTablePagination } from '@/shared/data-table/pagination'
+import { DataTableSearch } from '@/shared/data-table/search-input'
+import {
+  DataTableSelectionBar,
+  useServerSelection,
+} from '@/shared/data-table/selection'
+import { DataTableViewOptions } from '@/shared/data-table/view-options'
+import { Button } from '@/shared/ui/button'
+import { ConfirmAction } from '@/shared/ui/confirm-action'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shared/ui/dropdown-menu'
 import {
   Empty,
-  EmptyHeader,
-  EmptyTitle,
-  EmptyDescription,
   EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
 } from '@/shared/ui/empty'
-import { LoadingState } from '@/shared/ui/loading-state'
 import { Failure } from '@/shared/ui/route-feedback'
-import { Skeleton } from '@/shared/ui/skeleton'
-import { money, date } from '@/shared/lib/format'
+import { Illustration } from '@/shared/ui/illustration'
+import { PageHeader } from '@/shared/ui/page'
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/tabs'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip'
 import { permissions } from '../permissions'
 import {
-  requestSearch,
-  PAGE_SIZE,
+  PAGE_SIZES,
+  requestCategories,
+  requestStatuses,
   type RequestRecord,
   type RequestSearch,
 } from '../schema'
-import { listOptions } from '../queries'
+import {
+  fetchExport,
+  listOptions,
+  searchOwners,
+  requestKeys,
+  runBulkCommand,
+} from '../queries'
+import { ns } from '../i18n'
+import { CategoryLabel, Person, StatusBadge } from '../presentation'
+import { categoryIcons } from '../categories'
+
+const route = getRouteApi('/requests/')
+// Table column id -> server sort key.
+const sortColumns: Record<string, RequestSearch['sort']> = {
+  title: 'title',
+  amountMinor: 'amount',
+  status: 'status',
+  ownerName: 'owner',
+  updatedAt: 'updated',
+  createdAt: 'created',
+}
+const defaultVisibility: VisibilityState = { createdAt: false }
+const defaultPinning: ColumnPinningState = {
+  left: ['select', 'title'],
+  right: ['actions'],
+}
+const cleared = {
+  q: '',
+  status: [],
+  category: [],
+  owner: [],
+  from: undefined,
+  to: undefined,
+}
 
 export default function RequestList() {
   return (
@@ -55,250 +129,697 @@ export default function RequestList() {
     </AccessBoundary>
   )
 }
+
 function ListContent() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation(ns)
   const services = useServices(),
-    navigate = useNavigate()
-  const rawSearch = useSearch({ strict: false })
-  const search = useMemo(() => requestSearch.parse(rawSearch), [rawSearch])
-  const [filterReset, setFilterReset] = useState(0)
+    client = useQueryClient()
+  const navigate = route.useNavigate()
+  const search = route.useSearch()
+  const scope = services.session.workspace.id
   const create = useCapability({
     action: permissions.create,
     quota: 'requests.create',
   })
   const query = useQuery({
-    ...listOptions(services.api, services.session.workspace.id, search),
+    ...listOptions(services.api, scope, search),
     placeholderData: keepPreviousData,
   })
+  const items = useMemo(() => query.data?.items ?? [], [query.data])
+  // References of rows seen on any page, so confirmations can name selected records.
+  const [references] = useState(() => new Map<string, string>())
+  for (const item of items) references.set(item.id, item.reference)
+  const total = query.data?.total ?? 0
+  const selection = useServerSelection({
+    pageIds: items.map((item) => item.id),
+    total,
+    scope: JSON.stringify([
+      scope,
+      search.q,
+      search.status,
+      search.category,
+      search.owner,
+    ]),
+  })
+  const [columnVisibility, setColumnVisibility] =
+    usePersistentState<VisibilityState>(
+      'requests:list:columns',
+      defaultVisibility,
+    )
+  const [columnPinning, setColumnPinning] =
+    usePersistentState<ColumnPinningState>(
+      'requests:list:pinning',
+      defaultPinning,
+    )
+  const update = (patch: Partial<RequestSearch>) =>
+    // Same page, new URL state: keep the reader's scroll position.
+    void navigate({
+      search: (current) => ({ ...current, page: 1, ...patch }),
+      resetScroll: false,
+    })
+  const filtered =
+    search.q !== '' ||
+    search.status.length > 0 ||
+    search.category.length > 0 ||
+    search.owner.length > 0 ||
+    Boolean(search.from)
+  const bulk = useMutation({
+    mutationFn: (action: 'submit' | 'approve') =>
+      runBulkCommand(services.api, {
+        action,
+        target:
+          selection.selection.mode === 'ids'
+            ? { mode: 'ids', ids: selection.selection.ids }
+            : {
+                mode: 'all',
+                excluded: selection.selection.excluded,
+                filter: {
+                  q: search.q,
+                  status: search.status,
+                  category: search.category,
+                  owner: search.owner,
+                  from: search.from,
+                  to: search.to,
+                },
+              },
+      }),
+    onSuccess: async (result) => {
+      const done = result.succeeded.length,
+        failed = result.failed.length
+      if (done && !failed) toast.success(t('bulkDone', { count: done }))
+      else if (done) toast.warning(t('bulkPartial', { done, failed }))
+      else toast.error(t('bulkNone'))
+      selection.clear()
+      await client.invalidateQueries({ queryKey: requestKeys.all(scope) })
+    },
+    onError: () => toast.error(t('unavailable')),
+  })
+
+  const presets = useMemo(() => standardPresets(t), [t])
+  const filters: FilterDefinition[] = [
+    {
+      id: 'status',
+      label: t('status'),
+      type: 'options',
+      value: search.status,
+      onChange: (status) =>
+        update({ status: status as RequestSearch['status'] }),
+      options: requestStatuses.map((status) => ({
+        value: status,
+        label: t(status),
+        count: query.data?.facets.status[status],
+      })),
+    },
+    {
+      id: 'category',
+      label: t('category'),
+      type: 'options',
+      value: search.category,
+      onChange: (category) =>
+        update({ category: category as RequestSearch['category'] }),
+      options: requestCategories.map((category) => ({
+        value: category,
+        label: t(category),
+        icon: categoryIcons[category],
+        count: query.data?.facets.category[category],
+      })),
+    },
+    {
+      id: 'owner',
+      label: t('owner'),
+      type: 'options',
+      value: search.owner,
+      onChange: (owner) => update({ owner }),
+      options: (query.data?.facets.owner ?? []).map((owner) => ({
+        value: owner.id,
+        label: owner.name,
+        count: owner.count,
+      })),
+      total: query.data?.facets.ownerTotal,
+      search: (name, signal) =>
+        searchOwners(services.api, search, name, signal),
+    },
+    {
+      id: 'created',
+      label: t('created'),
+      type: 'date',
+      presets,
+      value: {
+        from: fromIsoDate(search.from),
+        to: fromIsoDate(search.to),
+      },
+      onChange: (range) =>
+        update({
+          from: range.from && toIsoDate(range.from),
+          to: range.to && toIsoDate(range.to),
+        }),
+    },
+  ]
+  async function exportRequests(kind: ExportKind) {
+    const { items, total: matching } = await fetchExport(services.api, search)
+    const document: ExportDocument = {
+      fileName: `${t('navigation')} ${toIsoDate(new Date())}`,
+      title: t('navigation'),
+      subtitle: `${t('common:generatedAt')}: ${new Date().toLocaleString(i18n.language)}`,
+      details: [
+        ...filters
+          .filter((filter) =>
+            filter.type === 'options' ? filter.value.length : filter.value.from,
+          )
+          .map((filter): [string, string] => [
+            filter.label,
+            filter.type === 'options'
+              ? filter.options
+                  .filter((option) => filter.value.includes(option.value))
+                  .map((option) => option.label)
+                  .join(', ')
+              : `${search.from ?? ''} → ${search.to ?? ''}`,
+          ]),
+        ...(search.q
+          ? [[t('common:search'), search.q] as [string, string]]
+          : []),
+        [t('records', { count: matching }), ''],
+      ],
+      currency: getCurrency(),
+      rtl: i18n.dir() === 'rtl',
+    }
+    const sheet: ExportSheet<RequestRecord> = {
+      name: t('navigation'),
+      totalsLabel: t('common:total'),
+      rows: items,
+      columns: [
+        { header: t('reference'), value: (row) => row.reference },
+        { header: t('title'), value: (row) => row.title, width: 32 },
+        { header: t('category'), value: (row) => t(row.category) },
+        { header: t('owner'), value: (row) => row.ownerName },
+        { header: t('status'), value: (row) => t(row.status) },
+        {
+          header: t('amount'),
+          value: (row) => row.amountMinor / 100,
+          format: 'money',
+          total: 'sum',
+        },
+        {
+          header: t('created'),
+          value: (row) => new Date(row.createdAt),
+          format: 'date',
+        },
+        {
+          header: t('updated'),
+          value: (row) => new Date(row.updatedAt),
+          format: 'datetime',
+        },
+        {
+          header: t('description'),
+          value: (row) => row.description,
+          width: 48,
+        },
+      ],
+    }
+    if (kind === 'csv') exportCsv(document, sheet)
+    else await exportXlsx(document, [sheet as ExportSheet<unknown>])
+  }
   const columns = useMemo<ColumnDef<RequestRecord>[]>(
     () => [
+      selectionColumn<RequestRecord>({
+        all: t('selectAll'),
+        row: t('selectRow'),
+      }),
       {
         accessorKey: 'title',
-        header: t('title'),
-        cell: ({ row }) => (
-          <Link
-            className="record-link"
-            to="/requests/$requestId"
-            params={{ requestId: row.original.id }}
-            search={search}
-          >
-            <strong dir="auto">{row.original.title}</strong>
-            <span dir="auto">{row.original.description}</span>
-          </Link>
+        meta: { label: t('title') },
+        enableHiding: false,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('title')} />
         ),
+        cell: ({ row }) => <TitleCell record={row.original} />,
+      },
+      {
+        accessorKey: 'category',
+        meta: { label: t('category') },
+        enableSorting: false,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('category')} />
+        ),
+        cell: ({ row }) => <CategoryLabel category={row.original.category} />,
       },
       {
         accessorKey: 'ownerName',
-        header: t('owner'),
-        cell: ({ row }) => <bdi>{row.original.ownerName}</bdi>,
-      },
-      {
-        accessorKey: 'amountMinor',
-        header: t('amount'),
-        cell: ({ row }) => <bdi>{money(row.original.amountMinor)}</bdi>,
-      },
-      {
-        accessorKey: 'status',
-        header: t('status'),
+        meta: { label: t('owner') },
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('owner')} />
+        ),
         cell: ({ row }) => (
-          <Badge variant="secondary" data-status={row.original.status}>
-            {t(row.original.status)}
-          </Badge>
+          <Person id={row.original.ownerId} name={row.original.ownerName} />
         ),
       },
       {
+        accessorKey: 'amountMinor',
+        meta: { label: t('amount'), className: 'text-end' },
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={t('amount')}
+            className="-me-2.5"
+          />
+        ),
+        cell: ({ row }) => (
+          <bdi className="font-medium">{money(row.original.amountMinor)}</bdi>
+        ),
+      },
+      {
+        accessorKey: 'status',
+        meta: { label: t('status') },
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('status')} />
+        ),
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      {
+        accessorKey: 'createdAt',
+        meta: { label: t('created') },
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('created')} />
+        ),
+        cell: ({ row }) => <When iso={row.original.createdAt} />,
+      },
+      {
         accessorKey: 'updatedAt',
-        header: t('updated'),
-        cell: ({ row }) => <bdi>{date(row.original.updatedAt)}</bdi>,
+        meta: { label: t('updated') },
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('updated')} />
+        ),
+        cell: ({ row }) => <When iso={row.original.updatedAt} />,
+      },
+      {
+        id: 'actions',
+        size: 48,
+        enableHiding: false,
+        enableSorting: false,
+        enablePinning: false,
+        header: () => <span className="sr-only">{t('actions')}</span>,
+        cell: ({ row }) => <RowActions record={row.original} />,
       },
     ],
-    [t, search],
+    [t],
   )
+  const sorting: SortingState = [
+    {
+      id:
+        Object.entries(sortColumns).find(
+          ([, value]) => value === search.sort,
+        )?.[0] ?? 'updatedAt',
+      desc: search.dir === 'desc',
+    },
+  ]
   const table = useReactTable({
-    data: query.data?.items ?? [],
+    data: items,
     columns,
+    getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    rowCount: query.data?.total ?? 0,
-    state: { pagination: { pageIndex: search.page - 1, pageSize: PAGE_SIZE } },
+    manualSorting: true,
+    rowCount: total,
+    // Rows from the previous query stay visible while fetching; never select those.
+    enableRowSelection: !query.isPlaceholderData,
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection: selection.rowSelection,
+      columnPinning,
+    },
+    initialState: {
+      columnVisibility: defaultVisibility,
+      columnPinning: defaultPinning,
+    },
+    // Users pin any column; selection always stays first and row actions last.
+    onColumnPinningChange: (updater) =>
+      setColumnPinning((current) => {
+        const next = typeof updater === 'function' ? updater(current) : updater
+        const left = (next.left ?? []).filter((id) => id !== 'select')
+        const right = (next.right ?? []).filter((id) => id !== 'actions')
+        return { left: ['select', ...left], right: [...right, 'actions'] }
+      }),
+    onRowSelectionChange: selection.onRowSelectionChange,
+    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: (updater) => {
+      const next = typeof updater === 'function' ? updater(sorting) : updater
+      const first = next[0]
+      update(
+        first
+          ? {
+              sort: sortColumns[first.id] ?? 'updated',
+              dir: first.desc ? 'desc' : 'asc',
+            }
+          : { sort: 'updated', dir: 'desc' },
+      )
+    },
   })
-  function filter(patch: Partial<typeof search>) {
-    void navigate({ to: '/requests', search: { ...search, page: 1, ...patch } })
-  }
+  const facets = query.data?.facets
+  const confirmChips = selection.allMatching
+    ? filters.flatMap((filter) =>
+        filter.type === 'options'
+          ? filter.options
+              .filter((option) => filter.value.includes(option.value))
+              .map((option) => option.label)
+          : filter.value.from
+            ? [`${search.from} → ${search.to}`]
+            : [],
+      )
+    : selection.selection.mode === 'ids'
+      ? selection.selection.ids.map((id) => references.get(id) ?? id)
+      : []
+  const statusTotal = facets
+    ? requestStatuses.reduce((sum, status) => sum + facets.status[status], 0)
+    : undefined
+  const newRequest = (
+    <Button asChild>
+      <Link to="/requests/new" search={search}>
+        <Plus data-icon="inline-start" />
+        {t('newRequest')}
+      </Link>
+    </Button>
+  )
+
   return (
     <>
-      <div className="page-heading">
-        <div>
-          <h1>{t('requests')}</h1>
-          <p>{t('requestSubtitle')}</p>
-        </div>
-        {create.status === 'allowed' ? (
-          <Button asChild>
-            <Link to="/requests/new" search={search}>
-              <Plus data-icon="inline-start" />
-              {t('newRequest')}
-            </Link>
-          </Button>
-        ) : (
-          <div>
-            <Button disabled>{t('newRequest')}</Button>
-            <p className="muted">{t(create.reason)}</p>
-          </div>
-        )}
-      </div>
-      <RequestFilters
-        key={JSON.stringify([search.q, filterReset])}
-        search={search}
-        onFilter={filter}
+      <PageHeader
+        title={t('navigation')}
+        description={t('requestSubtitle')}
+        actions={
+          create.status === 'allowed' ? (
+            newRequest
+          ) : (
+            <div className="flex flex-col items-start gap-1.5 sm:items-end">
+              <Button disabled>
+                <Plus data-icon="inline-start" />
+                {t('newRequest')}
+              </Button>
+              {create.status === 'denied' && (
+                <p className="max-w-xs text-xs text-muted-foreground sm:text-end">
+                  {t(create.reason)}
+                </p>
+              )}
+            </div>
+          )
+        }
       />
-      {query.isPending ? (
-        <div role="status" aria-label={t('loading')}>
-          <Skeleton className="h-64 w-full" />
+      <Tabs
+        value={search.status.length === 1 ? search.status[0]! : 'all'}
+        onValueChange={(value) =>
+          update({
+            status: value === 'all' ? [] : [value as RequestRecord['status']],
+          })
+        }
+        className="mb-4"
+      >
+        <TabsList className="max-w-full justify-start overflow-x-auto">
+          {(['all', ...requestStatuses] as const).map((status) => (
+            <TabsTrigger key={status} value={status} className="gap-1.5 px-3">
+              {t(status === 'all' ? 'viewAll' : status)}
+              {facets && (
+                <span className="rounded-full bg-muted px-1.5 text-xs leading-5 font-normal text-muted-foreground tabular-nums">
+                  {status === 'all' ? statusTotal : facets.status[status]}
+                </span>
+              )}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+      <div className="mb-3 flex items-center gap-2">
+        <DataTableSearch
+          value={search.q}
+          onChange={(q) => update({ q })}
+          placeholder={t('searchRequests')}
+          className="min-w-0 flex-1 sm:max-w-72"
+        />
+        <DataTableFilters
+          filters={filters}
+          onClearAll={() => update(cleared)}
+        />
+        <div className="ms-auto flex items-center gap-2">
+          <DataTableViewOptions table={table} />
+          <ExportMenu
+            size="sm"
+            disabled={!total}
+            onExport={(kind) => exportRequests(kind)}
+          />
         </div>
-      ) : query.isError ? (
-        <Failure error={query.error} retry={() => void query.refetch()} />
-      ) : query.data.total === 0 || query.data.items.length === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>{t('noResults')}</EmptyTitle>
-            <EmptyDescription>{t('noResultsHint')}</EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setFilterReset((value) => value + 1)
-                filter({ q: '', status: 'all', page: 1 })
-              }}
-            >
-              {t('resetFilters')}
-            </Button>
-          </EmptyContent>
-        </Empty>
+      </div>
+      <div className="mb-3 empty:hidden">
+        <ActiveFilters
+          filters={filters}
+          onClearAll={() => update(cleared)}
+          extra={
+            search.q
+              ? [
+                  {
+                    id: 'q',
+                    label: (
+                      <>
+                        <span className="text-muted-foreground">
+                          {t('common:search')}:
+                        </span>{' '}
+                        “{search.q}”
+                      </>
+                    ),
+                    onRemove: () => update({ q: '' }),
+                  },
+                ]
+              : undefined
+          }
+        />
+      </div>
+      {query.isError && !query.data ? (
+        <Failure
+          error={query.error}
+          retry={() => void query.refetch()}
+          layout="page"
+        />
       ) : (
-        <div className="data-table" aria-busy={query.isFetching}>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((group) => (
-                <TableRow key={group.id}>
-                  {group.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <DataTable
+          table={table}
+          loading={query.isPending}
+          fetching={query.isFetching}
+          skeletonRows={Math.min(search.size, 12)}
+          caption={t('navigation')}
+          fitViewport
+          onRowClick={(row) =>
+            void navigate({
+              to: '/requests/$requestId',
+              params: { requestId: row.original.id },
+              search,
+            })
+          }
+          empty={
+            <Empty className="border-0 py-16">
+              <EmptyHeader>
+                <EmptyMedia>
+                  <Illustration name={filtered ? 'no-results' : 'empty'} />
+                </EmptyMedia>
+                <EmptyTitle>
+                  {t(filtered ? 'noMatches' : 'emptyTitle')}
+                </EmptyTitle>
+                <EmptyDescription>
+                  {t(filtered ? 'noMatchesHint' : 'emptyHint')}
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                {filtered ? (
+                  <Button variant="outline" onClick={() => update(cleared)}>
+                    {t('clearFilters')}
+                  </Button>
+                ) : (
+                  create.status === 'allowed' && newRequest
+                )}
+              </EmptyContent>
+            </Empty>
+          }
+        />
       )}
-      {query.isFetching && !query.isPending && <LoadingState updating />}
-      <footer className="list-footer">
-        <p>
-          {services.mode === 'demo'
-            ? t('demoNote')
-            : t('records', { count: query.data?.total ?? 0 })}
-        </p>
-        <div className="pagination">
+      <div className="mt-4">
+        <DataTablePagination
+          page={search.page}
+          pageSize={search.size}
+          total={total}
+          pageSizes={PAGE_SIZES}
+          disabled={query.isFetching}
+          onPageChange={(page) =>
+            void navigate({
+              search: (current) => ({ ...current, page }),
+              resetScroll: false,
+            })
+          }
+          onPageSizeChange={(size) => update({ size })}
+        />
+      </div>
+      {services.mode === 'demo' && (
+        <p className="mt-6 text-xs text-muted-foreground">{t('demoNote')}</p>
+      )}
+      <DataTableSelectionBar
+        count={selection.count}
+        total={total}
+        allMatching={selection.allMatching}
+        pageFullySelected={selection.pageFullySelected}
+        onSelectAll={selection.selectAllMatching}
+        onClear={selection.clear}
+      >
+        <ConfirmAction
+          title={t('confirmBulkSubmit', { count: selection.count })}
+          chips={confirmChips}
+          chipTotal={selection.allMatching ? undefined : selection.count}
+          description={t('confirmBulkHint')}
+          confirmLabel={t('submitCount', { count: selection.count })}
+          tone="default"
+          icon={Send}
+
+          details={[
+            [t('requestCount'), selection.count],
+            [
+              t('appliesTo'),
+              t(selection.allMatching ? 'scopeAll' : 'scopeSelected'),
+            ],
+          ]}
+          onConfirm={() => bulk.mutate('submit')}
+        >
           <Button
+            size="sm"
             variant="outline"
-            disabled={search.page <= 1 || query.isFetching}
-            onClick={() => filter({ page: search.page - 1 })}
+            className="h-8"
+            disabled={bulk.isPending}
           >
-            {t('previous')}
+            <Send />
+            {t('bulkSubmit')}
           </Button>
-          <span>
-            {t('page', {
-              page: search.page,
-              pages: Math.max(
-                1,
-                Math.ceil((query.data?.total ?? 0) / PAGE_SIZE),
-              ),
-            })}
-          </span>
-          <Button
-            variant="outline"
-            disabled={!table.getCanNextPage() || query.isFetching}
-            onClick={() => filter({ page: search.page + 1 })}
-          >
-            {t('next')}
+        </ConfirmAction>
+        <ConfirmAction
+          title={t('confirmBulkApprove', { count: selection.count })}
+          chips={confirmChips}
+          chipTotal={selection.allMatching ? undefined : selection.count}
+          description={t('confirmBulkHint')}
+          confirmLabel={t('approveCount', { count: selection.count })}
+          tone="warning"
+          icon={CheckCheck}
+          irreversible
+          details={[
+            [t('requestCount'), selection.count],
+            [
+              t('appliesTo'),
+              t(selection.allMatching ? 'scopeAll' : 'scopeSelected'),
+            ],
+          ]}
+          onConfirm={() => bulk.mutate('approve')}
+        >
+          <Button size="sm" className="h-8" disabled={bulk.isPending}>
+            <CheckCheck />
+            {t('bulkApprove')}
           </Button>
-        </div>
-      </footer>
+        </ConfirmAction>
+      </DataTableSelectionBar>
     </>
   )
 }
 
-function RequestFilters({
-  search,
-  onFilter,
-}: {
-  search: RequestSearch
-  onFilter: (patch: Partial<RequestSearch>) => void
-}) {
-  const { t } = useTranslation()
-  const [term, setTerm] = useState(search.q)
+function When({ iso }: { iso: string }) {
   return (
-    <form
-      className="filter-bar"
-      onSubmit={(event) => {
-        event.preventDefault()
-        onFilter({ q: term })
-      }}
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <time
+          dateTime={iso}
+          className="whitespace-nowrap text-muted-foreground"
+        >
+          {relativeDate(iso)}
+        </time>
+      </TooltipTrigger>
+      <TooltipContent>{date(iso)}</TooltipContent>
+    </Tooltip>
+  )
+}
+
+function RowActions({ record }: { record: RequestRecord }) {
+  const { t } = useTranslation(ns)
+  const { access } = useServices()
+  const search = route.useSearch()
+  const editable =
+    record.status === 'draft' &&
+    access.decide(permissions.edit, record).status === 'allowed'
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8 text-muted-foreground data-[state=open]:bg-accent"
+          aria-label={`${t('rowActions')}: ${record.title}`}
+        >
+          <MoreHorizontal />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-44">
+        <DropdownMenuItem asChild>
+          <Link
+            to="/requests/$requestId"
+            params={{ requestId: record.id }}
+            search={search}
+          >
+            <Eye />
+            {t('open')}
+          </Link>
+        </DropdownMenuItem>
+        {editable && (
+          <DropdownMenuItem asChild>
+            <Link
+              to="/requests/$requestId/edit"
+              params={{ requestId: record.id }}
+              search={search}
+            >
+              <Pencil />
+              {t('edit')}
+            </Link>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() =>
+            void navigator.clipboard
+              ?.writeText(record.reference)
+              .then(() => toast.success(t('referenceCopied')))
+          }
+        >
+          <Copy />
+          {t('copyReference')}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+/** Reads search itself so column definitions never depend on URL state. */
+function TitleCell({ record }: { record: RequestRecord }) {
+  const search = route.useSearch()
+  return (
+    <Link
+      to="/requests/$requestId"
+      params={{ requestId: record.id }}
+      search={search}
+      className="group/title flex w-[11rem] flex-col gap-0.5 rounded-sm outline-none sm:w-auto sm:max-w-[16rem] sm:min-w-[11rem] 2xl:max-w-[22rem]"
     >
-      <Input
-        aria-label={t('searchRequests')}
-        placeholder={t('searchRequests')}
-        value={term}
-        onChange={(event) => setTerm(event.target.value)}
-      />
-      <Button type="submit" variant="outline">
-        {t('searchRequests')}
-      </Button>
-      <NativeSelect
-        aria-label={t('status')}
-        value={search.status}
-        onChange={(event) =>
-          onFilter({ status: event.target.value as typeof search.status })
-        }
+      <span
+        dir="auto"
+        className="truncate font-medium group-hover/title:underline group-focus-visible/title:underline"
       >
-        <NativeSelectOption value="all">{t('allStatuses')}</NativeSelectOption>
-        {(['draft', 'pending', 'approved'] as const).map((status) => (
-          <NativeSelectOption key={status} value={status}>
-            {t(status)}
-          </NativeSelectOption>
-        ))}
-      </NativeSelect>
-      <NativeSelect
-        aria-label={t('sort')}
-        value={search.sort}
-        onChange={(event) =>
-          onFilter({ sort: event.target.value as typeof search.sort })
-        }
-      >
-        {(['updated', 'title', 'amount'] as const).map((sort) => (
-          <NativeSelectOption key={sort} value={sort}>
-            {t(sort)}
-          </NativeSelectOption>
-        ))}
-      </NativeSelect>
-    </form>
+        {record.title}
+      </span>
+      {/* Reference and description keep their own direction; only the text truncates. */}
+      <span className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+        <span dir="ltr" className="shrink-0 font-medium tabular-nums">
+          {record.reference}
+        </span>
+        <span aria-hidden="true">·</span>
+        <span dir="auto" className="min-w-0 truncate">
+          {record.description}
+        </span>
+      </span>
+    </Link>
   )
 }

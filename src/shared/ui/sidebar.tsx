@@ -5,6 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/shared/lib/utils'
 import { PanelLeftIcon } from 'lucide-react'
 import { Slot } from 'radix-ui'
+import { useDirection } from '@/shared/ui/direction'
 
 import { useIsMobile } from '@/shared/hooks/use-mobile'
 import { Button } from '@/shared/ui/button'
@@ -165,6 +166,7 @@ function Sidebar({
 }) {
   const { t } = useTranslation()
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  // SheetContent already maps left/right to logical start/end, including RTL.
 
   if (collapsible === 'none') {
     return (
@@ -513,6 +515,7 @@ function SidebarMenuButton({
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const Comp = asChild ? Slot.Root : 'button'
   const { isMobile, state } = useSidebar()
+  const tooltipSide = useDirection() === 'rtl' ? 'left' : 'right'
 
   const button = (
     <Comp
@@ -539,7 +542,7 @@ function SidebarMenuButton({
     <Tooltip>
       <TooltipTrigger asChild>{button}</TooltipTrigger>
       <TooltipContent
-        side="right"
+        side={tooltipSide}
         align="center"
         hidden={state !== 'collapsed' || isMobile}
         {...tooltip}

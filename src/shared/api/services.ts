@@ -13,6 +13,8 @@ export interface Services {
   mode: 'demo' | 'api'
   aiEnabled: boolean
   refreshSession: () => Promise<unknown>
+  /** Ends the session with the backend and shows the sign-in screen. */
+  signOut: () => Promise<void>
   demo?: {
     plan: string
     setPlan: (value: string) => void

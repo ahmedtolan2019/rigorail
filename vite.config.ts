@@ -21,6 +21,12 @@ export default defineConfig({
     },
   ],
   build: { manifest: true },
+  // Scan every module, including lazy routes, so the dev server pre-bundles all
+  // dependencies at startup instead of re-optimizing and reloading the page the
+  // first time a lazy chunk (charts, grids, exports) needs a new package.
+  optimizeDeps: {
+    entries: ['index.html', 'src/**/*.{ts,tsx}', '!src/**/*.test.{ts,tsx}'],
+  },
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),

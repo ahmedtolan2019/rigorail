@@ -9,7 +9,19 @@ Implemented: modular ownership and checks; portable agent context; lazy routing;
 API/query/form/table patterns; English/Arabic and RTL; customizable theme/shell;
 replaceable resource permissions; remote business configuration; flags,
 subscription entitlements and quotas; optional reviewed AI streaming; installed
-shadcn source catalog; a removable Requests approval workflow; risk-based tests.
+shadcn source catalog; Requests approval workflow and Reports; account/sign-in,
+MFA, recovery and device-management frontend contracts; 20 original local compositions;
+risk-based tests. No real identity or reporting backend is connected.
+
+The retained reference catalog helps future coding agents: find the nearest existing example, expose missing contract decisions, and
+cover interaction/failure cases before calling a feature complete. Coverage and
+implementation status live in [the pattern guide](../docs/pattern-coverage.md).
+Agents may reuse, adapt, combine and create patterns required by an assigned
+feature. The [authoring guide](../docs/composition-authoring.md) defines ownership,
+shared extraction and verification. Catalog entries do not authorize invented
+product rules or unrelated roadmap work. The user rejected and requested removal
+of the 60 added compositions; do not restore or bulk-replace that expansion.
+Future gallery additions need explicit scope and visual review.
 
 A full ERP, pricing model, payroll rules, billing backend, authentication server,
 and live AI provider are not part of this template. The reference illustrates

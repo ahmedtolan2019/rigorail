@@ -1,17 +1,33 @@
-import { useState } from 'react'
-import { Link, useParams, useSearch } from '@tanstack/react-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Link, getRouteApi } from '@tanstack/react-router'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
+import { ArrowLeft, Check, CheckCheck, Pencil, Send } from 'lucide-react'
 import { useServices } from '@/shared/api/services'
+import { useDocumentTitle } from '@/shared/hooks/use-document-title'
 import { AccessBoundary } from '@/shared/auth/access'
 import { ApiError } from '@/shared/api/client'
-import { money, date } from '@/shared/lib/format'
+import { date, money, relativeDate } from '@/shared/lib/format'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
-import { Badge } from '@/shared/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/card'
+import { DetailSkeleton, backLinkClass } from '@/shared/ui/page'
 import { Failure } from '@/shared/ui/route-feedback'
+import { Spinner } from '@/shared/ui/spinner'
+import { ConfirmAction } from '@/shared/ui/confirm-action'
 import { permissions } from '../permissions'
 import { detailOptions, requestKeys } from '../queries'
-import { requestSchema, requestSearch } from '../schema'
+import { requestSchema, requestStatuses, type RequestRecord } from '../schema'
+import { ns } from '../i18n'
+import { CategoryLabel, Person, StatusBadge } from '../presentation'
+
+const route = getRouteApi('/requests/$requestId')
 export default function RequestDetail() {
   return (
     <AccessBoundary
@@ -24,15 +40,15 @@ export default function RequestDetail() {
   )
 }
 function Detail() {
-  const { t } = useTranslation(),
+  const { t } = useTranslation(ns),
     services = useServices(),
     client = useQueryClient()
-  const { requestId = '' } = useParams({ strict: false }),
-    search = requestSearch.parse(useSearch({ strict: false }))
+  const { requestId } = route.useParams(),
+    search = route.useSearch()
   const query = useQuery(
     detailOptions(services.api, services.session.workspace.id, requestId),
   )
-  const [notice, setNotice] = useState('')
+  useDocumentTitle(query.data?.title, t('navigation'))
   const mutation = useMutation({
     mutationFn: (action: 'submit' | 'approve') =>
       services.api.request(
@@ -44,7 +60,7 @@ function Detail() {
         },
       ),
     onSuccess: async (_, action) => {
-      setNotice(action === 'approve' ? 'approvalDone' : 'submitted')
+      toast.success(t(action === 'approve' ? 'approvalDone' : 'submitted'))
       await client.invalidateQueries({
         queryKey: requestKeys.all(services.session.workspace.id),
       })
@@ -54,106 +70,254 @@ function Detail() {
         void services.refreshSession()
     },
   })
-  if (query.isPending) return <p role="status">{t('loading')}</p>
+  if (query.isPending) return <DetailSkeleton />
   if (query.isError)
-    return <Failure error={query.error} retry={() => void query.refetch()} />
+    return (
+      <Failure
+        error={query.error}
+        retry={() => void query.refetch()}
+        layout="page"
+      />
+    )
   const item = query.data
+  const can = (action: string) =>
+    services.access.decide(action, item).status === 'allowed'
+  const next =
+    item.status === 'draft'
+      ? {
+          action: 'submit' as const,
+          icon: Send,
+          allowed: can(permissions.submit),
+        }
+      : item.status === 'pending'
+        ? {
+            action: 'approve' as const,
+            icon: CheckCheck,
+            allowed: can(permissions.approve),
+          }
+        : undefined
   return (
     <>
-      <Link className="back-link" to="/requests" search={search}>
+      <Link className={backLinkClass} to="/requests" search={search}>
+        <ArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
         {t('back')}
       </Link>
-      <div className="page-heading">
-        <div>
-          <h1 dir="auto">{item.title}</h1>
-          <p>{t('details')}</p>
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 dir="auto">{item.title}</h1>
+            <StatusBadge status={item.status} />
+          </div>
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+            <span
+              dir="ltr"
+              className="font-medium text-foreground tabular-nums"
+            >
+              {item.reference}
+            </span>
+            <span aria-hidden="true">·</span>
+            <span>
+              {t('created_at', { date: relativeDate(item.createdAt) })}
+            </span>
+          </p>
         </div>
-        <Badge variant="secondary" data-status={item.status}>
-          {t(item.status)}
-        </Badge>
-      </div>
-      <dl className="detail-grid">
-        <div>
-          <dt>{t('owner')}</dt>
-          <dd>
-            <bdi>{item.ownerName}</bdi>
-          </dd>
-        </div>
-        <div>
-          <dt>{t('amount')}</dt>
-          <dd>
-            <bdi>{money(item.amountMinor)}</bdi>
-          </dd>
-        </div>
-        <div>
-          <dt>{t('updated')}</dt>
-          <dd>{date(item.updatedAt)}</dd>
-        </div>
-        <div>
-          <dt>{t('status')}</dt>
-          <dd>{t(item.status)}</dd>
-        </div>
-      </dl>
-      <section className="description">
-        <h2>{t('description')}</h2>
-        <p dir="auto">{item.description || t('noDescription')}</p>
-      </section>
-      {mutation.isError && (
-        <Failure
-          error={mutation.error}
-          retry={() => {
-            mutation.reset()
-            void query.refetch()
-          }}
-        />
-      )}
-      <p role="status">{notice ? t(notice) : ''}</p>
-      <div className="action-row" aria-label={t('actions')}>
-        {item.status === 'draft' &&
-          services.access.decide(permissions.edit, item).status ===
-            'allowed' && (
+        <div
+          className="flex shrink-0 flex-wrap items-center gap-2"
+          aria-label={t('actions')}
+          role="group"
+        >
+          {item.status === 'draft' && can(permissions.edit) && (
             <Button asChild variant="outline">
               <Link
                 to="/requests/$requestId/edit"
                 params={{ requestId }}
                 search={search}
               >
+                <Pencil data-icon="inline-start" />
                 {t('edit')}
               </Link>
             </Button>
           )}
-        {item.status === 'draft' && (
-          <Button
-            disabled={
-              mutation.isPending ||
-              services.access.decide(permissions.submit, item).status !==
-                'allowed'
-            }
-            onClick={() => mutation.mutate('submit')}
-          >
-            {t(mutation.isPending ? 'saving' : 'submit')}
-          </Button>
-        )}
-        {item.status === 'pending' && (
-          <Button
-            disabled={
-              mutation.isPending ||
-              services.access.decide(permissions.approve, item).status !==
-                'allowed'
-            }
-            onClick={() => mutation.mutate('approve')}
-          >
-            {t(mutation.isPending ? 'saving' : 'approve')}
-          </Button>
-        )}
+          {next && (
+            // Submitting is routine; approval is final, so it asks first.
+            <MaybeConfirm
+              confirm={next.action === 'approve'}
+              title={t('confirmApprove')}
+              description={t('confirmApproveHint')}
+              confirmLabel={t('approve')}
+              icon={CheckCheck}
+              irreversible
+              details={[
+                [t('reference'), <bdi key="ref">{item.reference}</bdi>],
+                [t('title'), <bdi key="title">{item.title}</bdi>],
+                [
+                  t('amount'),
+                  <bdi key="amount">{money(item.amountMinor)}</bdi>,
+                ],
+              ]}
+              onConfirm={() => mutation.mutate(next.action)}
+            >
+              <Button
+                disabled={mutation.isPending || !next.allowed}
+                onClick={
+                  next.action === 'approve'
+                    ? undefined
+                    : () => mutation.mutate(next.action)
+                }
+              >
+                {mutation.isPending ? (
+                  <Spinner data-icon="inline-start" />
+                ) : (
+                  <next.icon data-icon="inline-start" />
+                )}
+                {t(mutation.isPending ? 'saving' : next.action)}
+              </Button>
+            </MaybeConfirm>
+          )}
+        </div>
       </div>
-      {((item.status === 'draft' &&
-        services.access.decide(permissions.submit, item).status !==
-          'allowed') ||
-        (item.status === 'pending' &&
-          services.access.decide(permissions.approve, item).status !==
-            'allowed')) && <p className="muted">{t('deniedHint')}</p>}
-      <p className="muted">{t('version', { version: item.version })}</p>
+      {next && !next.allowed && (
+        <p className="-mt-3 mb-6 text-sm text-muted-foreground lg:text-end">
+          {t('deniedHint')}
+        </p>
+      )}
+      {mutation.isError && (
+        <div className="mb-6">
+          <Failure
+            error={mutation.error}
+            retry={() => {
+              mutation.reset()
+              void query.refetch()
+            }}
+          />
+        </div>
+      )}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="flex flex-col gap-6 lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('description')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p
+                dir="auto"
+                className="leading-relaxed wrap-anywhere whitespace-pre-wrap"
+              >
+                {item.description || (
+                  <span className="text-muted-foreground">
+                    {t('noDescription')}
+                  </span>
+                )}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('workflow')}</CardTitle>
+              <CardDescription>{t('workflowHint')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Workflow status={item.status} />
+            </CardContent>
+          </Card>
+        </div>
+        <Card className="h-fit">
+          <CardHeader>
+            <CardTitle>{t('summary')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold tracking-tight">
+              <bdi>{money(item.amountMinor)}</bdi>
+            </p>
+            <p className="text-sm text-muted-foreground">{t('amount')}</p>
+            <dl className="mt-5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 border-t pt-5 text-sm [&_dd]:min-w-0 [&_dd]:text-end [&_dt]:text-muted-foreground">
+              <dt>{t('category')}</dt>
+              <dd>
+                <CategoryLabel category={item.category} />
+              </dd>
+              <dt>{t('owner')}</dt>
+              <dd>
+                <Person id={item.ownerId} name={item.ownerName} />
+              </dd>
+              <dt>{t('created')}</dt>
+              <dd>
+                <time dateTime={item.createdAt}>{date(item.createdAt)}</time>
+              </dd>
+              <dt>{t('updated')}</dt>
+              <dd>
+                <time dateTime={item.updatedAt}>{date(item.updatedAt)}</time>
+              </dd>
+            </dl>
+          </CardContent>
+        </Card>
+      </div>
     </>
+  )
+}
+
+const stepKeys = {
+  draft: 'stepDraft',
+  pending: 'stepPending',
+  approved: 'stepApproved',
+} as const
+function Workflow({ status }: { status: RequestRecord['status'] }) {
+  const { t } = useTranslation(ns)
+  const current = requestStatuses.indexOf(status)
+  return (
+    <ol className="flex items-center gap-2">
+      {requestStatuses.map((step, index) => {
+        const done = index < current || status === 'approved'
+        const active = index === current
+        return (
+          <li
+            key={step}
+            aria-current={active ? 'step' : undefined}
+            className="flex flex-1 items-center gap-2 last:flex-none"
+          >
+            <span
+              className={cn(
+                'grid size-7 shrink-0 place-items-center rounded-full border text-xs font-semibold transition-colors',
+                done && 'border-primary bg-primary text-primary-foreground',
+                active &&
+                  !done &&
+                  'border-primary text-primary ring-4 ring-primary/10',
+                !done && !active && 'text-muted-foreground',
+              )}
+            >
+              {done ? <Check className="size-3.5" /> : index + 1}
+            </span>
+            <span
+              className={cn(
+                'text-sm whitespace-nowrap',
+                active ? 'font-medium' : 'text-muted-foreground',
+              )}
+            >
+              {t(stepKeys[step])}
+            </span>
+            {index < requestStatuses.length - 1 && (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'mx-1 h-px flex-1',
+                  index < current ? 'bg-primary' : 'bg-border',
+                )}
+              />
+            )}
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
+
+function MaybeConfirm({
+  confirm,
+  children,
+  ...props
+}: React.ComponentProps<typeof ConfirmAction> & { confirm: boolean }) {
+  return confirm ? (
+    <ConfirmAction {...props}>{children}</ConfirmAction>
+  ) : (
+    children
   )
 }

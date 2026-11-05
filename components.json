@@ -11,7 +11,7 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@/shared",
+    "components": "@/shared/blocks",
     "utils": "@/shared/lib/utils",
     "ui": "@/shared/ui",
     "lib": "@/shared/lib",

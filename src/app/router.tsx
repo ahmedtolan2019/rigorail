@@ -1,86 +1,39 @@
 import {
-  createRootRoute,
   createRoute,
   createRouter,
   lazyRouteComponent,
   redirect,
 } from '@tanstack/react-router'
-import { LoadingState } from '@/shared/ui/loading-state'
-import { Shell } from './shell'
+import { rootRoute } from '@/shared/routing/root'
+import { PageSkeleton } from '@/shared/ui/page'
 import { RouteError, NotFound } from '@/shared/ui/route-feedback'
-import {
-  requestSearch,
-  loadRequestList,
-  loadRequestDetail,
-  loadRequestForm,
-} from '@/modules/requests/public'
-import { loadAppearance } from '@/modules/appearance/public'
-import { loadAccess } from '@/modules/access/public'
-import { loadCatalog } from '@/modules/catalog/public'
-const root = createRootRoute({
-  component: Shell,
+import { requestSearch } from '@/modules/requests/public'
+import { moduleRoutes } from './modules'
+
+rootRoute.update({
+  // Load navigation and account-menu UI only when the workspace mounts.
+  component: lazyRouteComponent(() => import('./shell'), 'Shell'),
   errorComponent: RouteError,
   notFoundComponent: NotFound,
 })
+// The application's start page. Change it when a different module is the home.
 const index = createRoute({
-  getParentRoute: () => root,
+  getParentRoute: () => rootRoute,
   path: '/',
   beforeLoad: () => {
     throw redirect({ to: '/requests', search: requestSearch.parse({}) })
   },
 })
-const list = createRoute({
-  getParentRoute: () => root,
-  path: '/requests',
-  validateSearch: (search) => requestSearch.parse(search),
-  component: lazyRouteComponent(loadRequestList),
-})
-const create = createRoute({
-  getParentRoute: () => root,
-  path: '/requests/new',
-  validateSearch: (search) => requestSearch.parse(search),
-  component: lazyRouteComponent(loadRequestForm),
-})
-const detail = createRoute({
-  getParentRoute: () => root,
-  path: '/requests/$requestId',
-  validateSearch: (search) => requestSearch.parse(search),
-  component: lazyRouteComponent(loadRequestDetail),
-})
-const edit = createRoute({
-  getParentRoute: () => root,
-  path: '/requests/$requestId/edit',
-  validateSearch: (search) => requestSearch.parse(search),
-  component: lazyRouteComponent(loadRequestForm),
-})
-const appearance = createRoute({
-  getParentRoute: () => root,
-  path: '/appearance',
-  component: lazyRouteComponent(loadAppearance),
-})
-const access = createRoute({
-  getParentRoute: () => root,
-  path: '/access',
-  component: lazyRouteComponent(loadAccess),
-})
-const catalog = createRoute({
-  getParentRoute: () => root,
-  path: '/components',
-  component: lazyRouteComponent(loadCatalog),
-})
 export const router = createRouter({
-  routeTree: root.addChildren([
-    index,
-    list,
-    create,
-    detail,
-    edit,
-    appearance,
-    access,
-    catalog,
-  ]),
+  routeTree: rootRoute.addChildren([index, ...moduleRoutes]),
+  // Provided per session by <RouterProvider context> in bootstrap.tsx.
+  context: { queryClient: undefined!, services: undefined! },
   defaultPreload: 'intent',
-  defaultPendingComponent: LoadingState,
+  // TanStack Query owns freshness; the router always asks it.
+  defaultPreloadStaleTime: 0,
+  // Back/forward returns to the previous scroll position, as in a classic site.
+  scrollRestoration: true,
+  defaultPendingComponent: PageSkeleton,
   defaultErrorComponent: RouteError,
 })
 declare module '@tanstack/react-router' {

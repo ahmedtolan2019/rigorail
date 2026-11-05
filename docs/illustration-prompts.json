@@ -1,0 +1,97 @@
+{
+  "created": "2026-11-05",
+  "generator": "Built-in image_gen imagegen",
+  "format": "400 × 400 transparent WebP, cwebp quality 85",
+  "assets": [
+    {
+      "name": "workspace",
+      "file": "src/shared/assets/illustrations/workspace.webp",
+      "prompt": "Use case: productivity-visual. Create a single polished small enterprise UI illustration, 1024 square canvas, truly transparent background. Subject: a calm organized workspace, an open laptop with a few abstract interface blocks on the screen, two neatly stacked document sheets beside it, and a small ceramic plant pot. Isolated centered still life, whole subject visible with generous transparent margin, occupies about 75 percent of canvas. Style: refined minimal softly dimensional editorial illustration, pale cool-gray paper and matte ceramic, fine restrained slate-gray outlines, gentle ambient shading, mostly frontal slight isometric view. Entire palette strictly neutral grayscale and slate gray with no saturated brand colors, no warm brown or skin colors. Must work on both very light and very dark interfaces and at 160px size. No background panel, no gradient backdrop, no text, letters, numbers, logos or watermark, no people. Clear recognizable silhouettes, not photorealistic. This will become a faint sidebar decoration and a reusable workspace/onboarding graphic. Do not draw a UI page around the illustration."
+    },
+    {
+      "name": "upload",
+      "file": "src/shared/assets/illustrations/upload.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a neat document sheet rising above an open file tray, a clear upward arrow formed as a solid matte object."
+    },
+    {
+      "name": "welcome",
+      "file": "src/shared/assets/illustrations/welcome.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: an open doorway with a short three-step path and a small sprout in a ceramic pot, suggesting a welcoming start."
+    },
+    {
+      "name": "success",
+      "file": "src/shared/assets/illustrations/success.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a completed document standing behind a large round embossed checkmark seal, with two tiny geometric accents."
+    },
+    {
+      "name": "download",
+      "file": "src/shared/assets/illustrations/download.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a neat document sheet settling into an open file tray, a clear downward arrow formed as a solid matte object."
+    },
+    {
+      "name": "approvals",
+      "file": "src/shared/assets/illustrations/approvals.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a clipboard with three abstract checklist rows and a rubber approval stamp, one clearly visible check mark."
+    },
+    {
+      "name": "documents",
+      "file": "src/shared/assets/illustrations/documents.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: three orderly overlapping document folders, a small paperclip and a gently curled page corner."
+    },
+    {
+      "name": "analytics",
+      "file": "src/shared/assets/illustrations/analytics.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a standing report board with three ascending solid bars and a small pie-chart disc beside it, no labels or digits."
+    },
+    {
+      "name": "team",
+      "file": "src/shared/assets/illustrations/team.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: three abstract rounded avatar bust sculptures arranged around a small round shared table; no realistic faces."
+    },
+    {
+      "name": "schedule",
+      "file": "src/shared/assets/illustrations/schedule.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a small standing desk calendar with blank grid cells and a round clock, no digits or weekday letters."
+    },
+    {
+      "name": "integrations",
+      "file": "src/shared/assets/illustrations/integrations.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: two softly beveled puzzle pieces joining, with a small connected node on either side."
+    },
+    {
+      "name": "security",
+      "file": "src/shared/assets/illustrations/security.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a softly beveled shield with a simple keyhole, a small key resting beside it."
+    },
+    {
+      "name": "archive",
+      "file": "src/shared/assets/illustrations/archive.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: two neatly stacked archive boxes, one slightly open with a folder inside."
+    },
+    {
+      "name": "maintenance",
+      "file": "src/shared/assets/illustrations/maintenance.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a small rounded gear and a simple wrench neatly leaning against it."
+    },
+    {
+      "name": "billing",
+      "file": "src/shared/assets/illustrations/billing.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a paper invoice with abstract blank lines and a small stack of plain discs; no currency symbols."
+    },
+    {
+      "name": "notifications",
+      "file": "src/shared/assets/illustrations/notifications.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a softly rounded notification bell with a small blank envelope beneath it."
+    },
+    {
+      "name": "growth",
+      "file": "src/shared/assets/illustrations/growth.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a ceramic plant pot with a growing sprout beside three low ascending blocks, a quiet progress metaphor."
+    },
+    {
+      "name": "support",
+      "file": "src/shared/assets/illustrations/support.webp",
+      "prompt": "Use case: productivity-visual. Single polished enterprise UI illustration on a truly transparent square background. Centered isolated still life with 15% transparent margins, entire subject visible. Refined softly dimensional editorial style: matte pale cool-gray paper/ceramic objects, restrained slate-gray outlines, subtle ambient shading, slightly isometric front view. Strictly neutral grayscale/slate palette, no saturated colors. Clear silhouettes readable at 160px. No background panels or scenery, text, numbers, letters, logos, watermarks or people. Match a calm enterprise illustration set; not an icon or full UI mockup. Subject: a friendly headset resting around a rounded speech bubble with three raised dots."
+    }
+  ]
+}

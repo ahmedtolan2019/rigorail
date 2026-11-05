@@ -1,0 +1,87 @@
+import { defineTranslations } from '@/shared/i18n'
+
+// Module-owned strings. Use t('key') with useTranslation(ns); common keys fall back automatically.
+export const ns = defineTranslations(
+  'access',
+  {
+    navigation: 'Access',
+    usageUnavailable: 'No usage limits were supplied by the service.',
+    usageCount: '{{used}} / {{limit}}',
+    subscription: 'Subscription and usage',
+    subscriptionHint:
+      'The external backend supplies entitlements and usage. Billing and plan changes belong to that service.',
+    requestFlag: 'Requests feature flag',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    planLabel: 'Plan: {{plan}} · Status: {{status}}',
+    unlimited: 'Unlimited',
+    configuration: 'Business configuration',
+    configurationHint:
+      'Validated rules from the external backend, scoped to this workspace.',
+    accessSubtitle:
+      'One permission contract for navigation and record actions.',
+    persona: 'Demo persona',
+    personaHint:
+      'Preview access rules locally. This does not create users or change a real backend.',
+    activeWorkspace: 'Active workspace',
+    permission: 'Permission',
+    decision: 'Decision',
+    refresh: 'Refresh access',
+    manager: 'Manager',
+    editor: 'Editor · own drafts',
+    viewer: 'Viewer · read only',
+    starter: 'Starter',
+    pro: 'Pro',
+    none: 'No subscription',
+    active: 'Active',
+    trialing: 'Trial',
+    past_due: 'Payment overdue',
+    cancelledSubscription: 'Cancelled',
+    demoControls: 'Demo controls',
+    permissionsTitle: 'Effective permissions',
+    permissionsHint:
+      'What the current session may do. The backend enforces every action again.',
+    refreshed: 'Access refreshed.',
+    usageQuota: 'Usage quota',
+  },
+  {
+    navigation: 'الصلاحيات',
+    usageUnavailable: 'لم توفّر الخدمة بيانات حدود الاستخدام.',
+    usageCount: '{{used}} / {{limit}}',
+    subscription: 'الاشتراك والاستخدام',
+    subscriptionHint:
+      'يوفّر الخادم الخارجي المزايا المتاحة والاستخدام. إدارة الفواتير وتغيير الخطط تتم في تلك الخدمة.',
+    requestFlag: 'تفعيل وحدة الطلبات',
+    enabled: 'مفعّل',
+    disabled: 'معطّل',
+    planLabel: 'الخطة: {{plan}} · الحالة: {{status}}',
+    unlimited: 'غير محدود',
+    configuration: 'إعدادات العمل',
+    configurationHint:
+      'قواعد يتم التحقق منها وتُحمّل من الخادم الخارجي لمساحة العمل الحالية.',
+    accessSubtitle: 'عقد صلاحيات موحّد للتنقل والإجراءات على السجلات.',
+    persona: 'دور تجريبي',
+    personaHint:
+      'جرّب الصلاحيات محليًا. لا يؤدي ذلك إلى إنشاء مستخدمين أو تغيير صلاحيات على خادم حقيقي.',
+    activeWorkspace: 'مساحة العمل الحالية',
+    permission: 'الصلاحية',
+    decision: 'القرار',
+    refresh: 'تحديث الصلاحيات',
+    manager: 'مدير',
+    editor: 'محرر · مسوداته فقط',
+    viewer: 'مشاهد · قراءة فقط',
+    starter: 'أساسي',
+    pro: 'احترافي',
+    none: 'بدون اشتراك',
+    active: 'نشط',
+    trialing: 'تجريبي',
+    past_due: 'دفعة متأخرة',
+    cancelledSubscription: 'ملغى',
+    demoControls: 'عناصر التحكم التجريبية',
+    permissionsTitle: 'الصلاحيات الفعلية',
+    permissionsHint:
+      'ما يمكن للجلسة الحالية فعله. يتحقق الخادم من كل إجراء مرة أخرى.',
+    refreshed: 'تم تحديث الصلاحيات.',
+    usageQuota: 'حصة الاستخدام',
+  },
+)

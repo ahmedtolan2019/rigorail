@@ -35,6 +35,7 @@ test('only rerenders a limit consumer when its selected value changes', async ()
     mode: 'api',
     aiEnabled: false,
     refreshSession: async () => undefined,
+    signOut: async () => undefined,
   }
   const view = render(
     <QueryClientProvider client={client}>

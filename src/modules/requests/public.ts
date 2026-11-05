@@ -1,12 +1,37 @@
+import { linkOptions } from '@tanstack/react-router'
+import { Files } from 'lucide-react'
+import type { ModuleDefinition } from '@/shared/routing/module'
+import { ns } from './i18n'
+import { permissions, requestPermissions } from './permissions'
+export { requestRoutes } from './routes'
+export { categoryIcons } from './categories'
 export { requestPermissions } from './permissions'
 export {
-  requestSchema,
+  bulkCommand,
+  defaultRequestSearch,
+  EXPORT_LIMIT,
+  fromRequestQuery,
+  requestCategories,
   requestInput,
+  requestSchema,
   requestSearch,
+  requestStatuses,
   toMinorUnits,
-  PAGE_SIZE,
 } from './schema'
-export type { RequestRecord } from './schema'
-export const loadRequestList = () => import('./pages/list')
-export const loadRequestDetail = () => import('./pages/detail')
-export const loadRequestForm = () => import('./pages/form')
+export type { RequestFilter, RequestRecord } from './schema'
+
+export const requestsModule = {
+  id: ns,
+  navigation: {
+    link: linkOptions({ to: '/requests', search: {} }),
+    labelKey: 'requests:navigation',
+    icon: Files,
+    section: 'main',
+    requires: {
+      flag: 'requests',
+      entitlement: 'requests',
+      action: permissions.read,
+    },
+  },
+  permissions: requestPermissions,
+} satisfies ModuleDefinition

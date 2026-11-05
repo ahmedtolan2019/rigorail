@@ -6,7 +6,9 @@ import { useConfiguration, selectAiEnabled } from '@/shared/config/business'
 import { streamSuggestion } from '@/shared/ai/stream'
 import { Button } from '@/shared/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/shared/ui/alert'
+import { mutedTextClass } from '@/shared/ui/page'
 import { permissions } from './permissions'
+import { ns } from './i18n'
 export function AiSuggestion({
   title,
   onApply,
@@ -14,7 +16,7 @@ export function AiSuggestion({
   title: string
   onApply: (text: string) => void
 }) {
-  const { t, i18n } = useTranslation(),
+  const { t, i18n } = useTranslation(ns),
     { api, mode, aiEnabled } = useServices()
   const access = useCapability({
       action: permissions.suggest,
@@ -59,11 +61,11 @@ export function AiSuggestion({
     }
   }
   return (
-    <section className="assistant-panel">
+    <section className="flex flex-col gap-3 rounded-lg border p-5">
       <h2>{t('aiTitle')}</h2>
-      <p>{t('aiHint')}</p>
-      {mode === 'demo' && <p className="muted">{t('aiDemo')}</p>}
-      <div className="action-row">
+      <p className="text-muted-foreground">{t('aiHint')}</p>
+      {mode === 'demo' && <p className={mutedTextClass}>{t('aiDemo')}</p>}
+      <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
           variant="outline"
@@ -83,11 +85,15 @@ export function AiSuggestion({
         )}
       </div>
       {text && (
-        <div className="suggestion" aria-label={t('suggestion')} dir="auto">
+        <div
+          className="border-s-[3px] border-primary bg-muted p-4 wrap-anywhere whitespace-pre-wrap"
+          aria-label={t('suggestion')}
+          dir="auto"
+        >
           {text}
         </div>
       )}
-      <p role="status" className="muted">
+      <p role="status" className={mutedTextClass}>
         {status === 'cancelled'
           ? t('cancelled')
           : status === 'complete'
@@ -103,7 +109,7 @@ export function AiSuggestion({
         </Alert>
       )}
       {status === 'complete' && (
-        <div className="action-row">
+        <div className="flex flex-wrap items-center gap-3">
           <Button
             type="button"
             onClick={() => {

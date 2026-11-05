@@ -6,6 +6,6 @@ import tseslint from 'typescript-eslint'
 export default tseslint.config(
   { ignores: ['dist', 'coverage', 'test-results', 'playwright-report'] },
   { files: ['**/*.{ts,tsx}'], extends: [js.configs.recommended, ...tseslint.configs.recommended], languageOptions: { globals: { ...globals.browser, ...globals.node } }, plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh }, rules: { 'react-hooks/rules-of-hooks': 'error', 'react-hooks/exhaustive-deps': 'error', 'react-refresh/only-export-components': ['error', { allowConstantExport: true }] } },
-  // Registry primitives deliberately export variants and context hooks alongside components.
-  { files: ['src/shared/ui/**/*.tsx'], rules: { 'react-refresh/only-export-components': 'off' } },
+  // Registry primitives and the data-table kit deliberately export variants, hooks and column helpers alongside components.
+  { files: ['src/shared/ui/**/*.tsx', 'src/shared/data-table/**/*.tsx'], rules: { 'react-refresh/only-export-components': 'off' } },
 )
