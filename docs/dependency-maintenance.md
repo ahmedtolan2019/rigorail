@@ -13,14 +13,13 @@ regenerate the lockfile through npm and run `npm run check`.
 `npm run check:dependencies` fails on moderate or higher findings in any dependency
 category. CI runs it separately so the code gate does not depend on the advisory service.
 
-## Upstream license
+## License and credits
 
-The upstream README declares MIT, but its current root has no LICENSE file. The
-root [LICENSE](../LICENSE) was restored verbatim from upstream commit
-[fb49408](https://github.com/kston83/react-ai-template/commit/fb4940859016b617e91b2a426aa01919aaead460)
-(blob `ef495d5ff017e359bc0567921cfa0d448287abd3`), which was later removed without
-explanation in c210d29. Preserve the notice in copies of the template. Dependency
-and imported-source licenses remain separate. This is provenance, not legal advice.
+The project is MIT-licensed under Ahmed Tolan's copyright ([LICENSE](../LICENSE)).
+[Third-party notices](../THIRD_PARTY_NOTICES.md) credit the original idea,
+reproduce its notice for the overlapping tool configuration, and list bundled
+agent skills. Keep that file when copying the template. This is provenance, not
+legal advice.
 
 ## Updates
 

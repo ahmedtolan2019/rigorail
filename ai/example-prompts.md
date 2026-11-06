@@ -17,7 +17,7 @@ and the next action.
 
 Read AGENTS.md and the owning module's AGENTS.md and contract.md before implementation. Implement [user behavior] against
 [API contract]. Include loading, empty, error, success, and applicable permission
-states, plus English/Arabic and RTL behavior. Use the shared error/loading patterns
+states, plus localization and RTL behavior. Use the shared error/loading patterns
 and capability checks. Acceptance criteria: [observable list]. Reuse existing UI conventions,
 cover the meaningful behavior with tests, run focused tests and npm run check; use browser tests when the workflow risk warrants them, and document any unmet contract requirements.
 

@@ -1,7 +1,7 @@
 // Application identity and defaults. Domain modules must not import this file.
 export const appConfig = {
-  id: 'foundation',
-  name: 'Foundation',
+  id: 'rigorail',
+  name: 'Rigorail',
   currency: 'USD',
   /** Agree both with the backend before enabling; see docs/backend-contract.md. */
   api: {

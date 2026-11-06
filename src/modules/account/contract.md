@@ -38,5 +38,5 @@ Sign-out lives in the account menu and on this page via `services.signOut`.
 | `POST /account/sessions/revoke-others`         | Empty                                                                        |
 
 Password rules in `schema.ts` are a UX hint; the backend enforces policy. Identity
-errors are shown by stable `code`, never backend text. Keep English/Arabic parity,
+errors are shown by stable `code`, never backend text. Keep translation parity across locales,
 RTL (emails, codes and passwords stay left-to-right) and dark mode.

@@ -23,7 +23,7 @@ Read \`contract.md\` before source. Build screens with \`docs/screen-recipes.md\
 (list, detail, form) and keep ${label.toLowerCase()} business rules here;
 other modules consume only \`public.ts\`. Before building screens, find the nearest
 pattern in \`docs/pattern-coverage.md\` and follow \`docs/composition-authoring.md\`.
-Keep English/Arabic keys in sync. Focused checks: \`npm test -- src/modules/${id}\`
+Keep translation keys in sync across locales. Focused checks: \`npm test -- src/modules/${id}\`
 and \`npx playwright test tests/e2e/${id}.spec.ts\`.
 `,
     'contract.md': `# ${label} contract

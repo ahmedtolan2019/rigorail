@@ -55,7 +55,7 @@ Work in this order; each step decides the next.
    mutation, cache invalidation, visible result (see detail recipe).
 6. **Cover every state**: loading skeleton, error with retry, empty, no matches,
    permission denied, partial success, and offline/stale data.
-7. **Finish**: English and Arabic strings, RTL, dark mode, 375/1000/1280px,
+7. **Finish**: strings in every locale, RTL, dark mode, 375/1000/1280px,
    keyboard path for every pointer action, tab title, and tests (below).
 
 ## List screen
@@ -182,6 +182,6 @@ Run `npm run check:fast` while editing and `npm run check` before finishing.
 - [ ] URL holds shareable state; reload and back/forward restore the screen.
 - [ ] Loading, empty, no-match, error, denied and partial states exist.
 - [ ] Business references and names only; no internal ids on screen.
-- [ ] English and Arabic, RTL, dark mode, 375/1000/1280px reviewed in screenshots.
+- [ ] Every locale, RTL, dark mode, 375/1000/1280px reviewed in screenshots.
 - [ ] Keyboard path for every action; axe audit passes.
 - [ ] Browser test for the main flow; `npm run check` passes.

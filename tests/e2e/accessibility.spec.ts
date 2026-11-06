@@ -40,8 +40,8 @@ test('no automated accessibility violations: Arabic dark sign-in', async ({
   page,
 }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('foundation:language', 'ar')
-    localStorage.setItem('foundation:theme', 'dark')
+    localStorage.setItem('rigorail:language', 'ar')
+    localStorage.setItem('rigorail:theme', 'dark')
     sessionStorage.setItem('demo:signed-out', '1')
   })
   await page.goto('/sign-in')
@@ -54,7 +54,7 @@ for (const { path, ready } of screens.slice(0, 4))
     page,
   }) => {
     await page.addInitScript(() =>
-      localStorage.setItem('foundation:theme', 'dark'),
+      localStorage.setItem('rigorail:theme', 'dark'),
     )
     await page.goto(path)
     await expect(
@@ -77,7 +77,7 @@ for (const theme of ['light', 'dark'] as const)
       page,
     }) => {
       await page.addInitScript(
-        (value) => localStorage.setItem('foundation:theme', value),
+        (value) => localStorage.setItem('rigorail:theme', value),
         theme,
       )
       await page.goto(`/design-system?tab=${tab}`)

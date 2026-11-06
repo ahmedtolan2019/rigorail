@@ -1,5 +1,28 @@
 {
-  "name": "react-ai-template",
+  "name": "rigorail",
+  "description": "Vibe coding. Engineered frontends. A React template that gives developers and AI coding agents modular architecture, 40+ enterprise screen compositions and automated engineering checks.",
+  "author": "Ahmed Tolan",
+  "license": "MIT",
+  "homepage": "https://github.com/ahmedtolan2019/rigorail#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmedtolan2019/rigorail.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ahmedtolan2019/rigorail/issues"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "tailwindcss",
+    "shadcn-ui",
+    "frontend-template",
+    "ai-agents",
+    "vibe-coding",
+    "enterprise",
+    "rtl"
+  ],
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -26,7 +49,7 @@
     "module:remove": "node scripts/remove-module.mjs",
     "api:types": "node scripts/api-types.mjs",
     "check:api": "node scripts/api-types.mjs --check",
-    "check:tooling": "node --test scripts/context.test.mjs scripts/hooks.test.mjs scripts/remove-module.test.mjs scripts/create-module.test.mjs",
+    "check:tooling": "node --test scripts/context.test.mjs scripts/hooks.test.mjs scripts/remove-module.test.mjs scripts/create-module.test.mjs packages/create-rigorail/index.test.mjs",
     "check:production": "node scripts/check-production.mjs",
     "check:dependencies": "npm audit --audit-level=moderate"
   },
@@ -103,6 +126,5 @@
   "packageManager": "npm@11.16.0",
   "overrides": {
     "minimatch@>=10.0.0 <11.0.0": "11.0.4"
-  },
-  "license": "MIT"
+  }
 }

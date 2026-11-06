@@ -239,7 +239,7 @@ within its scope.
    Label simulated jobs/sessions/AI explicitly. Never claim a toast performs an
    operation or that local grants provide production security.
 4. Register the slug/group in `views.ts`, an explicit literal lazy loader in
-   `page.tsx`, and English/Arabic labels and hints. Keep new work lazy. Keep each screen in its own lazy file.
+   `page.tsx`, and labels and hints in every locale. Keep new work lazy. Keep each screen in its own lazy file.
 5. Update `docs/pattern-coverage.md`, the module contract and `ai/plan.md` with the
    implementation, integration questions and actual validation results. Keep any
    stated counts current. The context lookup and RTL route sweep derive from source.

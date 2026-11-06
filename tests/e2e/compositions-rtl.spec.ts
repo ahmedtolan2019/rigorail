@@ -10,8 +10,8 @@ for (const group of compositionGroups) {
       if (message.type() === 'error') errors.push(message.text())
     })
     await page.addInitScript(() => {
-      localStorage.setItem('foundation:language', 'ar')
-      localStorage.setItem('foundation:theme', 'dark')
+      localStorage.setItem('rigorail:language', 'ar')
+      localStorage.setItem('rigorail:theme', 'dark')
     })
     for (const view of group.views) {
       await page.goto(`/compositions?view=${view}`)

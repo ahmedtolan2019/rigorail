@@ -6,6 +6,6 @@ modules consume only `public.ts`. Do not move request business rules into shared
 
 For form changes, check failed-save draft retention, base record version, amount
 normalization and unsaved navigation. For actions, check record permissions,
-workflow status and backend rejection. Keep English/Arabic keys in sync.
+workflow status and backend rejection. Keep translation keys in sync across locales.
 Focused tests: `npm test -- src/modules/requests src/app/demo/transport.test.ts` and the relevant
 `tests/e2e/template.spec.ts` test selected with `--grep`.

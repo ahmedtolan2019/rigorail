@@ -138,7 +138,7 @@ implemented API/demo boundaries; a composition does not silently extend them.
 | Concurrency | Changed revision, stale response, double submission, tenant switch, sign-out, tab close, unmount |
 | Permissions | Hidden navigation vs direct-route denial, action grants, field restrictions, revoked session, server rejection |
 | Accessibility | Labels, focus order/return, summary-to-field focus, keyboard/pointer alternatives to drag, error association, live feedback, non-color status |
-| Internationalization | English/Arabic, RTL logical styles, localized formatting, long names, business references in bidi isolation |
+| Internationalization | Localization with RTL support: logical styles, localized formatting, long names, business references in bidi isolation |
 | Layout | 375px phone, intermediate width, desktop, overflowing tables, long values, empty cards and dense rows |
 | Output | Actual downloaded bytes/type/filename, print content, selected columns, no secrets or internal IDs |
 | Maintenance | Owning contract, public imports, lazy boundaries, fixtures replaced deliberately, useful test and current handoff |
