@@ -21,7 +21,7 @@ jobs:
       VITE_APP_RELEASE: ${{ github.sha }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
@@ -39,7 +39,7 @@ jobs:
     outputs:
       version: ${{ steps.lock.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: lock
         run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
 
@@ -60,7 +60,7 @@ jobs:
       # Firefox refuses to run as root with a HOME owned by another user.
       HOME: /root
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
@@ -68,7 +68,7 @@ jobs:
       - run: npm install --global npm@11.16.0
       - run: npm ci
       - run: npm run test:e2e -- --shard=${{ matrix.shard }}/4 --workers=2
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: browser-failures-${{ matrix.shard }}
