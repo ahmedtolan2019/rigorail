@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeft, KeyRound, LinkIcon, MailCheck } from 'lucide-react'
 import { ApiError, type ApiClient } from '@/shared/api/client'
 import { useDocumentTitle } from '@/shared/hooks/use-document-title'
+import { withBase } from '@/shared/routing/base'
 import { Button } from '@/shared/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/shared/ui/field'
 import { Input } from '@/shared/ui/input'
@@ -75,7 +76,7 @@ export function ForgotPassword({
           {demo && (
             <Button asChild size="lg" className="w-full">
               <a
-                href={`${authPaths.reset}?token=demo`}
+                href={withBase(`${authPaths.reset}?token=demo`)}
                 onClick={(event) => {
                   event.preventDefault()
                   go(authPaths.reset, { token: 'demo' })

@@ -6,6 +6,7 @@ import { useTheme } from '@/shared/theme/theme-context'
 import { Button } from '@/shared/ui/button'
 import { BrandMark } from '@/shared/brand/brand-mark'
 import { ns } from '../messages'
+import { stripBase, withBase } from '@/shared/routing/base'
 import { authPaths, safeRedirect } from '../schema'
 import { ForgotPassword, ResetPassword } from './recovery'
 import { SignIn, type DemoHints } from './sign-in'
@@ -26,7 +27,7 @@ export interface SignedOutProps {
 
 function readLocation() {
   return {
-    path: window.location.pathname,
+    path: stripBase(window.location.pathname),
     search: new URLSearchParams(window.location.search),
   }
 }
@@ -52,7 +53,7 @@ export default function SignedOutApp({
     const redirect = new URLSearchParams(window.location.search).get('redirect')
     if (redirect && path !== authPaths.reset) next.set('redirect', redirect)
     const query = next.size ? `?${next}` : ''
-    window.history.pushState(null, '', path + query)
+    window.history.pushState(null, '', withBase(path + query))
     setLocation(readLocation())
     setNotice(undefined)
   }, [])
@@ -65,7 +66,7 @@ export default function SignedOutApp({
         reason !== 'signed-out' && target !== '/'
           ? `?${new URLSearchParams({ redirect: target })}`
           : ''
-      window.history.replaceState(null, '', authPaths.signIn + keep)
+      window.history.replaceState(null, '', withBase(authPaths.signIn + keep))
       setLocation(readLocation())
     }
     const onPop = () => setLocation(readLocation())

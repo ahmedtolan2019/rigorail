@@ -37,6 +37,7 @@ import { ProgressBar } from './route-progress'
 import { modules } from './modules'
 import { invalidationsFor } from '@/shared/realtime/events'
 import { createUploader } from '@/shared/uploads/model'
+import { withBase } from '@/shared/routing/base'
 
 function SessionScope({
   runtime,
@@ -187,7 +188,7 @@ function SessionLoader({ runtime }: { runtime: Runtime }) {
   const status = query.error instanceof ApiError ? query.error.status : 0
   if (status === 401) {
     const onSignedIn = async (returnTo: string) => {
-      router.history.replace(returnTo)
+      router.history.replace(withBase(returnTo))
       setSignedOut(false)
       setGeneration((value) => value + 1)
       await refetch()

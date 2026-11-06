@@ -19,6 +19,8 @@ spaghetti slop as it grows.
 ![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8)
 ![WCAG 2.2 AA audits](https://img.shields.io/badge/a11y-WCAG_2.2_AA_audits-0a6f69)
 
+**[▶ Try the live demo](https://ahmedtolan2019.github.io/rigorail/)** · no install, no backend, no sign-up
+
 [Quick start](#quick-start) ·
 [Features](#features) ·
 [Architecture](#architecture) ·
@@ -61,8 +63,9 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. The demo runs on local sample data, so no backend, API
-key or account is needed. Prefer GitHub? Use **Use this template** on the repository
+Open http://localhost:5173, or skip the install and explore the
+[live demo](https://ahmedtolan2019.github.io/rigorail/). The demo runs on local
+sample data, so no backend, API key or account is needed. Prefer GitHub? Use **Use this template** on the repository
 page, then run `npm ci && npm run dev`.
 
 Requirements: Node 24 (see `.nvmrc`) and npm 11.
