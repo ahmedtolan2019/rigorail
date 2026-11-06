@@ -224,14 +224,25 @@ export function BreakdownTable({
             onValueChange={(value) => onBreakdownChange(value as Breakdown)}
           >
             <TabsList>
-              <TabsTrigger value="category">{t('byCategoryTab')}</TabsTrigger>
-              <TabsTrigger value="owner">{t('byOwnerTab')}</TabsTrigger>
-              <TabsTrigger value="period">{t('byPeriodTab')}</TabsTrigger>
+              <TabsTrigger value="category" aria-controls="breakdown-results">
+                {t('byCategoryTab')}
+              </TabsTrigger>
+              <TabsTrigger value="owner" aria-controls="breakdown-results">
+                {t('byOwnerTab')}
+              </TabsTrigger>
+              <TabsTrigger value="period" aria-controls="breakdown-results">
+                {t('byPeriodTab')}
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </CardAction>
       </CardHeader>
-      <CardContent className="px-0">
+      <CardContent
+        id="breakdown-results"
+        role="tabpanel"
+        aria-label={t('breakdown')}
+        className="px-0"
+      >
         <DataTable
           table={table}
           caption={t('breakdown')}

@@ -163,6 +163,8 @@ function Sparkline({ values }: { values: number[] }) {
       config={{ value: { color: 'var(--chart-1)' } }}
       className="aspect-auto h-9 w-full"
       aria-hidden="true"
+      // Decorative: keep the chart's focusable SVG out of the tab order too.
+      inert
     >
       <AreaChart data={data} margin={{ top: 2, bottom: 2, left: 0, right: 0 }}>
         <Area

@@ -82,7 +82,7 @@ export function DataTableFilters({
       aria-label={active ? `${t('filters')} (${active})` : t('filters')}
     >
       <ListFilter aria-hidden="true" />
-      <span className="hidden sm:inline">{t('filters')}</span>
+      <span className="sr-only sm:not-sr-only">{t('filters')}</span>
       {active > 0 && (
         <Badge className="h-5 min-w-5 rounded-full px-1.5 tabular-nums">
           {active}

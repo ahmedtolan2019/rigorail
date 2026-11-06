@@ -38,6 +38,8 @@ import {
   useSidebar,
 } from '@/shared/ui/sidebar'
 import { appConfig } from './config'
+import { isApple, useShortcut } from '@/shared/shortcuts/registry'
+import { ShortcutsDialog } from '@/shared/shortcuts/shortcuts-dialog'
 import {
   isActive,
   navigation,
@@ -77,17 +79,19 @@ export function Shell() {
   useEffect(() => {
     document.querySelector<HTMLElement>('#main-content')?.focus()
   }, [pathname])
-  useEffect(() => {
-    const open = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault()
-        setCommandLoaded(true)
-        setCommandOpen((value) => !value)
-      }
-    }
-    window.addEventListener('keydown', open)
-    return () => window.removeEventListener('keydown', open)
-  }, [])
+  const [helpOpen, setHelpOpen] = useState(false)
+  const general = i18n.t('shortcutGeneral')
+  useShortcut(
+    { keys: 'mod+k', label: i18n.t('shortcutSearch'), group: general },
+    () => {
+      setCommandLoaded(true)
+      setCommandOpen((value) => !value)
+    },
+  )
+  useShortcut(
+    { keys: '?', label: i18n.t('shortcutHelp'), group: general },
+    () => setHelpOpen(true),
+  )
   const dir = i18n.dir()
   const content = (
     <Content
@@ -103,7 +107,7 @@ export function Shell() {
     <DirectionProvider dir={dir}>
       <RouteProgress />
       <a
-        className="fixed -top-20 start-4 z-100 rounded-md border-2 border-primary bg-background p-3 focus:top-4"
+        className="fixed -top-20 start-4 z-100 print:hidden rounded-md border-2 border-primary bg-background p-3 focus:top-4"
         href="#main-content"
       >
         {i18n.t('skip')}
@@ -121,6 +125,7 @@ export function Shell() {
           <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} />
         </Suspense>
       )}
+      <ShortcutsDialog open={helpOpen} onOpenChange={setHelpOpen} />
       <Toaster
         dir={dir}
         position={dir === 'rtl' ? 'bottom-left' : 'bottom-right'}
@@ -243,7 +248,7 @@ function Content({
   sidebar: boolean
   onSearch: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [online, setOnline] = useState(navigator.onLine)
   useEffect(() => {
     const update = () => setOnline(navigator.onLine)
@@ -263,8 +268,12 @@ function Content({
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto w-full max-w-[1440px] flex-1 p-(--page-space) outline-none"
+        className="mx-auto w-full max-w-[1440px] flex-1 p-(--page-space) outline-none print:max-w-none print:p-0"
       >
+        {/* Identifies printed pages; screens never show it. */}
+        <p className="mb-4 hidden border-b pb-2 text-xs text-muted-foreground print:block">
+          {appConfig.name} · {new Date().toLocaleString(i18n.language)}
+        </p>
         {!online && (
           <Alert className="mb-6">
             <WifiOff aria-hidden="true" />
@@ -293,7 +302,7 @@ function AppHeader({
   const { resolvedTheme, setTheme } = useTheme()
   const section = navigation.find((entry) => isActive(entry, pathname))
   return (
-    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-(--page-space)">
+    <header className="sticky top-0 z-20 flex h-14 print:hidden shrink-0 items-center gap-2 border-b bg-background/95 px-(--page-space)">
       {sidebar ? (
         <>
           <SidebarTrigger className="-ms-1.5" />
@@ -326,12 +335,20 @@ function AppHeader({
           variant="outline"
           size="sm"
           onClick={onSearch}
-          aria-label={t('search')}
+          aria-keyshortcuts={isApple() ? 'Meta+K' : 'Control+K'}
           className="h-8 gap-2 px-2 text-muted-foreground lg:w-56 lg:justify-start lg:px-3"
         >
           <Search aria-hidden="true" />
-          <span className="hidden lg:inline">{t('searchPlaceholder')}</span>
-          <Kbd className="ms-auto hidden lg:inline-flex">⌘K</Kbd>
+          {/* Visible text is the accessible name (WCAG 2.5.3); icon-only below lg. */}
+          <span className="sr-only lg:not-sr-only">
+            {t('searchPlaceholder')}
+          </span>
+          {/* The key hint is drawn with CSS so it never pollutes the name. */}
+          <Kbd
+            aria-hidden="true"
+            data-keys={isApple() ? '⌘K' : 'Ctrl K'}
+            className="ms-auto hidden after:content-[attr(data-keys)] lg:inline-flex"
+          />
         </Button>
         {mode === 'demo' && (
           <Badge variant="secondary" className="hidden md:inline-flex">
@@ -416,7 +433,7 @@ function TopNavigationLink({
       )}
     >
       <Icon aria-hidden="true" className="size-4" />
-      <span className="hidden md:inline">{t(entry.labelKey)}</span>
+      <span className="sr-only md:not-sr-only">{t(entry.labelKey)}</span>
     </Link>
   )
 }

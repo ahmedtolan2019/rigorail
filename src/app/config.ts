@@ -7,6 +7,8 @@ export const appConfig = {
   api: {
     csrf: null as { cookie: string; header: string } | null,
     requestIdHeader: null as string | null,
+    /** Server-Sent Events path for live updates, for example '/events'. */
+    events: null as string | null,
   },
   auth: {
     /** Offer "Continue with single sign-on" on the sign-in page. */

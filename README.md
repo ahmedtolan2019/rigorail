@@ -33,7 +33,9 @@ the email for the two-step code `123456`). These exist only in the demo transpor
 - **Requests**: a professional data screen with status tabs, debounced search, a
   Filters panel with server facet counts, a one-line chip strip, sortable/pinned
   columns, column visibility, page sizes, cross-page selection with bulk actions,
-  Excel/CSV export, detail with workflow, and a sectioned form with a leave guard.
+  Excel/CSV export, per-user saved views, attachments with upload progress, a
+  printable detail page, keyboard shortcuts (`?` lists them), and a sectioned form
+  with a leave guard. Lists refresh live when the backend reports changes.
 - **Reports**: date-range presets, period comparison, KPI cards with sparklines,
   trend/status/category charts, a breakdown table with totals, drill-down to records
   and a formatted multi-sheet Excel export. Aggregates come from the backend.
@@ -66,7 +68,11 @@ the email for the two-step code `123456`). These exist only in the demo transpor
 5. Point the account module at your identity backend (sign-in, MFA, recovery,
    sign-out, SSO; see `src/modules/account/contract.md`). Set `auth.sso` in
    `src/app/config.ts`. Replace the sample grant adapter if its policy model differs.
-6. Remove the reference modules and demo transport when they are no longer useful.
+6. Remove reference modules you don't need. `npm run module:remove -- reports
+   --dry-run` previews the change; without `--dry-run` it deletes the module, its
+   registration and its `<module>*.spec.ts` browser specs, then lists remaining
+   references and type errors to fix by hand (docs, demo transport endpoints).
+   Keep `design-system` and `compositions` while your team still copies from them.
    [Customization](docs/customization-and-ux.md) lists the registration points.
 
 `npm run build` validates API configuration and builds for your backend.
@@ -89,14 +95,18 @@ npm run check:fast            # structural checks during editing
 npm run check                 # full gate, demo/API builds and bundle budget
 npm run test:watch            # focused development tests
 npx playwright install chromium  # once, before the first browser run
-npm run test:e2e              # desktop/mobile reference flows
+npm run test:e2e              # desktop/mobile flows plus WCAG audits (axe)
+E2E_ALL_BROWSERS=1 npm run test:e2e  # also Firefox and WebKit core flows
+npm run api:types             # regenerate API types from contracts/openapi.yaml
+npm run module:remove -- reports --dry-run  # preview removing a reference module
 npm run format               # format source and scripts
 npm run catalog              # refresh catalog after changing installed UI exports
 ```
 
 Use risk-based checks. Full E2E is for broad UI/auth/routing changes or release;
 ordinary changes need focused checks. CI runs `check:dependencies`, `check` and the
-Chromium browser suite on every pull request.
+browser suite (Chromium desktop/mobile, plus Firefox and WebKit core flows) on every
+pull request.
 
 ## Provenance
 

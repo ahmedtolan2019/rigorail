@@ -45,6 +45,14 @@ Updated 2026-11-05. Backend stays external.
   password, SSO button) outside the router; `/account` (profile, password,
   signed-in devices); sign-out in the account menu; any 401 returns to sign-in and
   back. Demo identity in `app/demo/identity.ts`; contract in the module.
+- Foundation gaps closed (2026-11-06): `npm run module:remove` for starting a real
+  project; `contracts/openapi.yaml` with generated types and compile-time Zod
+  conformance (`check:api`); per-user saved views; Server-Sent Events live updates
+  via module `refreshOn`; presigned uploads with `FileUpload`; print mode; a
+  shortcut registry with `?` help; axe WCAG audits (light, dark, mobile, Arabic)
+  that drove AA token fixes; Firefox/WebKit core flows in CI. Compositions added
+  global search, notifications, audit log, report builder, comments, custom
+  dashboard and rules editor.
 - Completed the interrupted Claude account/compositions work together. The shell
   now loads lazily when the workspace mounts. The unpaginated reference grids
   disable automatic page resets, fixing a React update-before-mount warning.

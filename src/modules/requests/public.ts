@@ -34,4 +34,6 @@ export const requestsModule = {
     },
   },
   permissions: requestPermissions,
+  // Server change events for requests refresh this module's cached lists and records.
+  refreshOn: ['requests'],
 } satisfies ModuleDefinition

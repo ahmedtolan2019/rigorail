@@ -252,7 +252,7 @@ function Dashboard() {
             onCheckedChange={(compare) => update({ compare })}
           />
           <Label htmlFor="compare" className="truncate font-normal">
-            <span className="hidden md:inline">{t('compare')}</span>
+            <span className="sr-only md:not-sr-only">{t('compare')}</span>
             <span className="md:hidden">{t('previous')}</span>
           </Label>
         </div>

@@ -759,6 +759,27 @@ export const ns = defineTranslations(
     'customer-360': 'Customer account',
     'customer-360Hint':
       'Health, revenue, receivables aging, open items and interactions on one page.',
+    'global-search': 'Global search',
+    'global-searchHint':
+      'Records, people and documents in one result list, with filters and keyboard navigation.',
+    'custom-dashboard': 'Arrangeable dashboard',
+    'custom-dashboardHint':
+      'Add, remove, reorder and resize widgets by drag or keyboard; the layout is remembered.',
+    'rules-editor': 'Approval rules',
+    'rules-editorHint':
+      'Conditions route requests to ordered approver steps, with validation and a live test.',
+    'audit-log': 'Audit log',
+    'audit-logHint':
+      'Who changed what and when, with before and after values and export.',
+    'notifications-center': 'Notification preferences',
+    'notifications-centerHint':
+      'Choose in-app, email or digest delivery per event, with quiet hours and a volume preview.',
+    'comments-thread': 'Comment threads',
+    'comments-threadHint':
+      'Discuss a record with @mentions, replies, editing and resolved threads.',
+    'report-builder': 'Report builder',
+    'report-builderHint':
+      'Pick a grouping, measure and chart, preview live and save the report.',
   },
   {
     navigation: 'التراكيب',
@@ -1492,5 +1513,25 @@ export const ns = defineTranslations(
     'customer-360': 'حساب العميل',
     'customer-360Hint':
       'الصحة والإيراد وأعمار الذمم والبنود المفتوحة والتفاعلات في صفحة واحدة.',
+    'global-search': 'البحث الشامل',
+    'global-searchHint':
+      'السجلات والأشخاص والمستندات في قائمة نتائج واحدة مع المرشحات والتنقل بلوحة المفاتيح.',
+    'custom-dashboard': 'لوحة قابلة للترتيب',
+    'custom-dashboardHint':
+      'أضف العناصر واحذفها ورتبها وغيّر حجمها بالسحب أو بلوحة المفاتيح، ويُحفظ التخطيط.',
+    'rules-editor': 'قواعد الاعتماد',
+    'rules-editorHint':
+      'شروط توجه الطلبات إلى خطوات اعتماد مرتبة مع التحقق واختبار مباشر.',
+    'audit-log': 'سجل التدقيق',
+    'audit-logHint': 'من غيّر ماذا ومتى، مع القيم قبل وبعد والتصدير.',
+    'notifications-center': 'تفضيلات الإشعارات',
+    'notifications-centerHint':
+      'اختر التسليم داخل التطبيق أو بالبريد أو بالملخص لكل حدث، مع ساعات الهدوء ومعاينة الحجم.',
+    'comments-thread': 'نقاشات التعليقات',
+    'comments-threadHint':
+      'ناقش السجل مع الإشارات والردود والتعديل والنقاشات المحلولة.',
+    'report-builder': 'منشئ التقارير',
+    'report-builderHint':
+      'اختر التجميع والمقياس والرسم وعاين مباشرة واحفظ التقرير.',
   },
 )

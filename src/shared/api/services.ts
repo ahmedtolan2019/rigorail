@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import type { Uploader } from '../uploads/model'
 import type { ApiClient } from './client'
 import type {
   AuthorizationAdapter,
@@ -13,6 +14,8 @@ export interface Services {
   mode: 'demo' | 'api'
   aiEnabled: boolean
   refreshSession: () => Promise<unknown>
+  /** Sends a file to storage; see `shared/uploads/model.ts`. */
+  upload: Uploader
   /** Ends the session with the backend and shows the sign-in screen. */
   signOut: () => Promise<void>
   demo?: {

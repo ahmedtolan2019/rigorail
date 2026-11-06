@@ -71,7 +71,9 @@ its lines in `app/modules.ts` (plus any demo transport fixtures).
 Transient session refresh failures hide/inert the current workspace while retaining
 drafts for recovery. HTTP 403 clears it; HTTP 401 from any query or mutation
 reloads the session and shows sign-in ("session ended"), keeping the URL to return to.
-Sign-in and sign-out are broadcast to the app's other tabs (`BroadcastChannel`). A new QueryClient is mounted when user/workspace/session revision changes; the
+Sign-in and sign-out are broadcast to the app's other tabs (`BroadcastChannel`).
+Server change events (`shared/realtime`) invalidate the queries of modules whose
+`refreshOn` lists the topic, so query keys must start with the owning module id. A new QueryClient is mounted when user/workspace/session revision changes; the
 old client cancels and clears its requests. Never persist business data or copy
 query results into Zustand. Query keys include workspace and filters. Remote
 configuration and capability hooks use selectors; subscribe only to needed values.
@@ -177,6 +179,19 @@ localized usage and copyable examples. Keep meaning in accessible HTML and ambie
 artwork outside controls. See [illustrations.md](illustrations.md) for reuse and
 extension rules. Success feedback uses toasts; skeletons mirror the final layout;
 motion respects reduced motion.
+
+## Platform services
+
+- Shortcuts: `shared/shortcuts` registers keys with `useShortcut` (listed in the `?`
+  help). `mod` is ⌘ or Ctrl; single keys never fire while typing.
+- Uploads: `services.upload` sends bytes to storage (`shared/uploads/model.ts`);
+  records attach upload ids. `FileUpload` is the shared UI.
+- Saved views: `shared/data-table/saved-views.tsx`; modules pass non-default
+  search/columns and validate on apply.
+- Print: `@media print` in `index.css` hides navigation and `data-print="hide"`
+  controls; use `print:` utilities for paper layouts.
+- Accessibility: `tests/e2e/accessibility.spec.ts` runs axe WCAG 2.2 AA. Text on
+  semantic tints must keep 4.5:1; keep icon-button labels as `sr-only sm:not-sr-only`.
 
 ## Validation and delivery
 

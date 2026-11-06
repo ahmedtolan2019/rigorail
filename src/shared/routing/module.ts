@@ -21,4 +21,9 @@ export interface ModuleDefinition {
   id: string
   navigation?: NavigationEntry
   permissions?: readonly PermissionDefinition[]
+  /**
+   * Realtime topics that make this module's queries stale. Query keys must start
+   * with the module id; see `shared/realtime/events.ts`.
+   */
+  refreshOn?: readonly string[]
 }

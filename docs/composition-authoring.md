@@ -103,9 +103,9 @@ These are adaptation recipes, not additional implemented gallery routes.
 | Purchase entry | `wizard`, `line-items` | One form owner, line totals, step validation and final review. |
 | Operations overview | `dashboard`, `calendar`, `timeline` | Shared date scope, selected event and drill-down navigation. |
 | Change review | `inline-table`, `compare` | Draft edits, revision selection, discard rules and final confirmation. |
-| Supplier onboarding | `import-mapping`, `conditional-form`, `approval-chain` | Imported rows feeding a review form, then an amount- or risk-driven approval route. |
+| Supplier onboarding | `import-mapping`, `conditional-form`, `rules-editor`, `approval-chain` | Imported rows feeding a review form, then an amount- or risk-driven approval route. |
 | Month-end close | `reconciliation`, `pivot`, `document` | Shared period, unmatched lines blocking close, variance drill-down to source documents. |
-| Access review | `permission-matrix`, `org-chart`, `bulk-edit` | Selected team, pending grant changes and one confirmation for the combined change set. |
+| Access review | `permission-matrix`, `org-chart`, `bulk-edit`, `audit-log` | Selected team, pending grant changes and one confirmation for the combined change set. |
 
 These combinations need domain-specific integration. Selecting a new record must
 not allow an old response to update the new selection. Test focus return and
@@ -140,7 +140,11 @@ Every composition follows one anatomy, so a new one should read like its neighbo
    `grid-cols-[minmax(0,1fr)]`, move side panels below until `2xl` when the main
    content needs the width, scroll only wide data, and mark user or sample text
    that may be English inside Arabic with `dir="auto"`.
-8. **Product states**: compositions show the loaded state. When adapting one, add
+8. **Keyboard and persistence**: every pointer gesture (drag, hover) has a button or
+   key path and announces its result in an `aria-live` region. Remember only UI
+   preferences (layouts, saved report definitions) with `usePersistentState`;
+   business data always comes from the backend.
+9. **Product states**: compositions show the loaded state. When adapting one, add
    `DetailSkeleton`/`PageSkeleton` from `@/shared/ui/page` while loading and the
    failure and empty patterns in [error handling](error-handling.md).
 

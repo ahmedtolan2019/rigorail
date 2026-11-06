@@ -126,6 +126,6 @@ async function printCompositionContext(view) {
     `Composition: ${view}\nRoute: /compositions?view=${view}\nSource: ${path.relative(root, file)}`,
   )
   console.log(
-    'Read: src/modules/compositions/AGENTS.md, src/modules/compositions/contract.md, docs/composition-authoring.md.\nInventory and acceptance: docs/pattern-coverage.md.\nRead only this source and its direct dependencies as needed. For combinations, look up each view separately.\nAdapt into the owning domain; never import gallery fixtures across modules.\nRegistration: src/modules/compositions/views.ts and src/modules/compositions/page.tsx.\nRegression maps: tests/e2e/composition-patterns.spec.ts, tests/e2e/template.spec.ts and tests/e2e/compositions-rtl.spec.ts.\nStart with focused behavior tests and npm run check:fast; use root AGENTS.md for the completion gate.',
+    'Read: src/modules/compositions/AGENTS.md, src/modules/compositions/contract.md, docs/composition-authoring.md.\nInventory and acceptance: docs/pattern-coverage.md.\nRead only this source and its direct dependencies as needed. For combinations, look up each view separately.\nAdapt into the owning domain; never import gallery fixtures across modules.\nRegistration: src/modules/compositions/views.ts and src/modules/compositions/page.tsx.\nRegression maps: tests/e2e/composition-patterns.spec.ts, tests/e2e/composition-screens.spec.ts and tests/e2e/compositions-rtl.spec.ts.\nStart with focused behavior tests and npm run check:fast; use root AGENTS.md for the completion gate.',
   )
 }

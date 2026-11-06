@@ -28,7 +28,7 @@ jobs:
       - run: npm run check:dependencies
       - run: npm run check
       # Browser flows gate every pull request; failures upload traces below.
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()

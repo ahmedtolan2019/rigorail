@@ -33,6 +33,9 @@ import { createRuntime, permissionCatalog, type Runtime } from './runtime'
 import { appConfig } from './config'
 import { router } from './router'
 import { ProgressBar } from './route-progress'
+import { modules } from './modules'
+import { invalidationsFor } from '@/shared/realtime/events'
+import { createUploader } from '@/shared/uploads/model'
 
 function SessionScope({
   runtime,
@@ -78,6 +81,15 @@ function SessionScope({
     },
     [client],
   )
+  // Live updates: a change event refreshes the queries of subscribing modules.
+  useEffect(
+    () =>
+      runtime.events?.((event) => {
+        for (const queryKey of invalidationsFor(modules, event))
+          void client.invalidateQueries({ queryKey })
+      }),
+    [runtime, client],
+  )
   // Route loaders read the same services from the router context.
   const services = useMemo<Services>(
     () => ({
@@ -89,6 +101,10 @@ function SessionScope({
       aiEnabled: runtime.aiEnabled,
       refreshSession,
       signOut,
+      upload: createUploader(
+        runtime.api,
+        runtime.mode === 'demo' ? runtime.demo.putFile : undefined,
+      ),
       demo:
         runtime.mode === 'demo'
           ? {

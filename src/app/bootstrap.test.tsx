@@ -25,6 +25,7 @@ vi.mock('./runtime', async () => {
   }
 })
 vi.mock('./router', () => ({ router: { history: { replace: vi.fn() } } }))
+vi.mock('./modules', () => ({ modules: [] }))
 vi.mock('@/modules/account/public', () => ({
   signOutRequest: async () => {
     state.status = 401

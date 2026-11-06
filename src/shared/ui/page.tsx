@@ -26,7 +26,11 @@ export function PageHeader({
           </p>
         )}
       </div>
-      {actions && <div className="shrink-0">{actions}</div>}
+      {actions && (
+        <div data-print="hide" className="shrink-0">
+          {actions}
+        </div>
+      )}
     </div>
   )
 }
@@ -96,5 +100,5 @@ export function DetailSkeleton() {
 }
 
 export const backLinkClass =
-  'mb-5 inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-muted-foreground transition-colors hover:text-foreground'
+  'mb-5 inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-muted-foreground transition-colors hover:text-foreground print:hidden'
 export const mutedTextClass = 'text-sm text-muted-foreground'

@@ -10,6 +10,8 @@ export const compositionGroups = [
       'calendar',
       'activity',
       'onboarding',
+      'global-search',
+      'custom-dashboard',
     ],
   },
   {
@@ -20,6 +22,7 @@ export const compositionGroups = [
       'import-mapping',
       'bulk-edit',
       'three-way-match',
+      'rules-editor',
     ],
   },
   {
@@ -31,6 +34,7 @@ export const compositionGroups = [
       'gallery',
       'pivot',
       'permission-matrix',
+      'audit-log',
     ],
   },
   {
@@ -41,6 +45,7 @@ export const compositionGroups = [
       'inline-edit',
       'settings',
       'quote-builder',
+      'notifications-center',
     ],
   },
   {
@@ -52,11 +57,20 @@ export const compositionGroups = [
       'org-chart',
       'asset-detail',
       'customer-360',
+      'comments-thread',
     ],
   },
   {
     id: 'groupDistinctive',
-    views: ['triage', 'timeline', 'compare', 'planner', 'bin-map', 'roster'],
+    views: [
+      'triage',
+      'timeline',
+      'compare',
+      'planner',
+      'bin-map',
+      'roster',
+      'report-builder',
+    ],
   },
 ] as const
 export type CompositionView =

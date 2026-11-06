@@ -20,6 +20,6 @@ registration, bilingual copy and integration tests. The catalog is open to growt
 product-specific variations stay in their owning domain.
 
 An earlier 60-pattern expansion was removed at the user's request. Do not restore
-it or bulk-generate replacements. Fifteen curated screens were later added at the
+it or bulk-generate replacements. Twenty-two curated screens were later added at the
 user's explicit request. Any future gallery addition needs explicit user scope
 and a visual review against the existing screens.

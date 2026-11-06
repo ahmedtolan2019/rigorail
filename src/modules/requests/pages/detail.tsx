@@ -2,7 +2,14 @@ import { Link, getRouteApi } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowLeft, Check, CheckCheck, Pencil, Send } from 'lucide-react'
+import {
+  ArrowLeft,
+  Check,
+  CheckCheck,
+  Pencil,
+  Printer,
+  Send,
+} from 'lucide-react'
 import { useServices } from '@/shared/api/services'
 import { useDocumentTitle } from '@/shared/hooks/use-document-title'
 import { AccessBoundary } from '@/shared/auth/access'
@@ -21,6 +28,8 @@ import { DetailSkeleton, backLinkClass } from '@/shared/ui/page'
 import { Failure } from '@/shared/ui/route-feedback'
 import { Spinner } from '@/shared/ui/spinner'
 import { ConfirmAction } from '@/shared/ui/confirm-action'
+import { FileUpload } from '@/shared/uploads/file-upload'
+import type { Attachment } from '@/shared/uploads/model'
 import { permissions } from '../permissions'
 import { detailOptions, requestKeys } from '../queries'
 import { requestSchema, requestStatuses, type RequestRecord } from '../schema'
@@ -125,7 +134,12 @@ function Detail() {
           className="flex shrink-0 flex-wrap items-center gap-2"
           aria-label={t('actions')}
           role="group"
+          data-print="hide"
         >
+          <Button variant="ghost" onClick={() => window.print()}>
+            <Printer data-icon="inline-start" />
+            {t('common:print')}
+          </Button>
           {item.status === 'draft' && can(permissions.edit) && (
             <Button asChild variant="outline">
               <Link
@@ -192,8 +206,8 @@ function Detail() {
           />
         </div>
       )}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-6 lg:col-span-2">
+      <div className="grid gap-6 lg:grid-cols-3 print:grid-cols-[minmax(0,1fr)_16rem]">
+        <div className="flex flex-col gap-6 lg:col-span-2 print:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>{t('description')}</CardTitle>
@@ -211,6 +225,7 @@ function Detail() {
               </p>
             </CardContent>
           </Card>
+          <Attachments item={item} canEdit={can(permissions.edit)} />
           <Card>
             <CardHeader>
               <CardTitle>{t('workflow')}</CardTitle>
@@ -319,5 +334,76 @@ function MaybeConfirm({
     <ConfirmAction {...props}>{children}</ConfirmAction>
   ) : (
     children
+  )
+}
+
+/** Files on the record. Uploads go to storage first, then attach by id. */
+function Attachments({
+  item,
+  canEdit,
+}: {
+  item: RequestRecord
+  canEdit: boolean
+}) {
+  const { t } = useTranslation(ns)
+  const services = useServices(),
+    client = useQueryClient()
+  const scope = services.session.workspace.id
+  const settle = async (record: RequestRecord) => {
+    client.setQueryData(requestKeys.detail(scope, item.id), record)
+    await client.invalidateQueries({
+      queryKey: requestKeys.all(scope),
+      refetchType: 'none',
+    })
+  }
+  const path = `/requests/${encodeURIComponent(item.id)}/attachments`
+  const attach = (file: Attachment) =>
+    services.api
+      .request(path, requestSchema, {
+        method: 'POST',
+        body: JSON.stringify({ uploadId: file.id }),
+      })
+      .then(settle)
+  const remove = useMutation({
+    mutationFn: (file: Attachment) =>
+      services.api.request(
+        `${path}/${encodeURIComponent(file.id)}`,
+        requestSchema,
+        { method: 'DELETE' },
+      ),
+    onSuccess: async (record, file) => {
+      await settle(record)
+      toast(t('attachmentRemoved', { name: file.name }))
+    },
+    onError: () => toast.error(t('common:unavailable')),
+  })
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('attachments')}</CardTitle>
+        <CardDescription>{t('attachmentsHint')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {canEdit ? (
+          <FileUpload
+            label={t('attachments')}
+            value={item.attachments}
+            accept={['application/pdf', 'image/*', '.xlsx', '.csv', '.docx']}
+            acceptLabel={t('attachmentTypes')}
+            onAdd={attach}
+            onRemove={(file) => remove.mutate(file)}
+          />
+        ) : item.attachments.length ? (
+          <FileUpload
+            label={t('attachments')}
+            value={item.attachments}
+            readOnly
+            onAdd={() => undefined}
+          />
+        ) : (
+          <p className="text-sm text-muted-foreground">{t('noAttachments')}</p>
+        )}
+      </CardContent>
+    </Card>
   )
 }

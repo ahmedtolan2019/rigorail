@@ -50,7 +50,7 @@ export function ExportMenu({
           ) : (
             <Download data-icon="inline-start" />
           )}
-          <span className="hidden sm:inline">{t('export')}</span>
+          <span className="sr-only sm:not-sr-only">{t('export')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">

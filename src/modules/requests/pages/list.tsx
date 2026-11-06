@@ -53,6 +53,9 @@ import {
   useServerSelection,
 } from '@/shared/data-table/selection'
 import { DataTableViewOptions } from '@/shared/data-table/view-options'
+import { useShortcut } from '@/shared/shortcuts/registry'
+import { SavedViews } from '@/shared/data-table/saved-views'
+import type { SavedViewState } from '@/shared/data-table/saved-views-model'
 import { Button } from '@/shared/ui/button'
 import { ConfirmAction } from '@/shared/ui/confirm-action'
 import {
@@ -77,8 +80,10 @@ import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip'
 import { permissions } from '../permissions'
 import {
+  defaultRequestSearch,
   PAGE_SIZES,
   requestCategories,
+  requestSearch,
   requestStatuses,
   type RequestRecord,
   type RequestSearch,
@@ -171,6 +176,49 @@ function ListContent() {
       'requests:list:pinning',
       defaultPinning,
     )
+  // Saved views store only what differs from the defaults (never the page number).
+  const viewState = useMemo<SavedViewState>(() => {
+    const changed = Object.fromEntries(
+      Object.entries(search).filter(
+        ([key, value]) =>
+          key !== 'page' &&
+          JSON.stringify(value) !==
+            JSON.stringify(defaultRequestSearch[key as keyof RequestSearch]),
+      ),
+    )
+    const columnsChanged =
+      JSON.stringify(columnVisibility) !== JSON.stringify(defaultVisibility) ||
+      JSON.stringify(columnPinning) !== JSON.stringify(defaultPinning)
+    return {
+      search: changed,
+      ...(columnsChanged
+        ? { columns: { visibility: columnVisibility, pinning: columnPinning } }
+        : {}),
+    }
+  }, [search, columnVisibility, columnPinning])
+  const applyView = (state: SavedViewState | null) => {
+    // Validate through the route schema: views saved by older versions stay safe.
+    void navigate({
+      search: requestSearch.parse({ ...(state?.search ?? {}), page: 1 }),
+      resetScroll: false,
+    })
+    setColumnVisibility(state?.columns?.visibility ?? defaultVisibility)
+    const pinning = state?.columns?.pinning
+    setColumnPinning(
+      pinning
+        ? {
+            left: [
+              'select',
+              ...(pinning.left ?? []).filter((id) => id !== 'select'),
+            ],
+            right: [
+              ...(pinning.right ?? []).filter((id) => id !== 'actions'),
+              'actions',
+            ],
+          }
+        : defaultPinning,
+    )
+  }
   const update = (patch: Partial<RequestSearch>) =>
     // Same page, new URL state: keep the reader's scroll position.
     void navigate({
@@ -492,6 +540,24 @@ function ListContent() {
   const statusTotal = facets
     ? requestStatuses.reduce((sum, status) => sum + facets.status[status], 0)
     : undefined
+  useShortcut(
+    { keys: '/', label: t('shortcutFocusSearch'), group: t('navigation') },
+    () =>
+      document
+        .querySelector<HTMLInputElement>(
+          `input[aria-label="${t('searchRequests')}"]`,
+        )
+        ?.focus(),
+  )
+  useShortcut(
+    {
+      keys: 'n',
+      label: t('newRequest'),
+      group: t('navigation'),
+      enabled: create.status === 'allowed',
+    },
+    () => void navigate({ to: '/requests/new', search }),
+  )
   const newRequest = (
     <Button asChild>
       <Link to="/requests/new" search={search}>
@@ -535,7 +601,13 @@ function ListContent() {
       >
         <TabsList className="max-w-full justify-start overflow-x-auto">
           {(['all', ...requestStatuses] as const).map((status) => (
-            <TabsTrigger key={status} value={status} className="gap-1.5 px-3">
+            <TabsTrigger
+              key={status}
+              value={status}
+              // Every status tab filters the same results panel below.
+              aria-controls="requests-results"
+              className="gap-1.5 px-3"
+            >
               {t(status === 'all' ? 'viewAll' : status)}
               {facets && (
                 <span className="rounded-full bg-muted px-1.5 text-xs leading-5 font-normal text-muted-foreground tabular-nums">
@@ -547,6 +619,12 @@ function ListContent() {
         </TabsList>
       </Tabs>
       <div className="mb-3 flex items-center gap-2">
+        <SavedViews
+          scope="requests"
+          current={viewState}
+          defaultLabel={t('allRequests')}
+          onApply={applyView}
+        />
         <DataTableSearch
           value={search.q}
           onChange={(q) => update({ q })}
@@ -590,53 +668,55 @@ function ListContent() {
           }
         />
       </div>
-      {query.isError && !query.data ? (
-        <Failure
-          error={query.error}
-          retry={() => void query.refetch()}
-          layout="page"
-        />
-      ) : (
-        <DataTable
-          table={table}
-          loading={query.isPending}
-          fetching={query.isFetching}
-          skeletonRows={Math.min(search.size, 12)}
-          caption={t('navigation')}
-          fitViewport
-          onRowClick={(row) =>
-            void navigate({
-              to: '/requests/$requestId',
-              params: { requestId: row.original.id },
-              search,
-            })
-          }
-          empty={
-            <Empty className="border-0 py-16">
-              <EmptyHeader>
-                <EmptyMedia>
-                  <Illustration name={filtered ? 'no-results' : 'empty'} />
-                </EmptyMedia>
-                <EmptyTitle>
-                  {t(filtered ? 'noMatches' : 'emptyTitle')}
-                </EmptyTitle>
-                <EmptyDescription>
-                  {t(filtered ? 'noMatchesHint' : 'emptyHint')}
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                {filtered ? (
-                  <Button variant="outline" onClick={() => update(cleared)}>
-                    {t('clearFilters')}
-                  </Button>
-                ) : (
-                  create.status === 'allowed' && newRequest
-                )}
-              </EmptyContent>
-            </Empty>
-          }
-        />
-      )}
+      <div id="requests-results" role="tabpanel" aria-label={t('navigation')}>
+        {query.isError && !query.data ? (
+          <Failure
+            error={query.error}
+            retry={() => void query.refetch()}
+            layout="page"
+          />
+        ) : (
+          <DataTable
+            table={table}
+            loading={query.isPending}
+            fetching={query.isFetching}
+            skeletonRows={Math.min(search.size, 12)}
+            caption={t('navigation')}
+            fitViewport
+            onRowClick={(row) =>
+              void navigate({
+                to: '/requests/$requestId',
+                params: { requestId: row.original.id },
+                search,
+              })
+            }
+            empty={
+              <Empty className="border-0 py-16">
+                <EmptyHeader>
+                  <EmptyMedia>
+                    <Illustration name={filtered ? 'no-results' : 'empty'} />
+                  </EmptyMedia>
+                  <EmptyTitle>
+                    {t(filtered ? 'noMatches' : 'emptyTitle')}
+                  </EmptyTitle>
+                  <EmptyDescription>
+                    {t(filtered ? 'noMatchesHint' : 'emptyHint')}
+                  </EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                  {filtered ? (
+                    <Button variant="outline" onClick={() => update(cleared)}>
+                      {t('clearFilters')}
+                    </Button>
+                  ) : (
+                    create.status === 'allowed' && newRequest
+                  )}
+                </EmptyContent>
+              </Empty>
+            }
+          />
+        )}
+      </div>
       <div className="mt-4">
         <DataTablePagination
           page={search.page}

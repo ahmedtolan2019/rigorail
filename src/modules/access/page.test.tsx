@@ -41,6 +41,9 @@ test('permission labels belong to their domain and absent quotas are not called 
     aiEnabled: false,
     refreshSession: async () => undefined,
     signOut: async () => undefined,
+    upload: async () => {
+      throw new Error('Uploads are not used here.')
+    },
   }
   const view = render(
     <QueryClientProvider client={client}>

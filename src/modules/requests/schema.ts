@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { attachmentSchema } from '@/shared/uploads/model'
 
 export const requestStatuses = ['draft', 'pending', 'approved'] as const
 export const requestStatus = z.enum(requestStatuses)
@@ -40,6 +41,8 @@ export const requestSchema = z.object({
   version: z.number().int(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  /** Files attached after creation (`POST /requests/:id/attachments`). */
+  attachments: z.array(attachmentSchema),
 })
 export type RequestRecord = z.infer<typeof requestSchema>
 

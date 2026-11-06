@@ -15,7 +15,10 @@ import {
   type Session,
 } from '@/shared/auth/model'
 import type { Transport } from '@/shared/api/client'
+import type { Attachment, PutFile } from '@/shared/uploads/model'
+import type { RealtimeEvent, RealtimeSource } from '@/shared/realtime/events'
 import { createDemoIdentity, DEMO_MFA_CODE, DEMO_PASSWORD } from './identity'
+import { createDemoViews } from './views'
 
 const catalogTitles: Record<(typeof requestCategories)[number], string[]> = {
   equipment: [
@@ -170,6 +173,17 @@ function seedRecords(workspaceId: string, count: number): RequestRecord[] {
       version: 1,
       createdAt: new Date(created).toISOString(),
       updatedAt: new Date(Math.max(created, updated)).toISOString(),
+      attachments:
+        index % 4 === 0
+          ? [
+              {
+                id: `${workspaceId}-${index + 1}-quote`,
+                name: 'Supplier quote.pdf',
+                size: 184_320,
+                type: 'application/pdf',
+              },
+            ]
+          : [],
     }
   })
 }
@@ -234,6 +248,37 @@ export function createDemoTransport(catalog: readonly PermissionDefinition[]) {
     ...seedRecords('south', 180),
   ]
   const identity = createDemoIdentity()
+  const uploads = new Map<string, Attachment>()
+  // Live updates: a teammate occasionally approves a pending request in this
+  // workspace, as another user would. Off under automation so tests stay stable.
+  const listeners = new Set<(event: RealtimeEvent) => void>()
+  let teammate: ReturnType<typeof setInterval> | undefined
+  function approveAsTeammate() {
+    if (!identity.signedIn) return
+    const pending = records.find(
+      (item) => item.workspaceId === workspace && item.status === 'pending',
+    )
+    if (!pending) return
+    pending.status = 'approved'
+    pending.version++
+    pending.updatedAt = new Date().toISOString()
+    for (const notify of listeners)
+      notify({ topic: 'requests', ids: [pending.id] })
+  }
+  const events: RealtimeSource = (listener) => {
+    listeners.add(listener)
+    if (!teammate && !navigator.webdriver)
+      teammate = setInterval(approveAsTeammate, 45_000)
+    return () => {
+      listeners.delete(listener)
+      if (!listeners.size && teammate) {
+        clearInterval(teammate)
+        teammate = undefined
+      }
+    }
+  }
+
+  const savedViews = createDemoViews()
   function session(): Session {
     const actions =
       persona === 'viewer'
@@ -292,6 +337,8 @@ export function createDemoTransport(catalog: readonly PermissionDefinition[]) {
         401,
       )
     const actor = session()
+    const viewResponse = await savedViews.handle(request, url, actor)
+    if (viewResponse) return viewResponse
     const access = createGrantAdapter(actor, catalog)
     const allowed = (action: string, resource?: RequestRecord) =>
       access.decide(action, resource).status === 'allowed'
@@ -692,9 +739,61 @@ export function createDemoTransport(catalog: readonly PermissionDefinition[]) {
         version: 1,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        attachments: [],
       })
       records.unshift(item)
       return response(item, 201)
+    }
+    // Uploads: tickets point at simulated storage (see putFile below).
+    if (path === '/uploads' && request.method === 'POST') {
+      const meta = (await request.json().catch(() => null)) as Attachment | null
+      if (!meta?.name || !(meta.size >= 0))
+        return response({ message: 'Check the file.', code: 'validation' }, 422)
+      if (meta.size > 10 * 1024 * 1024)
+        return response({ message: 'File too large.', code: 'too_large' }, 413)
+      const id = `upload-${crypto.randomUUID()}`
+      uploads.set(id, { id, name: meta.name, size: meta.size, type: meta.type })
+      return response({ id, url: `demo://storage/${id}`, method: 'PUT' }, 201)
+    }
+    const attach = path.match(
+      /^\/requests\/([^/]+)\/attachments(?:\/([^/]+))?$/,
+    )
+    if (attach) {
+      const item = records.find(
+        (record) =>
+          record.id === decodeURIComponent(attach[1]!) &&
+          record.workspaceId === actor.workspace.id,
+      )
+      if (!item)
+        return response(
+          { message: 'Request not found.', code: 'not_found' },
+          404,
+        )
+      if (!allowed('requests.edit', item)) return denied()
+      if (request.method === 'POST' && !attach[2]) {
+        const body = (await request.json().catch(() => null)) as {
+          uploadId?: string
+        } | null
+        const file = body?.uploadId ? uploads.get(body.uploadId) : undefined
+        if (!file)
+          return response(
+            { message: 'Upload not found.', code: 'not_found' },
+            404,
+          )
+        if (item.attachments.length >= 10)
+          return response(
+            { message: 'Too many files.', code: 'validation' },
+            422,
+          )
+        item.attachments.push(file)
+      } else if (request.method === 'DELETE' && attach[2]) {
+        item.attachments = item.attachments.filter(
+          (file) => file.id !== decodeURIComponent(attach[2]!),
+        )
+      } else
+        return response({ message: 'Method not allowed.', code: 'method' }, 405)
+      item.updatedAt = new Date().toISOString()
+      return response(item)
     }
     const match = path.match(/^\/requests\/([^/]+)(?:\/(submit|approve))?$/)
     if (match) {
@@ -772,6 +871,29 @@ export function createDemoTransport(catalog: readonly PermissionDefinition[]) {
   }
   return {
     transport,
+    events,
+    /** Simulated storage transfer with real progress events and cancellation. */
+    putFile: ((_, file, { onProgress, signal }) =>
+      new Promise<void>((resolve, reject) => {
+        let sent = 0
+        const step = Math.max(file.size / 8, 1)
+        const timer = setInterval(() => {
+          sent = Math.min(file.size, sent + step)
+          onProgress(file.size ? sent / file.size : 1)
+          if (sent >= file.size) {
+            clearInterval(timer)
+            resolve()
+          }
+        }, 120)
+        signal.addEventListener(
+          'abort',
+          () => {
+            clearInterval(timer)
+            reject(signal.reason)
+          },
+          { once: true },
+        )
+      })) satisfies PutFile,
     /** Shown on the demo sign-in page. */
     credentials: { password: DEMO_PASSWORD, mfaCode: DEMO_MFA_CODE },
     get plan() {

@@ -20,7 +20,7 @@ import { PageHeader } from '@/shared/ui/page'
 import { ToggleGroup, ToggleGroupItem } from '@/shared/ui/toggle-group'
 import { ns } from './i18n'
 
-const brands = { teal: '#0b7a73', indigo: '#4f46e5' } as const
+const brands = { teal: '#0a6f69', indigo: '#4f46e5' } as const
 
 export default function Appearance() {
   const { t, i18n } = useTranslation(ns),

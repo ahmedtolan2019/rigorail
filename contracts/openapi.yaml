@@ -1,0 +1,341 @@
+# Sample external API contract, machine-readable form of docs/backend-contract.md.
+# Replace it with the backend team's published spec, then run `npm run api:types`.
+# The TypeScript checks in `*.contract.ts` files fail when Zod schemas drift from it.
+openapi: 3.1.0
+info:
+  title: Foundation sample API
+  version: 0.1.0
+servers:
+  - url: https://your-api.example/api
+security:
+  - session: []
+paths:
+  /session:
+    get:
+      summary: Current user, workspace and grants
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Session' } } } }
+        '401': { $ref: '#/components/responses/Error' }
+  /capabilities:
+    get:
+      summary: Flags, entitlements, subscription and quotas for this user and workspace
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Capabilities' } } } }
+  /configuration:
+    get:
+      summary: Business rules for this workspace
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Configuration' } } } }
+  /requests:
+    get:
+      summary: Filtered, sorted, paginated requests with facet counts
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: array, items: { $ref: '#/components/schemas/RequestStatus' } } }
+        - { name: category, in: query, schema: { type: array, items: { $ref: '#/components/schemas/RequestCategory' } } }
+        - { name: owner, in: query, schema: { type: array, items: { type: string } } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: sort, in: query, schema: { type: string, enum: [updated, created, title, amount, status, reference] } }
+        - { name: dir, in: query, schema: { type: string, enum: [asc, desc] } }
+        - { name: page, in: query, schema: { type: integer, minimum: 1 } }
+        - { name: size, in: query, schema: { type: integer, enum: [10, 20, 50] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RequestList' } } } }
+    post:
+      summary: Create a draft request
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/RequestInput' } } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/RequestRecord' } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /requests/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      summary: One request
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RequestRecord' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+    patch:
+      summary: Update a draft with optimistic concurrency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/RequestInput'
+                - { type: object, required: [version], properties: { version: { type: integer } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RequestRecord' } } } }
+        '409': { $ref: '#/components/responses/Error' }
+  /uploads:
+    post:
+      summary: Reserve storage for one file; the client then sends the bytes to `url`
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, size, type]
+              properties: { name: { type: string }, size: { type: integer, minimum: 0 }, type: { type: string } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/UploadTicket' } } } }
+        '413': { $ref: '#/components/responses/Error' }
+  /requests/{id}/attachments:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    post:
+      summary: Attach a completed upload to the request
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [uploadId], properties: { uploadId: { type: string } } } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RequestRecord' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+  /requests/{id}/attachments/{attachmentId}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+      - { name: attachmentId, in: path, required: true, schema: { type: string } }
+    delete:
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RequestRecord' } } } }
+  /views:
+    get:
+      summary: The user's saved views for one list
+      parameters:
+        - { name: scope, in: query, required: true, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SavedViews' } } } }
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scope, name, state]
+              properties: { scope: { type: string }, name: { type: string, minLength: 2, maxLength: 60 }, state: { $ref: '#/components/schemas/SavedViewState' } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SavedView' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /views/{id}:
+    delete:
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        '204': { description: Deleted }
+        '404': { $ref: '#/components/responses/Error' }
+  /account:
+    get:
+      summary: The signed-in user's account
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Account' } } } }
+    patch:
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [name], properties: { name: { type: string } } } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Account' } } } }
+  /account/sessions:
+    get:
+      summary: Devices signed in to this account
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/AccountSessions' } } } }
+  /auth/sign-in:
+    post:
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, remember]
+              properties: { email: { type: string, format: email }, password: { type: string }, remember: { type: boolean } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SignInResult' } } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+  /auth/sign-out:
+    post:
+      responses:
+        '204': { description: Signed out }
+components:
+  securitySchemes:
+    session: { type: apiKey, in: cookie, name: session }
+  responses:
+    Error:
+      description: Failure with a stable code; the UI never shows `message` verbatim.
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+  schemas:
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+        code: { type: string }
+        fields: { type: object, additionalProperties: { type: string } }
+    Grant:
+      type: object
+      required: [action, scope]
+      properties:
+        action: { type: string }
+        scope: { type: string, enum: [workspace, own] }
+        maxAmountMinor: { type: integer, minimum: 0 }
+    Session:
+      type: object
+      required: [user, workspace, revision, grants]
+      properties:
+        user:
+          type: object
+          required: [id, name]
+          properties: { id: { type: string }, name: { type: string }, email: { type: string } }
+        workspace:
+          type: object
+          required: [id, name]
+          properties: { id: { type: string }, name: { type: string } }
+        revision: { type: string }
+        grants: { type: array, items: { $ref: '#/components/schemas/Grant' } }
+    Capabilities:
+      type: object
+      required: [revision, flags, entitlements, subscription, quotas]
+      properties:
+        revision: { type: string }
+        flags: { type: object, additionalProperties: { type: boolean } }
+        entitlements: { type: array, items: { type: string } }
+        subscription:
+          type: object
+          required: [plan, status]
+          properties:
+            plan: { type: string }
+            status: { type: string, enum: [trialing, active, past_due, cancelled, none] }
+        quotas:
+          type: object
+          additionalProperties:
+            type: object
+            required: [used, limit]
+            properties: { used: { type: integer, minimum: 0 }, limit: { type: [integer, 'null'], minimum: 0 } }
+    Configuration:
+      type: object
+      required: [revision, limits, features]
+      properties:
+        revision: { type: string }
+        limits: { type: object, required: [requestAmountMinor], properties: { requestAmountMinor: { type: integer } } }
+        features: { type: object, required: [aiSuggestions], properties: { aiSuggestions: { type: boolean } } }
+    RequestStatus: { type: string, enum: [draft, pending, approved] }
+    RequestCategory: { type: string, enum: [equipment, software, training, services, facilities] }
+    RequestInput:
+      type: object
+      required: [title, category, description, amount]
+      properties:
+        title: { type: string }
+        category: { $ref: '#/components/schemas/RequestCategory' }
+        description: { type: string }
+        amount: { type: string, description: Decimal string with up to two decimals }
+    RequestRecord:
+      type: object
+      required: [id, reference, title, description, category, amountMinor, status, ownerId, ownerName, workspaceId, version, createdAt, updatedAt, attachments]
+      properties:
+        id: { type: string, description: Internal identifier; never shown to users }
+        reference: { type: string, description: Business reference such as REQ-1042 }
+        title: { type: string }
+        description: { type: string }
+        category: { $ref: '#/components/schemas/RequestCategory' }
+        amountMinor: { type: integer, minimum: 1 }
+        status: { $ref: '#/components/schemas/RequestStatus' }
+        ownerId: { type: string }
+        ownerName: { type: string }
+        workspaceId: { type: string }
+        version: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        attachments: { type: array, items: { $ref: '#/components/schemas/Attachment' } }
+    Attachment:
+      type: object
+      required: [id, name, size, type]
+      properties: { id: { type: string }, name: { type: string }, size: { type: integer, minimum: 0 }, type: { type: string } }
+    UploadTicket:
+      type: object
+      required: [id, url, method]
+      properties:
+        id: { type: string }
+        url: { type: string, description: Short-lived storage URL for the bytes }
+        method: { type: string, enum: [PUT, POST] }
+        headers: { type: object, additionalProperties: { type: string } }
+    FacetOwner:
+      type: object
+      required: [id, name, count]
+      properties: { id: { type: string }, name: { type: string }, count: { type: integer, minimum: 0 } }
+    RequestList:
+      type: object
+      required: [items, total, facets]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/RequestRecord' } }
+        total: { type: integer, minimum: 0 }
+        facets:
+          type: object
+          required: [status, category, owner, ownerTotal]
+          properties:
+            status:
+              type: object
+              required: [draft, pending, approved]
+              properties: { draft: { type: integer }, pending: { type: integer }, approved: { type: integer } }
+            category:
+              type: object
+              required: [equipment, software, training, services, facilities]
+              properties:
+                equipment: { type: integer }
+                software: { type: integer }
+                training: { type: integer }
+                services: { type: integer }
+                facilities: { type: integer }
+            owner: { type: array, items: { $ref: '#/components/schemas/FacetOwner' } }
+            ownerTotal: { type: integer, minimum: 0 }
+    SavedViewState:
+      type: object
+      required: [search]
+      properties:
+        search: { type: object, additionalProperties: {} }
+        columns:
+          type: object
+          properties:
+            visibility: { type: object, additionalProperties: { type: boolean } }
+            pinning:
+              type: object
+              properties:
+                left: { type: array, items: { type: string } }
+                right: { type: array, items: { type: string } }
+    SavedView:
+      type: object
+      required: [id, name, state]
+      properties: { id: { type: string }, name: { type: string }, state: { $ref: '#/components/schemas/SavedViewState' } }
+    SavedViews:
+      type: object
+      required: [items]
+      properties: { items: { type: array, items: { $ref: '#/components/schemas/SavedView' } } }
+    SignInResult:
+      type: object
+      required: [status]
+      properties: { status: { type: string, enum: [signed_in, mfa_required] } }
+    Account:
+      type: object
+      required: [name, email, mfaEnabled, passwordChangedAt, passwordManaged]
+      properties:
+        name: { type: string }
+        email: { type: string }
+        mfaEnabled: { type: boolean }
+        passwordChangedAt: { type: [string, 'null'], format: date-time }
+        passwordManaged: { type: boolean }
+    AccountSession:
+      type: object
+      required: [id, device, client, location, lastActiveAt, current]
+      properties:
+        id: { type: string }
+        device: { type: string, enum: [desktop, mobile, tablet] }
+        client: { type: string }
+        location: { type: [string, 'null'] }
+        lastActiveAt: { type: string, format: date-time }
+        current: { type: boolean }
+    AccountSessions:
+      type: object
+      required: [items]
+      properties: { items: { type: array, items: { $ref: '#/components/schemas/AccountSession' } } }

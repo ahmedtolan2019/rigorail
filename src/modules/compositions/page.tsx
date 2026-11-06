@@ -38,6 +38,13 @@ import {
   FileWarning,
   Forklift,
   Building2,
+  BarChart3,
+  BellRing,
+  LayoutPanelLeft,
+  MessagesSquare,
+  ScrollText,
+  Search,
+  Workflow,
 } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { PageHeader } from '@/shared/ui/page'
@@ -141,6 +148,34 @@ const views: Record<CompositionView, { load: View; icon: LucideIcon }> = {
   'customer-360': {
     load: lazy(() => import('./views/customer-360')),
     icon: Building2,
+  },
+  'global-search': {
+    load: lazy(() => import('./views/global-search')),
+    icon: Search,
+  },
+  'custom-dashboard': {
+    load: lazy(() => import('./views/custom-dashboard')),
+    icon: LayoutPanelLeft,
+  },
+  'rules-editor': {
+    load: lazy(() => import('./views/rules-editor')),
+    icon: Workflow,
+  },
+  'audit-log': {
+    load: lazy(() => import('./views/audit-log')),
+    icon: ScrollText,
+  },
+  'notifications-center': {
+    load: lazy(() => import('./views/notifications-center')),
+    icon: BellRing,
+  },
+  'comments-thread': {
+    load: lazy(() => import('./views/comments-thread')),
+    icon: MessagesSquare,
+  },
+  'report-builder': {
+    load: lazy(() => import('./views/report-builder')),
+    icon: BarChart3,
   },
 }
 const route = getRouteApi('/compositions')

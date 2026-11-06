@@ -4,6 +4,16 @@ This is a sample contract used by the runnable reference, not a claim about an
 existing service. Agree or replace it before connecting a real application.
 Schemas in source are authoritative for accepted fields.
 
+## Machine-readable contract
+
+`contracts/openapi.yaml` is the sample contract in OpenAPI form. Replace it with the
+backend team's published spec, then run `npm run api:types` to regenerate
+`src/shared/api/openapi.gen.ts` (never edit it by hand; `npm run check:api` fails
+when it is stale). Zod schemas stay the runtime validators. Each owner asserts its
+Zod output matches the spec in both directions (`src/shared/api/contract.ts`,
+`src/modules/*/contract.check.ts`), so an unabsorbed backend change fails
+`npm run typecheck`. Generated types are not runtime validation.
+
 ## Environment and transport
 
 - Development/demo: `.env.development` / `.env.demo` explicitly select demo mode.
@@ -132,6 +142,37 @@ access, quota, latest amount limit and legal workflow transitions. HTTP 403 refr
 session access; 409 indicates a conflict, 422 can supply `fields.amount`. Do not expose
 sensitive backend error text directly. Versions prevent lost updates; the edit form
 retains its base version while the user holds a draft.
+
+## Live updates
+
+Optional. Set `appConfig.api.events` (for example `'/events'`) when the backend
+offers Server-Sent Events at `GET {base}/events` with the session cookie. Each
+message is JSON `{topic, ids?}` naming a changed resource, never its data; for
+example `{"topic":"requests","ids":["…"]}`. Modules declare `refreshOn` topics in
+their `ModuleDefinition`; an event refreshes active queries whose key starts with a
+subscribing module's id, and marks the rest stale. The browser reconnects on its
+own. Send only events the user may see; authorization still applies on refetch.
+The demo simulates a teammate approving a pending request every 45 seconds.
+
+## Uploads and attachments
+
+Files never pass through JSON APIs. `POST /uploads {name, size, type}` returns a
+ticket `{id, url, method, headers?}`, usually a short-lived presigned storage URL;
+the browser sends the bytes there with progress (`shared/uploads/model.ts`, XHR),
+then attaches the upload to a record, for example `POST /requests/:id/attachments
+{uploadId}` and `DELETE /requests/:id/attachments/:attachmentId`. The backend
+enforces size, type, malware scanning, retention and who may read each file;
+client checks in `FileUpload` are UX only. Swap `PutFile` for multipart or
+resumable uploads without changing screens.
+
+## Saved views
+
+`GET /views?scope=requests` returns `{items: [{id, name, state}]}` for the signed-in
+user and workspace; `POST /views` `{scope, name, state}` creates one and `DELETE
+/views/:id` removes it. `state` is `{search, columns?}`: the list's non-default
+search values and optional column visibility/pinning. The owning module validates
+`search` with its route schema when applying, so old views stay safe. Shared team
+views, defaults per role and renaming are natural backend extensions.
 
 ## Reports API
 

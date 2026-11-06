@@ -22,4 +22,6 @@ export const reportsModule = {
     },
   },
   permissions: reportPermissions,
+  // Report aggregates are computed from requests, so request changes refresh them.
+  refreshOn: ['requests'],
 } satisfies ModuleDefinition

@@ -75,6 +75,8 @@
 }
 
 :root {
+  /* Text colors keep >= 4.5:1 on their own 10-12% tints over every light surface
+     (badges, avatars, deltas); tests/e2e/accessibility.spec.ts guards it. */
   --radius: 0.625rem;
   /* Density tokens used by tables and page padding. */
   --row-space: 0.75rem;
@@ -85,7 +87,7 @@
   --card-foreground: #111a24;
   --popover: #ffffff;
   --popover-foreground: #111a24;
-  --primary: #0b7a73;
+  --primary: #0a6f69;
   --primary-foreground: #ffffff;
   --secondary: #f1f4f6;
   --secondary-foreground: #1d2a37;
@@ -93,13 +95,13 @@
   --muted-foreground: #5d6876;
   --accent: #eef3f4;
   --accent-foreground: #1d2a37;
-  --destructive: #d92d20;
-  --success: #15803d;
-  --warning: #b45309;
-  --info: #2563eb;
+  --destructive: #be2318;
+  --success: #116a32;
+  --warning: #9a4507;
+  --info: #1d4fd0;
   --border: #e3e8ee;
   --input: #d6dde5;
-  --ring: #0b7a73;
+  --ring: #0a6f69;
   --chart-1: #0d9488;
   --chart-2: #6366f1;
   --chart-3: #f59e0b;
@@ -107,12 +109,12 @@
   --chart-5: #64748b;
   --sidebar: #f8fafb;
   --sidebar-foreground: #2b3744;
-  --sidebar-primary: #0b7a73;
+  --sidebar-primary: #0a6f69;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #e7f2f1;
   --sidebar-accent-foreground: #075f5b;
   --sidebar-border: #e3e8ee;
-  --sidebar-ring: #0b7a73;
+  --sidebar-ring: #0a6f69;
 }
 
 .dark {
@@ -251,5 +253,34 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* Paper output: records print as documents. Navigation and controls hide, content
+   uses the full page in light colors, and cards avoid splitting across pages. */
+@media print {
+  :root,
+  .dark {
+    --background: #ffffff;
+    --foreground: #111827;
+    --card: #ffffff;
+    --card-foreground: #111827;
+    --muted: #f3f4f6;
+    --muted-foreground: #4b5563;
+    --border: #d1d5db;
+    color-scheme: light;
+  }
+  [data-slot='sidebar'],
+  [data-slot='sidebar-gap'],
+  [data-sonner-toaster],
+  [data-print='hide'] {
+    display: none !important;
+  }
+  [data-slot='card'] {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+  @page {
+    margin: 14mm;
   }
 }

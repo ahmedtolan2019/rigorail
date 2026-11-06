@@ -41,12 +41,13 @@ export function CategoryLabel({
   )
 }
 
+// Color lives in the tint; initials stay dark so tiny text keeps AA contrast.
 const hues = [
-  'bg-chart-1/15 text-chart-1',
-  'bg-chart-2/15 text-chart-2',
-  'bg-chart-3/20 text-warning',
-  'bg-chart-4/15 text-chart-4',
-  'bg-chart-5/20 text-foreground',
+  'bg-chart-1/20 text-foreground',
+  'bg-chart-2/20 text-foreground',
+  'bg-chart-3/25 text-foreground',
+  'bg-chart-4/20 text-foreground',
+  'bg-chart-5/25 text-foreground',
 ]
 /** Avatar initials with a stable color per person id. */
 export function Person({ id, name }: { id: string; name: string }) {

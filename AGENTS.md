@@ -27,6 +27,8 @@ npm ci
 npm run dev                 # localhost:5173
 npm run context -- requests # owning module contract, source map and checks
 npm run context -- compositions master-detail # one pattern source and guidance
+npm run api:types           # regenerate API types after editing contracts/openapi.yaml
+npm run module:remove -- <module> --dry-run # preview removing a module
 npm run check:fast           # lint, boundaries, catalog and types while editing
 npm run check               # full gate, demo/API builds and bundle budget
 npm run test:e2e            # browser tests; starts its own local Vite server
