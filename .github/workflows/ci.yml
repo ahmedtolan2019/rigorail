@@ -31,10 +31,25 @@ jobs:
       - run: npm run check:dependencies
       - run: npm run check
 
+  # The Playwright image ships every browser and system library, so jobs skip
+  # the slow apt download. Its tag follows the locked @playwright/test version.
+  playwright-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.lock.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: lock
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> "$GITHUB_OUTPUT"
+
   # Browser flows gate every pull request. The suite (flows, accessibility audits,
   # three engines) is split across parallel shards to keep each job short.
   e2e:
+    needs: playwright-version
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -42,6 +57,8 @@ jobs:
         shard: [1, 2, 3, 4]
     env:
       VITE_APP_RELEASE: ${{ github.sha }}
+      # Firefox refuses to run as root with a HOME owned by another user.
+      HOME: /root
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,7 +67,6 @@ jobs:
           cache: npm
       - run: npm install --global npm@11.16.0
       - run: npm ci
-      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e -- --shard=${{ matrix.shard }}/4 --workers=2
       - uses: actions/upload-artifact@v4
         if: failure()
