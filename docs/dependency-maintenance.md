@@ -21,3 +21,12 @@ root [LICENSE](../LICENSE) was restored verbatim from upstream commit
 (blob `ef495d5ff017e359bc0567921cfa0d448287abd3`), which was later removed without
 explanation in c210d29. Preserve the notice in copies of the template. Dependency
 and imported-source licenses remain separate. This is provenance, not legal advice.
+
+## Updates
+
+Dependabot opens weekly grouped minor/patch PRs for npm and monthly GitHub Actions
+updates. Merge them when CI passes. Major npm versions are ignored on purpose:
+upgrade them deliberately on a branch (read the migration guide, update code and
+docs, run `npm run check` and the full browser suite, then visual review). Pending
+majors as of 2026-11-06: TypeScript 7, `@tanstack/react-table` 9, lint-staged 17,
+`@types/node` 26.

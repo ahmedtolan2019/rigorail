@@ -1,5 +1,9 @@
 # Reuse, combine and create compositions
 
+For the common product screens (list, detail, form, dashboard, settings) start with
+[screen recipes](screen-recipes.md); this guide covers composing and extending
+patterns.
+
 Agents may adapt, combine and create patterns needed by the assigned feature.
 The [composition inventory](pattern-coverage.md) is a starting set, not a closed
 list or a requirement to force every feature into an existing screen. Routine

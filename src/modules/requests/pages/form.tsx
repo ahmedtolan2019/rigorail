@@ -62,11 +62,10 @@ import {
 import { Failure } from '@/shared/ui/route-feedback'
 import { DetailSkeleton, PageHeader, backLinkClass } from '@/shared/ui/page'
 import { permissions } from '../permissions'
-import { detailOptions, requestKeys } from '../queries'
+import { detailOptions, requestKeys, saveRequest } from '../queries'
 import {
   requestCategories,
   requestInput,
-  requestSchema,
   toMinorUnits,
   type RequestRecord,
   type RequestInput,
@@ -137,16 +136,12 @@ function FormContent({ record }: { record?: RequestRecord }) {
 
   const mutation = useMutation({
     mutationFn: (values: RequestInput) =>
-      services.api.request(
-        record ? `/requests/${encodeURIComponent(record.id)}` : '/requests',
-        requestSchema,
-        {
-          method: record ? 'PATCH' : 'POST',
-          body: JSON.stringify({
-            ...values,
-            ...(record ? { version: baseVersion } : {}),
-          }),
-        },
+      saveRequest(
+        services.api,
+        values,
+        record && baseVersion !== undefined
+          ? { id: record.id, version: baseVersion }
+          : undefined,
       ),
   })
   // In-app navigation asks with an accessible dialog; closing the tab uses the browser prompt.

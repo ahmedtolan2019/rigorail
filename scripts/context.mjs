@@ -21,7 +21,7 @@ if (
   for (const module of names)
     console.log(`  ${module} -> src/modules/${module}/contract.md`)
   console.log(
-    '\nFor shared/platform changes: docs/architecture.md and its context map.\nUI component lookup: docs/component-catalog.md.\nPattern discovery: docs/pattern-coverage.md. Reuse/combine/create: docs/composition-authoring.md.\nQuick checks: npm run check:fast. Full completion gate: npm run check.',
+    '\nFor shared/platform changes: docs/architecture.md and its context map.\nUI component lookup: docs/component-catalog.md.\nCommon screens (list, detail, form, dashboard, settings): docs/screen-recipes.md.\nPattern discovery: docs/pattern-coverage.md. Reuse/combine/create: docs/composition-authoring.md.\nQuick checks: npm run check:fast. Full completion gate: npm run check.',
   )
 } else if (view) {
   await printCompositionContext(view)

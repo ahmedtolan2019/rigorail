@@ -8,6 +8,7 @@ import {
   requestSchema,
   toRequestQuery,
   type BulkCommand,
+  type RequestInput,
   type RequestFilter,
   type RequestSearch,
 } from './schema'
@@ -75,3 +76,49 @@ export const searchOwners = (
         count: item.count,
       })),
     )
+
+// Writes live here too, so pages never build endpoints or bodies themselves.
+/** Creates a draft, or updates one with the version the user started from. */
+export const saveRequest = (
+  api: ApiClient,
+  values: RequestInput,
+  existing?: { id: string; version: number },
+) =>
+  api.request(
+    existing ? `/requests/${encodeURIComponent(existing.id)}` : '/requests',
+    requestSchema,
+    {
+      method: existing ? 'PATCH' : 'POST',
+      body: JSON.stringify(
+        existing ? { ...values, version: existing.version } : values,
+      ),
+    },
+  )
+/** Moves a record through the workflow; `version` guards against stale state. */
+export const runRequestAction = (
+  api: ApiClient,
+  id: string,
+  action: 'submit' | 'approve',
+  version: number,
+) =>
+  api.request(`/requests/${encodeURIComponent(id)}/${action}`, requestSchema, {
+    method: 'POST',
+    body: JSON.stringify({ version }),
+  })
+/** Attaches a finished upload, or removes an attachment. */
+export const attachToRequest = (api: ApiClient, id: string, uploadId: string) =>
+  api.request(
+    `/requests/${encodeURIComponent(id)}/attachments`,
+    requestSchema,
+    { method: 'POST', body: JSON.stringify({ uploadId }) },
+  )
+export const removeRequestAttachment = (
+  api: ApiClient,
+  id: string,
+  attachmentId: string,
+) =>
+  api.request(
+    `/requests/${encodeURIComponent(id)}/attachments/${encodeURIComponent(attachmentId)}`,
+    requestSchema,
+    { method: 'DELETE' },
+  )

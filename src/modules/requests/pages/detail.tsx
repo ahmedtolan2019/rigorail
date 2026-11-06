@@ -31,8 +31,14 @@ import { ConfirmAction } from '@/shared/ui/confirm-action'
 import { FileUpload } from '@/shared/uploads/file-upload'
 import type { Attachment } from '@/shared/uploads/model'
 import { permissions } from '../permissions'
-import { detailOptions, requestKeys } from '../queries'
-import { requestSchema, requestStatuses, type RequestRecord } from '../schema'
+import {
+  attachToRequest,
+  detailOptions,
+  removeRequestAttachment,
+  requestKeys,
+  runRequestAction,
+} from '../queries'
+import { requestStatuses, type RequestRecord } from '../schema'
 import { ns } from '../i18n'
 import { CategoryLabel, Person, StatusBadge } from '../presentation'
 
@@ -60,14 +66,7 @@ function Detail() {
   useDocumentTitle(query.data?.title, t('navigation'))
   const mutation = useMutation({
     mutationFn: (action: 'submit' | 'approve') =>
-      services.api.request(
-        `/requests/${encodeURIComponent(requestId)}/${action}`,
-        requestSchema,
-        {
-          method: 'POST',
-          body: JSON.stringify({ version: query.data?.version }),
-        },
-      ),
+      runRequestAction(services.api, requestId, action, query.data!.version),
     onSuccess: async (_, action) => {
       toast.success(t(action === 'approve' ? 'approvalDone' : 'submitted'))
       await client.invalidateQueries({
@@ -356,21 +355,11 @@ function Attachments({
       refetchType: 'none',
     })
   }
-  const path = `/requests/${encodeURIComponent(item.id)}/attachments`
   const attach = (file: Attachment) =>
-    services.api
-      .request(path, requestSchema, {
-        method: 'POST',
-        body: JSON.stringify({ uploadId: file.id }),
-      })
-      .then(settle)
+    attachToRequest(services.api, item.id, file.id).then(settle)
   const remove = useMutation({
     mutationFn: (file: Attachment) =>
-      services.api.request(
-        `${path}/${encodeURIComponent(file.id)}`,
-        requestSchema,
-        { method: 'DELETE' },
-      ),
+      removeRequestAttachment(services.api, item.id, file.id),
     onSuccess: async (record, file) => {
       await settle(record)
       toast(t('attachmentRemoved', { name: file.name }))

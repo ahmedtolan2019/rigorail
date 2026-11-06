@@ -70,7 +70,7 @@ the email for the two-step code `123456`). These exist only in the demo transpor
    sign-out, SSO; see `src/modules/account/contract.md`). Set `auth.sso` in
    `src/app/config.ts`. Replace the sample grant adapter if its policy model differs.
 6. Scaffold your first domain with `npm run module:create -- <id>` and build its
-   screens from the nearest composition.
+   screens with [the screen recipes](docs/screen-recipes.md).
 7. Remove reference modules you don't need. `npm run module:remove -- reports
    --dry-run` previews the change; without `--dry-run` it deletes the module, its
    registration and its `<module>*.spec.ts` browser specs, then lists remaining
