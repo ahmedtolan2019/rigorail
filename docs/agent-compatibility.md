@@ -8,7 +8,7 @@ and common shell commands, not a guarantee that every model follows instructions
 | Tool | Entry | Verification status |
 | --- | --- | --- |
 | Codex | Root `AGENTS.md` | Official discovery documentation checked; repo instructions used in this session |
-| Claude Code | `CLAUDE.md` imports `@AGENTS.md` | Import/hook formats checked against official docs; no live Claude task run |
+| Claude Code | `CLAUDE.md` imports `@AGENTS.md` | Local Claude project transcripts and resulting changes reviewed on 2026-11-05; this does not prove every hook/client behavior |
 | Cursor | Root `AGENTS.md` | Official native support checked; no live Cursor task run |
 | GitHub Copilot | `.github/copilot-instructions.md` links to `AGENTS.md` | Repository instructions documented; no live Copilot task run |
 | Gemini CLI | `GEMINI.md` imports `@./AGENTS.md` | Official import syntax checked; CLI not installed/tested here |
@@ -31,14 +31,24 @@ Do not copy global machine permissions or credentials into this template.
 - `docs/architecture.md`: durable technical rules and explicit decisions.
 - `ai/prd.md`: agreed product requirements and backend contract inputs.
 - `ai/plan.md`: completed work, validation, unresolved items, next step.
+- `docs/pattern-coverage.md`: searchable inventory and acceptance coverage.
+- `docs/composition-authoring.md`: reuse, adaptation, combinations, new patterns and sharing boundaries.
+- `npm run context -- compositions <view>`: source-derived lookup for one example.
 - `src/modules/<domain>/AGENTS.md` and `contract.md`: scoped domain context.
 - `ai/docs/`: optional feature notes, read on demand.
 - `.agents/skills/`: optional imported material, not the source of project policy.
 
+The root entry point explicitly directs UI tasks to both composition guides.
+The context command also surfaces these pointers for ordinary domain lookups, so
+an agent does not have to know that it should ask for Compositions first. Claude,
+Gemini and Copilot continue to reach this policy through their existing root
+adapters; no duplicate vendor policy is needed. This documents discovery paths,
+not proof of live behavior in every agent client.
+
 Avoid duplicating rules in each agent's format. Prefer source pointers over long
-code snippets that drift. The imported skills contain Next.js/server guidance;
-only apply sections relevant to this Vite SPA. Do not load the whole skill catalog
-for every small task. Skill auto-discovery differs across tools.
+code snippets that drift. Imported skills are kept only when they apply to this
+Vite SPA stack. Do not load the whole skill catalog for every small task. Skill
+auto-discovery differs across tools.
 
 ## Claude hook limits
 

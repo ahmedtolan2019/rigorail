@@ -4,6 +4,16 @@ This is a sample contract used by the runnable reference, not a claim about an
 existing service. Agree or replace it before connecting a real application.
 Schemas in source are authoritative for accepted fields.
 
+## Machine-readable contract
+
+`contracts/openapi.yaml` is the sample contract in OpenAPI form. Replace it with the
+backend team's published spec, then run `npm run api:types` to regenerate
+`src/shared/api/openapi.gen.ts` (never edit it by hand; `npm run check:api` fails
+when it is stale). Zod schemas stay the runtime validators. Each owner asserts its
+Zod output matches the spec in both directions (`src/shared/api/contract.ts`,
+`src/modules/*/contract.check.ts`), so an unabsorbed backend change fails
+`npm run typecheck`. Generated types are not runtime validation.
+
 ## Environment and transport
 
 - Development/demo: `.env.development` / `.env.demo` explicitly select demo mode.
@@ -18,8 +28,10 @@ Schemas in source are authoritative for accepted fields.
 - Default responses are parsed as JSON through Zod; an empty success needs an
   explicit `z.undefined()` contract. Errors accept `{message, code?, fields?}`.
 - Agree authentication/session expiry, CORS credentials, cookie settings, CSRF
-  protection, rate limits and correlation IDs with the backend. Extend the transport
-  for agreed CSRF headers. No localStorage bearer-token convention is invented here.
+  protection, rate limits and correlation IDs with the backend. `appConfig.api` in
+  `src/app/config.ts` turns on a double-submit CSRF header (copied from a readable
+  cookie on unsafe methods) and a per-request correlation header; both are off by
+  default. No localStorage bearer-token convention is invented here.
 - Mutations do not retry. Add idempotency keys only with corresponding server support.
 
 ## Session and workspace
@@ -41,8 +53,21 @@ sample adapter. A production workspace switch must change backend session scope
 and refresh session; do not trust a browser-selected tenant ID. User/workspace/
 revision changes create a new query cache. Transient session refresh failures hide
 and disable the workspace with retry feedback while retaining local drafts.
-Explicit 401/403 failures remove the old workspace state. Add the real identity provider's sign-in/sign-out
-UX when its endpoints and redirect contract are agreed.
+`workspace.timeZone` (optional IANA name, for example `Asia/Riyadh`) makes every
+date display in the organization's zone instead of each browser's.
+Explicit 401/403 failures remove the old workspace state. `GET /session` answering
+401 shows the sign-in screens; any later 401 is treated as an ended session.
+
+## Authentication and account
+
+The sample identity endpoints (sign-in with an optional second factor, password
+recovery, sign-out, SSO redirect, profile, password change and signed-in devices)
+are listed in `src/modules/account/contract.md`, with schemas in its `schema.ts`.
+The backend owns credentials, the HttpOnly session cookie, CSRF protection, MFA,
+lockout/rate limits and password policy. Recovery must not reveal whether an
+account exists. The browser never stores tokens or passwords. Replace these
+endpoints with the agreed identity provider flow; an SSO-only product can hide the
+password form and keep the same signed-out shell.
 
 ## Capabilities and configuration
 
@@ -82,25 +107,83 @@ latest rules atomically on writes, even when the frontend snapshot is stale.
 
 ## Reference Requests API
 
-Schemas and search defaults are in `src/modules/requests/schema.ts`.
+Schemas, search defaults and query serialization are in `src/modules/requests/schema.ts`.
+List parameters repeat for multiple values (`status=draft&status=pending`); defaults are omitted.
 
 | Endpoint | Purpose |
 | --- | --- |
-| `GET /requests?q=&status=all&page=1&sort=updated` | `{items, total}`, one-based pages, sample page size 6 |
+| `GET /requests?q=&status=&category=&owner=&from=&to=&sort=updated&dir=desc&page=1&size=10` | `{items, total, facets}`; `size` is 10, 20 or 50; `from`/`to` filter created date (yyyy-mm-dd, inclusive) |
+| `GET /requests/owners?<other active filters>&name=` | `{items: [{id, name, count}]}` for debounced owner lookup; ignore the active owner filter when computing counts |
+| `GET /requests/export?<same filters>&sort=&dir=` | `{items, total, truncated}` with every matching record up to 5,000; larger exports belong in a backend job |
 | `GET /requests/:id` | One validated record |
-| `POST /requests` | `{title, description, amount}` -> new draft, HTTP 201 |
+| `POST /requests` | `{title, category, description, amount}` -> new draft, HTTP 201 |
 | `PATCH /requests/:id` | Same input plus `version` -> updated draft |
 | `POST /requests/:id/submit` | `{version}` -> pending |
 | `POST /requests/:id/approve` | `{version}` -> approved |
+| `POST /requests/bulk` | `{action: submit or approve, target}` -> `{succeeded: id[], failed: [{id, code}]}` |
 
+`facets` counts each status, category and owner with every other active filter applied
+(a facet ignores its own filter), so filter options stay discoverable. `facets.owner`
+is a bounded list of top owners plus selected owners; `facets.ownerTotal` reports
+the total available owners. The demo sends the top eight plus selected values.
+Owner lookup uses the other active filters and preserves selected labels in the UI.
+The current lookup response has no pagination cursor; agree one before adapting
+this pattern to a directory that needs paginated search results.
+
+Bulk `target` is
+`{mode: 'ids', ids}` (max 500) or `{mode: 'all', filter, excluded}` for "select all N
+matching" across pages; the backend applies the filter itself and reports per-record
+`forbidden`, `conflict` or `not_found` failures instead of failing the whole command.
+
+Records carry an internal `id` (URLs and API calls only) and a human-readable
+`reference` such as `REQ-1042`, which is what the UI shows, searches and exports.
 Amounts arrive as decimal strings and return as two-decimal integer minor units.
-Responses include ID, workspace, owner ID/name, status, version and ISO updatedAt.
-The backend validates resource scope, permissions, module access, quota, latest
-amount limit and legal workflow transitions. HTTP 403 refreshes session access;
-409 indicates a conflict, 422 can supply `fields.amount`. Do not expose sensitive
-backend error text directly. Expand error-code-to-translation mapping when adding
-new domain errors. Versions prevent lost updates; the edit form retains its base
-version while the user holds a draft.
+Responses include id, reference, workspace, category, owner id/name, status, version,
+createdAt and updatedAt. The backend validates resource scope, permissions, module
+access, quota, latest amount limit and legal workflow transitions. HTTP 403 refreshes
+session access; 409 indicates a conflict, 422 can supply `fields.amount`. Do not expose
+sensitive backend error text directly. Versions prevent lost updates; the edit form
+retains its base version while the user holds a draft.
+
+## Live updates
+
+Optional. Set `appConfig.api.events` (for example `'/events'`) when the backend
+offers Server-Sent Events at `GET {base}/events` with the session cookie. Each
+message is JSON `{topic, ids?}` naming a changed resource, never its data; for
+example `{"topic":"requests","ids":["…"]}`. Modules declare `refreshOn` topics in
+their `ModuleDefinition`; an event refreshes active queries whose key starts with a
+subscribing module's id, and marks the rest stale. The browser reconnects on its
+own. Send only events the user may see; authorization still applies on refetch.
+The demo simulates a teammate approving a pending request every 45 seconds.
+
+## Uploads and attachments
+
+Files never pass through JSON APIs. `POST /uploads {name, size, type}` returns a
+ticket `{id, url, method, headers?}`, usually a short-lived presigned storage URL;
+the browser sends the bytes there with progress (`shared/uploads/model.ts`, XHR),
+then attaches the upload to a record, for example `POST /requests/:id/attachments
+{uploadId}` and `DELETE /requests/:id/attachments/:attachmentId`. The backend
+enforces size, type, malware scanning, retention and who may read each file;
+client checks in `FileUpload` are UX only. Swap `PutFile` for multipart or
+resumable uploads without changing screens.
+
+## Saved views
+
+`GET /views?scope=requests` returns `{items: [{id, name, state}]}` for the signed-in
+user and workspace; `POST /views` `{scope, name, state}` creates one and `DELETE
+/views/:id` removes it. `state` is `{search, columns?}`: the list's non-default
+search values and optional column visibility/pinning. The owning module validates
+`search` with its route schema when applying, so old views stay safe. Shared team
+views, defaults per role and renaming are natural backend extensions.
+
+## Reports API
+
+`GET /reports/requests?from=&to=&compare=true&category=&owner=` returns server-side
+aggregates (see `src/modules/reports/schema.ts`): totals and previous-window totals,
+a series bucketed by day (up to 31 days), week (up to 120) or month with previous
+values aligned by index, status mix, breakdown rows by category and owner, and owner
+filter options. The browser never downloads raw records to compute reports. Invalid
+windows return 422.
 
 ## Optional AI stream
 
@@ -124,9 +207,6 @@ plain streamed text is never executable code or an approved command.
 
 ## Hosting
 
-Serve `dist/` over HTTPS using a static host with SPA fallback to `index.html` for
-application routes. Serve missing asset URLs as 404, not HTML. Give hashed assets
-long immutable cache lifetimes and keep `index.html` refreshable. Configure CSP,
-API `connect-src`, security headers and error reporting for the chosen host.
-Subpath hosting needs Vite `base` and router `basepath` together; current routes
-assume the origin root. No public deployment has been performed.
+See [deployment](deployment.md) for build variables, SPA fallback, caching, a
+strict CSP and security headers, and the release checklist. No public deployment
+has been performed.

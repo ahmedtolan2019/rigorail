@@ -13,12 +13,15 @@ small reference that establishes repeatable conventions.
    endpoints, schemas, permission IDs, state ownership and acceptance cases.
 3. Implement only folders you need. Keep schemas, queries, forms and workflow
    rules inside that domain. Copy the Requests pattern, not its business assumptions.
-4. Expose narrow exports in `public.ts`: route loaders, contract types/schemas and
-   permission definitions. Do not export every internal component.
-5. Register lazy routes in `app/router.tsx`, navigation in `app/shell.tsx` and
-   permissions in `app/runtime.ts`. Backend entitlements/flags must use the agreed IDs.
-6. Add English/Arabic namespace resources and RTL acceptance cases. Select only
-   the business rules needed by each screen. Paginate large server collections.
+4. Add `routes.ts` (lazy pages attached to `shared/routing/root.ts`), `i18n.ts`
+   (`defineTranslations('<domain>', en, ar)`) and permissions named `<domain>.<action>`
+   with `<domain>:` label keys. Pages use `getRouteApi` and `useTranslation(ns)`.
+5. Export the route tree and a `ModuleDefinition` (id, navigation, permissions)
+   from `public.ts`, plus contract types/schemas other modules need. Do not export
+   every internal component. Add both to `app/modules.ts`; nothing else in `app/`
+   changes. Backend entitlements/flags must use the agreed IDs.
+6. Style with Tailwind utilities and shared components; add RTL acceptance cases.
+   Select only the business rules needed by each screen. Paginate large server collections.
 7. Run focused tests and boundary/type checks, then the cohesive change gate.
    Missing local contracts, private cross-domain imports and computed import
    loaders fail the check. Do not create alternate src layers to bypass it.
@@ -29,8 +32,8 @@ code. Update `ai/plan.md` for handoff rather than copying a chat transcript.
 
 ## When the application grows
 
-- Split navigation into domain-owned manifests composed by the app when the small
-  explicit registry becomes hard to scan. Keep visibility and direct-route checks consistent.
+- Group navigation entries into sections when the flat module list becomes hard to
+  scan. Keep visibility and direct-route checks consistent.
 - Introduce a domain-specific configuration endpoint/namespace when unrelated
   rules dominate one payload. Reuse the scoped query/selector pattern.
 - Use virtualized rows only for measured large client-side grids. Server pagination
@@ -44,23 +47,27 @@ code. Update `ai/plan.md` for handoff rather than copying a chat transcript.
 
 ## Future application decisions
 
-These are documented extension needs, not empty packages installed in advance:
+The [composition examples](pattern-coverage.md) provide screen references. The
+table lists product decisions that still need a real backend contract. Where the
+template already ships the frontend side, extend it instead of rebuilding it:
 
 | Need | Backend contract and frontend work required |
 | --- | --- |
 | Organization/workspace switching | Authorized workspace list, session scope and cache reset; current demo proves reset behavior |
 | Audit/history | Actor/time/change events, retention/redaction; frontend cannot create authoritative audit evidence |
-| Notifications/live updates | Event IDs, reconnect cursor, scoped invalidation, read/unread policy |
-| Files/import/export | Signed upload limits, scan status, job progress, partial errors and expiring downloads |
+| Notifications/live updates | Shipped: SSE invalidation by module `refreshOn`. Needed: event IDs, reconnect cursor (`Last-Event-ID`), read/unread policy |
+| Files/import/export | Shipped: presigned uploads with progress, XLSX/CSV export. Needed: scan status, import/export jobs, expiring downloads |
 | Complex forms | Field arrays, step validation, server errors, concurrency, optional recoverable drafts with privacy policy |
-| Global search/command palette | Permission-filtered backend results, keyboard access, shortcut discoverability |
-| Offline operations | Conflict/idempotency/sync contract; current app only reports offline state, never queues writes silently |
+| Global search/command palette | Shipped: palette and shortcut help. Needed: permission-filtered backend search |
+| Offline operations | Conflict/idempotency/sync contract; production app reports offline state; the separate composition queues only explicit demo writes |
 | Reporting | Server aggregates, accessible charts, localized time zones and explicit currency units |
 | Billing management | Backend-generated management links, invoices and webhook-synchronized entitlements |
-| Observability | Error sink, correlation IDs, redaction, release identity and frontend performance budgets |
+| Observability | Shipped: error and analytics hooks, Web Vitals, release tag, request-ID header, bundle budget. Needed: the actual services and redaction policy |
 
-Do not implement product-specific payroll formulas, subscription pricing or role
-editors until that application's rules and backend endpoints are known.
+Do not turn the local role/plan previews into product-specific policy, payroll
+formulas or subscription pricing until the application rules and backend endpoints
+are known. Navigation grouping, recoverable forms, reports and a shell command
+palette already exist; extend their owning contracts rather than rebuilding them.
 
 ## Research references
 

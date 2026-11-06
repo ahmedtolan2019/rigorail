@@ -10,8 +10,8 @@ import RequestForm from './form'
 vi.mock('@tanstack/react-router', () => ({
   useParams: () => ({ requestId: 'record-1' }),
   useNavigate: () => vi.fn(),
-  useSearch: () => ({}),
-  useBlocker: () => undefined,
+  getRouteApi: () => ({ useSearch: () => ({}) }),
+  useBlocker: () => ({ status: 'idle' }),
   Link: ({ children }: { children: ReactNode }) => <a>{children}</a>,
 }))
 vi.mock('@/shared/auth/access', () => ({
@@ -54,6 +54,10 @@ test('background record transitions retain the draft and prevent an invalid save
     mode: 'api',
     aiEnabled: false,
     refreshSession: async () => undefined,
+    signOut: async () => undefined,
+    upload: async () => {
+      throw new Error('Uploads are not used here.')
+    },
   }
   const view = render(
     <QueryClientProvider client={client}>

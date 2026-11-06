@@ -8,14 +8,22 @@ export const permissions = {
   suggest: 'requests.suggest',
 } as const
 export const requestPermissions: readonly PermissionDefinition[] = [
-  { action: permissions.read, labelKey: 'permissionRead' },
-  { action: permissions.create, labelKey: 'permissionCreate' },
-  { action: permissions.edit, labelKey: 'permissionEdit', resource: true },
-  { action: permissions.submit, labelKey: 'permissionSubmit', resource: true },
+  { action: permissions.read, labelKey: 'requests:permissionRead' },
+  { action: permissions.create, labelKey: 'requests:permissionCreate' },
   {
-    action: permissions.approve,
-    labelKey: 'permissionApprove',
+    action: permissions.edit,
+    labelKey: 'requests:permissionEdit',
     resource: true,
   },
-  { action: permissions.suggest, labelKey: 'permissionSuggest' },
+  {
+    action: permissions.submit,
+    labelKey: 'requests:permissionSubmit',
+    resource: true,
+  },
+  {
+    action: permissions.approve,
+    labelKey: 'requests:permissionApprove',
+    resource: true,
+  },
+  { action: permissions.suggest, labelKey: 'requests:permissionSuggest' },
 ]

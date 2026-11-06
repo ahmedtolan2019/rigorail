@@ -41,3 +41,44 @@ Review [feature] against its acceptance criteria, API contract, and architecture
 Look for behavior bugs, unhandled response states, inaccessible interactions,
 cross-feature coupling, and frontend/backend boundary violations. Give findings
 with file/line evidence and impact. Distinguish verified behavior from assumptions.
+
+## Build a feature from a composition
+
+> Implement `<feature>` in `<owning module>` using the nearest pattern in
+> `docs/pattern-coverage.md`. Read that module contract and only the relevant
+> composition source and `docs/composition-authoring.md`. Adapt the UI structure; do not import Compositions fixtures
+> across domains. Connect the agreed API, specify selection/dirty/concurrency
+> behavior, and include empty/loading/denied/failure/retry and Arabic/RTL acceptance.
+> Verify the actual result of each action (including file bytes for downloads).
+> Update the owning contract and `ai/plan.md`; run the required checks.
+
+## Extend the composition library
+
+> Add `<missing workflow>` to Compositions as an interactive local example with
+> a distinct URL, bilingual label/hint, accessible controls and useful state
+> transitions. Match the retained original screens and review the rendered result.
+> Register navigation and the
+> explicit lazy import, document its production contract questions, and add a
+> behavior test. Do not implement a server or present fixtures as a live service.
+
+## Combine compositions into one workflow
+
+> Implement `<workflow>` in `<owning domain>` using `<candidate compositions>`.
+> Read AGENTS.md and `docs/composition-authoring.md`. Use the inventory and
+> `npm run context -- compositions <view>` to inspect only relevant references.
+> Choose reuse, adaptation, combination or a new pattern based on the task.
+> Extract sections rather than embedding route pages. Record who owns selection,
+> forms, URL state, queries and mutations, plus dirty/permission/conflict behavior.
+> Use public domain contracts and shared UI without importing gallery fixtures.
+> Test interactions between sections, especially switching records during pending
+> work. If the work produces a distinct reusable workflow, add a local gallery
+> example and update its inventory, registration, translations and tests.
+
+## Review a composed workflow
+
+> Review `<workflow>` against `docs/composition-authoring.md` and its module
+> contract. Check for duplicate state owners/providers, nested forms, competing
+> route updates, stale actions on a new record, permission gaps, focus traps,
+> shared-state leaks between instances and eager loading of unrelated examples.
+> Reproduce problems, fix them within the task's scope, and add useful regression
+> coverage. Do not weaken import boundaries or invent service behavior.

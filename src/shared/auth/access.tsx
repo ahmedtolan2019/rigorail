@@ -4,14 +4,18 @@ import { useQueryClient } from '@tanstack/react-query'
 import type { Resource } from './model'
 import { useCapability } from '../capabilities/hooks'
 import type { Requirements } from '../capabilities/model'
+import { RotateCw } from 'lucide-react'
 import {
   Empty,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
 } from '../ui/empty'
 import { Button } from '../ui/button'
+import { PageSkeleton } from '../ui/page'
+import { Illustration } from '../ui/illustration'
 
 export function AccessBoundary({
   action,
@@ -36,21 +40,29 @@ export function AccessBoundary({
     hasAllowed && (decision.status === 'error' || decision.status === 'loading')
   return (
     <>
-      {!allowed && (
-        <Empty role="status">
+      {!allowed && decision.status === 'loading' && !preserve && (
+        <PageSkeleton />
+      )}
+      {!allowed && decision.status !== 'loading' && (
+        <Empty role="status" className="min-h-[55vh]">
           <EmptyHeader>
-            <EmptyTitle>
-              {t(decision.status === 'loading' ? 'loading' : 'denied')}
-            </EmptyTitle>
+            <EmptyMedia>
+              <Illustration
+                name={decision.status === 'error' ? 'error' : 'access-denied'}
+              />
+            </EmptyMedia>
+            <EmptyTitle>{t('denied')}</EmptyTitle>
             <EmptyDescription>{t(decision.reason)}</EmptyDescription>
           </EmptyHeader>
           {decision.status === 'error' && (
             <EmptyContent>
               <Button
+                variant="outline"
                 onClick={() =>
                   void client.invalidateQueries({ queryKey: ['capabilities'] })
                 }
               >
+                <RotateCw data-icon="inline-start" />
                 {t('retry')}
               </Button>
             </EmptyContent>

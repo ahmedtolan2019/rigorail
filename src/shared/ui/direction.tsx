@@ -1,5 +1,3 @@
-import { DirectionProvider as BaseDirectionProvider } from '@base-ui/react/direction-provider'
-
 import * as React from 'react'
 import { Direction } from 'radix-ui'
 
@@ -12,9 +10,7 @@ function DirectionProvider({
 }) {
   return (
     <Direction.DirectionProvider dir={direction ?? dir}>
-      <BaseDirectionProvider direction={direction ?? dir}>
-        {children}
-      </BaseDirectionProvider>
+      {children}
     </Direction.DirectionProvider>
   )
 }

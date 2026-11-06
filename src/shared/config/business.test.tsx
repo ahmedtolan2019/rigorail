@@ -35,6 +35,10 @@ test('only rerenders a limit consumer when its selected value changes', async ()
     mode: 'api',
     aiEnabled: false,
     refreshSession: async () => undefined,
+    signOut: async () => undefined,
+    upload: async () => {
+      throw new Error('Uploads are not used here.')
+    },
   }
   const view = render(
     <QueryClientProvider client={client}>

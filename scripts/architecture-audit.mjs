@@ -23,6 +23,13 @@ export function auditArchitecture(root) {
         )
       if (/\.[cm]?jsx?$/.test(entry.name))
         issues.push(`${rel(file)}: application source must use TypeScript`)
+      if (
+        /\.(css|scss|sass|less)$/.test(entry.name) &&
+        rel(file) !== 'index.css'
+      )
+        issues.push(
+          `${rel(file)}: style with Tailwind utilities; src/index.css is the only stylesheet`,
+        )
       return /\.(ts|tsx)$/.test(entry.name) ? [file] : []
     })
   }
@@ -114,6 +121,10 @@ export function auditArchitecture(root) {
           `${name}: computed dynamic imports bypass ownership checks; use a literal loader map`,
         )
       if (specifier && ts.isStringLiteral(specifier)) {
+        if (/^next(\/|$)|^next-themes$/.test(specifier.text))
+          issues.push(
+            `${name}: ${specifier.text} is Next.js-only; adapt registry blocks to this Vite SPA`,
+          )
         if (isBuiltin(specifier.text) && !isTest(name))
           issues.push(
             `${name}: Node-only module ${specifier.text} is not part of this browser application`,

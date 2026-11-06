@@ -162,11 +162,25 @@ test('alternate TypeScript extensions cannot bypass source scanning', () => {
 test('assets follow ownership and must exist', () => {
   const issues = audit({
     'src/shared/widget.ts':
-      "import '../modules/a/private.css'; import './missing.css'",
-    'src/modules/a/private.css': ':root {}',
+      "import '../modules/a/logo.svg'; import './missing.svg'",
+    'src/modules/a/logo.svg': '<svg />',
   })
   assert(issues.some((issue) => issue.includes('violates module ownership')))
   assert(issues.some((issue) => issue.includes('unresolved internal import')))
+})
+
+test('index.css is the only stylesheet', () => {
+  const issues = audit({
+    'src/main.tsx': "import './index.css'; import './app/extra.css'",
+    'src/index.css': ':root {}',
+    'src/app/extra.css': '.page {}',
+  })
+  assert(
+    issues.some((issue) =>
+      issue.includes('app/extra.css: style with Tailwind'),
+    ),
+  )
+  assert(!issues.some((issue) => issue.startsWith('index.css')))
 })
 
 test('entry imports of global CSS are explicit and legitimate', () => {
@@ -185,4 +199,13 @@ test('source cannot route around ownership through root helpers', () => {
       'helper.ts': 'export {}',
     }).some((issue) => issue.includes('must remain inside src')),
   )
+})
+
+test('Next.js-only imports from pasted registry blocks are rejected', () => {
+  const issues = audit({
+    'src/shared/blocks/app-sidebar.tsx':
+      "import Link from 'next/link'; import { useTheme } from 'next-themes'",
+  })
+  assert(issues.some((issue) => issue.includes('next/link is Next.js-only')))
+  assert(issues.some((issue) => issue.includes('next-themes is Next.js-only')))
 })
