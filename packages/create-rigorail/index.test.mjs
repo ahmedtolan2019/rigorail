@@ -1,4 +1,9 @@
+import { spawnSync } from 'node:child_process'
+import { mkdtempSync, symlinkSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import { test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import assert from 'node:assert/strict'
 import { parseArgs, personalizePackage, toPackageName } from './index.mjs'
 
@@ -50,4 +55,17 @@ test('the manifest drops template identity and keeps scripts and dependencies', 
     'check:tooling': 'node --test scripts/a.test.mjs',
   })
   assert.deepEqual(next.dependencies, { react: '^19' })
+})
+
+test('runs when npm starts it through a node_modules/.bin symlink', () => {
+  const bin = path.join(
+    mkdtempSync(path.join(tmpdir(), 'create-rigorail-')),
+    'create-rigorail',
+  )
+  symlinkSync(fileURLToPath(new URL('./index.mjs', import.meta.url)), bin)
+  const result = spawnSync(process.execPath, [bin, '--help'], {
+    encoding: 'utf8',
+  })
+  assert.equal(result.status, 0)
+  assert.match(result.stdout, /Usage: npm create rigorail@latest/)
 })
