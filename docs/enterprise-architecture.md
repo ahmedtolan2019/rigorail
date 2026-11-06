@@ -47,22 +47,22 @@ code. Update `ai/plan.md` for handoff rather than copying a chat transcript.
 
 ## Future application decisions
 
-The [20 original composition examples](pattern-coverage.md) provide selected
-screen references. The table below lists future product decisions, not a list
-of implemented gallery workflows or an instruction to build them:
+The [composition examples](pattern-coverage.md) provide screen references. The
+table lists product decisions that still need a real backend contract. Where the
+template already ships the frontend side, extend it instead of rebuilding it:
 
 | Need | Backend contract and frontend work required |
 | --- | --- |
 | Organization/workspace switching | Authorized workspace list, session scope and cache reset; current demo proves reset behavior |
 | Audit/history | Actor/time/change events, retention/redaction; frontend cannot create authoritative audit evidence |
-| Notifications/live updates | Event IDs, reconnect cursor, scoped invalidation, read/unread policy |
-| Files/import/export | Signed upload limits, scan status, job progress, partial errors and expiring downloads |
+| Notifications/live updates | Shipped: SSE invalidation by module `refreshOn`. Needed: event IDs, reconnect cursor (`Last-Event-ID`), read/unread policy |
+| Files/import/export | Shipped: presigned uploads with progress, XLSX/CSV export. Needed: scan status, import/export jobs, expiring downloads |
 | Complex forms | Field arrays, step validation, server errors, concurrency, optional recoverable drafts with privacy policy |
-| Global search/command palette | Permission-filtered backend results, keyboard access, shortcut discoverability |
+| Global search/command palette | Shipped: palette and shortcut help. Needed: permission-filtered backend search |
 | Offline operations | Conflict/idempotency/sync contract; production app reports offline state; the separate composition queues only explicit demo writes |
 | Reporting | Server aggregates, accessible charts, localized time zones and explicit currency units |
 | Billing management | Backend-generated management links, invoices and webhook-synchronized entitlements |
-| Observability | Error sink, correlation IDs, redaction, release identity and frontend performance budgets |
+| Observability | Shipped: error and analytics hooks, Web Vitals, release tag, request-ID header, bundle budget. Needed: the actual services and redaction policy |
 
 Do not turn the local role/plan previews into product-specific policy, payroll
 formulas or subscription pricing until the application rules and backend endpoints

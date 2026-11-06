@@ -68,12 +68,16 @@ the email for the two-step code `123456`). These exist only in the demo transpor
 5. Point the account module at your identity backend (sign-in, MFA, recovery,
    sign-out, SSO; see `src/modules/account/contract.md`). Set `auth.sso` in
    `src/app/config.ts`. Replace the sample grant adapter if its policy model differs.
-6. Remove reference modules you don't need. `npm run module:remove -- reports
+6. Scaffold your first domain with `npm run module:create -- <id>` and build its
+   screens from the nearest composition.
+7. Remove reference modules you don't need. `npm run module:remove -- reports
    --dry-run` previews the change; without `--dry-run` it deletes the module, its
    registration and its `<module>*.spec.ts` browser specs, then lists remaining
    references and type errors to fix by hand (docs, demo transport endpoints).
    Keep `design-system` and `compositions` while your team still copies from them.
    [Customization](docs/customization-and-ux.md) lists the registration points.
+8. Before going live, follow [deployment](docs/deployment.md): headers, caching,
+   release ID, and your error/analytics services in `src/main.tsx`.
 
 `npm run build` validates API configuration and builds for your backend.
 `npm run build:demo` explicitly builds the standalone demo. Nothing silently falls
@@ -98,6 +102,7 @@ npx playwright install chromium  # once, before the first browser run
 npm run test:e2e              # desktop/mobile flows plus WCAG audits (axe)
 E2E_ALL_BROWSERS=1 npm run test:e2e  # also Firefox and WebKit core flows
 npm run api:types             # regenerate API types from contracts/openapi.yaml
+npm run module:create -- inventory   # scaffold a checked domain module
 npm run module:remove -- reports --dry-run  # preview removing a reference module
 npm run format               # format source and scripts
 npm run catalog              # refresh catalog after changing installed UI exports

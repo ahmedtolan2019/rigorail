@@ -12,7 +12,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.filePath
 FILE_PATH=$(echo "$FILE_PATH" | sed 's|\\|/|g')
 
 # Public template environment presets are editable; local/secret overrides are not.
-if [[ "$FILE_PATH" =~ (^|/)(package-lock\.json|node_modules|dist|\.claude/hooks)(/|$) ]] ||
+if [[ "$FILE_PATH" =~ (^|/)(package-lock\.json|node_modules|dist|\.claude/hooks|openapi\.gen\.ts)(/|$) ]] ||
    [[ "$FILE_PATH" =~ (^|/)\.env($|\.) && ! "$FILE_PATH" =~ (^|/)\.env\.(example|development|demo)$ ]]; then
   echo "Protected generated or secret file. Use the owning tool for generated files." >&2
   exit 2

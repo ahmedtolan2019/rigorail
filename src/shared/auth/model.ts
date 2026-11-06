@@ -54,7 +54,12 @@ export const sessionSchema = z.object({
     /** Optional; shown in the account menu when the backend provides it. */
     email: z.string().optional(),
   }),
-  workspace: z.object({ id: z.string(), name: z.string() }),
+  workspace: z.object({
+    id: z.string(),
+    name: z.string(),
+    /** IANA zone for business dates; the browser's zone when absent. */
+    timeZone: z.string().optional(),
+  }),
   revision: z.string(),
   grants: z.array(
     z.object({

@@ -6,14 +6,39 @@ export function configureFormatting(currency: string) {
 export function getCurrency() {
   return applicationCurrency
 }
+let applicationTimeZone: string | undefined
+/**
+ * Formats dates in the organization's IANA time zone (for example `Asia/Riyadh`)
+ * instead of the browser's, so every user sees the same business day. Invalid or
+ * missing zones fall back to the browser.
+ */
+export function configureTimeZone(zone?: string) {
+  try {
+    applicationTimeZone = zone
+      ? new Intl.DateTimeFormat('en', { timeZone: zone }).resolvedOptions()
+          .timeZone
+      : undefined
+  } catch {
+    applicationTimeZone = undefined
+  }
+}
+export const getTimeZone = () => applicationTimeZone
 export const money = (minor: number, currency = applicationCurrency) =>
   new Intl.NumberFormat(i18n.language, { style: 'currency', currency }).format(
     minor / 100,
   )
 export const date = (iso: string) =>
-  new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' }).format(
-    new Date(iso),
-  )
+  new Intl.DateTimeFormat(i18n.language, {
+    dateStyle: 'medium',
+    timeZone: applicationTimeZone,
+  }).format(new Date(iso))
+/** Date and time, for timestamps such as "generated at" or audit entries. */
+export const dateTime = (value: string | Date = new Date()) =>
+  new Intl.DateTimeFormat(i18n.language, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: applicationTimeZone,
+  }).format(typeof value === 'string' ? new Date(value) : value)
 export const normalizeNumber = (value: string) =>
   value
     .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))

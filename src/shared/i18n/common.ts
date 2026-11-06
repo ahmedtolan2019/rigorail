@@ -1,3 +1,4 @@
+import type { ArabicPlurals } from './index'
 // Strings for shared UI, transport errors, access decisions and the app shell.
 // Domain strings belong in the owning module's i18n.ts namespace.
 export const en = {
@@ -145,6 +146,7 @@ export const en = {
   uploadType: '{{name}} is not an accepted file type.',
   uploadSize: '{{name}} is larger than {{size}}.',
   uploadCount: 'You can attach up to {{count}} files.',
+  uploadCount_one: 'You can attach only {{count}} file.',
   uploadRemove: 'Remove {{name}}',
   uploadFailed: 'Upload failed. Retry or remove it.',
   uploading: 'Uploading {{name}}',
@@ -175,7 +177,8 @@ export const en = {
   cannotUndo: 'This cannot be undone.',
   moreCount: '+{{count}} more',
 }
-export const ar: Record<keyof typeof en, string> = {
+export const ar: Record<keyof typeof en, string> &
+  ArabicPlurals<keyof typeof en> = {
   updating: 'جارٍ التحديث…',
   timeoutError:
     'استغرق الطلب وقتًا أطول من المتوقع. تحقق من الاتصال وحاول مجددًا.',
@@ -312,7 +315,11 @@ export const ar: Record<keyof typeof en, string> = {
   uploadAnyType: 'أي نوع ملف',
   uploadType: 'نوع الملف {{name}} غير مقبول.',
   uploadSize: 'الملف {{name}} أكبر من {{size}}.',
-  uploadCount: 'يمكنك إرفاق {{count}} ملفات كحد أقصى.',
+  uploadCount: 'يمكنك إرفاق {{count}} ملف كحد أقصى.',
+  uploadCount_one: 'يمكنك إرفاق ملف واحد فقط.',
+  uploadCount_two: 'يمكنك إرفاق ملفين فقط.',
+  uploadCount_few: 'يمكنك إرفاق {{count}} ملفات كحد أقصى.',
+  uploadCount_many: 'يمكنك إرفاق {{count}} ملفًا كحد أقصى.',
   uploadRemove: 'إزالة {{name}}',
   uploadFailed: 'فشل الرفع. أعد المحاولة أو أزله.',
   uploading: 'جارٍ رفع {{name}}',

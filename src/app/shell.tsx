@@ -38,6 +38,7 @@ import {
   useSidebar,
 } from '@/shared/ui/sidebar'
 import { appConfig } from './config'
+import { dateTime } from '@/shared/lib/format'
 import { isApple, useShortcut } from '@/shared/shortcuts/registry'
 import { ShortcutsDialog } from '@/shared/shortcuts/shortcuts-dialog'
 import {
@@ -248,7 +249,7 @@ function Content({
   sidebar: boolean
   onSearch: () => void
 }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [online, setOnline] = useState(navigator.onLine)
   useEffect(() => {
     const update = () => setOnline(navigator.onLine)
@@ -272,7 +273,7 @@ function Content({
       >
         {/* Identifies printed pages; screens never show it. */}
         <p className="mb-4 hidden border-b pb-2 text-xs text-muted-foreground print:block">
-          {appConfig.name} · {new Date().toLocaleString(i18n.language)}
+          {appConfig.name} · {dateTime()}
         </p>
         {!online && (
           <Alert className="mb-6">

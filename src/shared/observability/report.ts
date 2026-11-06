@@ -1,10 +1,13 @@
 import { ApiError } from '../api/client'
+import { release } from './release'
 
 export interface ErrorContext {
   /** Where it happened, for example `render`, `route`, `query`, `mutation`, `window`. */
   source: string
   /** Stable, non-sensitive tags such as a query key prefix. Never user data. */
   tags?: Record<string, string>
+  /** Build identifier, added automatically. */
+  release?: string
 }
 export type ErrorSink = (error: unknown, context: ErrorContext) => void
 
@@ -40,7 +43,7 @@ export function isReportable(error: unknown) {
 export function reportError(error: unknown, context: ErrorContext) {
   if (!isReportable(error)) return
   try {
-    sink(error, context)
+    sink(error, { ...context, release })
   } catch {
     /* A broken sink must not break the application. */
   }

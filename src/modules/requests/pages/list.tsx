@@ -29,7 +29,13 @@ import { useServices } from '@/shared/api/services'
 import { AccessBoundary } from '@/shared/auth/access'
 import { useCapability } from '@/shared/capabilities/hooks'
 import { usePersistentState } from '@/shared/hooks/use-persistent-state'
-import { date, getCurrency, money, relativeDate } from '@/shared/lib/format'
+import {
+  date,
+  dateTime,
+  getCurrency,
+  money,
+  relativeDate,
+} from '@/shared/lib/format'
 import { DataTable, selectionColumn } from '@/shared/data-table/data-table'
 import { DataTableColumnHeader } from '@/shared/data-table/column-header'
 import {
@@ -328,7 +334,7 @@ function ListContent() {
     const document: ExportDocument = {
       fileName: `${t('navigation')} ${toIsoDate(new Date())}`,
       title: t('navigation'),
-      subtitle: `${t('common:generatedAt')}: ${new Date().toLocaleString(i18n.language)}`,
+      subtitle: `${t('common:generatedAt')}: ${dateTime()}`,
       details: [
         ...filters
           .filter((filter) =>

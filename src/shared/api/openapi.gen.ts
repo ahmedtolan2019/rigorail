@@ -694,6 +694,8 @@ export interface components {
       workspace: {
         id: string
         name: string
+        /** @description IANA time zone for business dates */
+        timeZone?: string
       }
       revision: string
       grants: components['schemas']['Grant'][]

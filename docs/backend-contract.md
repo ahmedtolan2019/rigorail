@@ -53,6 +53,8 @@ sample adapter. A production workspace switch must change backend session scope
 and refresh session; do not trust a browser-selected tenant ID. User/workspace/
 revision changes create a new query cache. Transient session refresh failures hide
 and disable the workspace with retry feedback while retaining local drafts.
+`workspace.timeZone` (optional IANA name, for example `Asia/Riyadh`) makes every
+date display in the organization's zone instead of each browser's.
 Explicit 401/403 failures remove the old workspace state. `GET /session` answering
 401 shows the sign-in screens; any later 401 is treated as an ended session.
 
@@ -205,9 +207,6 @@ plain streamed text is never executable code or an approved command.
 
 ## Hosting
 
-Serve `dist/` over HTTPS using a static host with SPA fallback to `index.html` for
-application routes. Serve missing asset URLs as 404, not HTML. Give hashed assets
-long immutable cache lifetimes and keep `index.html` refreshable. Configure CSP,
-API `connect-src`, security headers and error reporting for the chosen host.
-Subpath hosting needs Vite `base` and router `basepath` together; current routes
-assume the origin root. No public deployment has been performed.
+See [deployment](deployment.md) for build variables, SPA fallback, caching, a
+strict CSP and security headers, and the release checklist. No public deployment
+has been performed.

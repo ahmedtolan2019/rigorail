@@ -10,7 +10,7 @@ import {
   type FilterDefinition,
 } from '@/shared/data-table/filters'
 import { ExportMenu } from '@/shared/export/export-menu'
-import { getCurrency } from '@/shared/lib/format'
+import { dateTime, getCurrency } from '@/shared/lib/format'
 import { cn } from '@/shared/lib/utils'
 import {
   DateRangePicker,
@@ -204,10 +204,7 @@ function Dashboard() {
                               .join(', ')
                           : '',
                       ]),
-                    [
-                      t('common:generatedAt'),
-                      new Date().toLocaleString(i18n.language),
-                    ],
+                    [t('common:generatedAt'), dateTime()],
                   ],
                   currency: getCurrency(),
                   rtl: i18n.dir() === 'rtl',

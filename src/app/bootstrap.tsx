@@ -1,7 +1,7 @@
 import { ApiError } from '@/shared/api/client'
 import { Failure } from '@/shared/ui/route-feedback'
 import { Spinner } from '@/shared/ui/spinner'
-import { configureFormatting } from '@/shared/lib/format'
+import { configureFormatting, configureTimeZone } from '@/shared/lib/format'
 import { useTranslation } from 'react-i18next'
 import {
   Suspense,
@@ -53,6 +53,8 @@ function SessionScope({
     value: string,
   ) => void
 }) {
+  // Business dates follow the workspace's time zone; set before children render.
+  useState(() => configureTimeZone(session.workspace.timeZone))
   // A 401 from any request means the backend session ended: reload the session so
   // bootstrap shows sign-in and returns the user here afterwards.
   const refreshRef = useRef(refreshSession)

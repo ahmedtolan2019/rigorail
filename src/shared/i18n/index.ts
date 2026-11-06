@@ -21,13 +21,27 @@ void i18n.use(initReactI18next).init({
  * The Arabic dictionary must contain exactly the English keys, checked at compile time.
  * Prefix keys with the namespace (`requests:navigation`) when read outside the module.
  */
+/**
+ * Arabic has six plural categories. A key that has an English `_one` form may add
+ * Arabic `_zero`, `_two`, `_few` and `_many` forms; i18next falls back to the base
+ * key. Count-neutral phrasing ("المحدد: 3") is also fine and needs no extra forms.
+ */
+export type ArabicPlurals<Keys extends string> = Partial<
+  Record<
+    Keys extends `${infer Base}_one`
+      ? `${Base}_${'zero' | 'two' | 'few' | 'many'}`
+      : never,
+    string
+  >
+>
+
 export function defineTranslations<
   const Namespace extends string,
   const Keys extends string,
 >(
   namespace: Namespace,
   english: Record<Keys, string>,
-  arabic: Record<NoInfer<Keys>, string>,
+  arabic: Record<NoInfer<Keys>, string> & ArabicPlurals<NoInfer<Keys>>,
 ): Namespace {
   if (namespace === 'common')
     throw new Error('The common namespace belongs to shared code.')

@@ -8,8 +8,11 @@ import { appConfig } from './app/config'
 import { Bootstrap } from './app/bootstrap'
 import { reportError, reportGlobalErrors } from './shared/observability/report'
 import { recoverFromStaleDeploys } from './shared/observability/stale-deploy'
-// Install a production error service here with configureErrorReporting(sink).
+import { reportWebVitals } from './shared/observability/analytics'
+// Install production services here: configureErrorReporting(sink) for errors and
+// configureAnalytics(sink) for product events and Web Vitals (after consent).
 reportGlobalErrors()
+reportWebVitals()
 recoverFromStaleDeploys()
 configureLocale(appConfig.id)
 configureDocumentTitle(appConfig.name)

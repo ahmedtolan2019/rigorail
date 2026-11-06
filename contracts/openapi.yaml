@@ -192,7 +192,7 @@ components:
         workspace:
           type: object
           required: [id, name]
-          properties: { id: { type: string }, name: { type: string } }
+          properties: { id: { type: string }, name: { type: string }, timeZone: { type: string, description: IANA time zone for business dates } }
         revision: { type: string }
         grants: { type: array, items: { $ref: '#/components/schemas/Grant' } }
     Capabilities:

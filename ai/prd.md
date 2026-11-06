@@ -10,8 +10,11 @@ API/query/form/table patterns; English/Arabic and RTL; customizable theme/shell;
 replaceable resource permissions; remote business configuration; flags,
 subscription entitlements and quotas; optional reviewed AI streaming; installed
 shadcn source catalog; Requests approval workflow and Reports; account/sign-in,
-MFA, recovery and device-management frontend contracts; 20 original local compositions;
-risk-based tests. No real identity or reporting backend is connected.
+MFA, recovery and device-management frontend contracts; saved views, live updates,
+uploads, print and keyboard shortcuts; an OpenAPI contract with compile-time
+conformance; module create/remove scripts; error, analytics and Web Vitals hooks;
+42 local compositions; WCAG AA audits and risk-based tests across Chromium, with
+Firefox and WebKit core flows in CI. No real identity or reporting backend is connected.
 
 The retained reference catalog helps future coding agents: find the nearest existing example, expose missing contract decisions, and
 cover interaction/failure cases before calling a feature complete. Coverage and
@@ -37,9 +40,9 @@ integration contracts without pretending sample data is production infrastructur
 | Permission and resource model | Sample workspace/own-record grants; replace as agreed |
 | Entitlements, plans, quotas and business rules | Backend-resolved; demo mappings are illustrative |
 | Locales | English and Arabic, RTL |
-| Timezone/currency precision/legal reporting | Must be agreed for each real application |
-| Browser/accessibility targets | Chromium desktop/mobile reference checks; broader acceptance unset |
-| Hosting and observability | Static root deployment contract documented; service unset |
+| Timezone/currency precision/legal reporting | Workspace IANA zone from the session (browser fallback); precision and legal rules per application |
+| Browser/accessibility targets | Chromium desktop/mobile, Firefox and WebKit core flows; axe WCAG 2.2 AA on key screens |
+| Hosting and observability | `docs/deployment.md`; error/analytics sinks unset until configured in `main.tsx` |
 | AI data policy/provider/use cases | Optional, external backend contract; no provider configured |
 
 Record new product acceptance criteria and real API examples here or in the owning

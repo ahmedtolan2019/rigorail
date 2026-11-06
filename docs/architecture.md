@@ -190,6 +190,13 @@ motion respects reduced motion.
   search/columns and validate on apply.
 - Print: `@media print` in `index.css` hides navigation and `data-print="hide"`
   controls; use `print:` utilities for paper layouts.
+- Dates: use `date`/`dateTime`/`relativeDate` from `shared/lib/format`; they follow
+  the workspace IANA time zone (`session.workspace.timeZone`), never raw `Date`
+  string methods.
+- Translations: Arabic may add `_zero/_two/_few/_many` forms to keys with an English
+  `_one`, or use count-neutral phrasing.
+- Observability: `reportError` for failures, `track` for product events (no
+  personal data), both tagged with `release`; sinks are installed in `main.tsx`.
 - Accessibility: `tests/e2e/accessibility.spec.ts` runs axe WCAG 2.2 AA. Text on
   semantic tints must keep 4.5:1; keep icon-button labels as `sr-only sm:not-sr-only`.
 

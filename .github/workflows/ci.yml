@@ -16,6 +16,9 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      # Ties error reports and analytics to this build.
+      VITE_APP_RELEASE: ${{ github.sha }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4

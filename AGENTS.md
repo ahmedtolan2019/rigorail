@@ -28,6 +28,7 @@ npm run dev                 # localhost:5173
 npm run context -- requests # owning module contract, source map and checks
 npm run context -- compositions master-detail # one pattern source and guidance
 npm run api:types           # regenerate API types after editing contracts/openapi.yaml
+npm run module:create -- <id>  # scaffold a new domain module the template's way
 npm run module:remove -- <module> --dry-run # preview removing a module
 npm run check:fast           # lint, boundaries, catalog and types while editing
 npm run check               # full gate, demo/API builds and bundle budget
@@ -94,6 +95,7 @@ Report commands actually run and remaining gaps. Never hide failures.
 | Tool setup and compatibility limits | `docs/agent-compatibility.md` |
 | Loading, failures and recovery patterns | `docs/error-handling.md` |
 | External API, session, AI and hosting contract | `docs/backend-contract.md` |
+| Build, caching, security headers and release checklist | `docs/deployment.md` |
 | Installed component source and exports | `docs/component-catalog.md` |
 | UI patterns to copy (tokens, data tables, filters, exports, screens) | `/design-system`, `/compositions` routes and their module source |
 | Reusable artwork, ambient decoration and adding new illustrations | `/design-system?tab=illustrations`, `docs/illustrations.md` |
