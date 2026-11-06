@@ -110,9 +110,9 @@ npm run catalog              # refresh catalog after changing installed UI expor
 ```
 
 Use risk-based checks. Full E2E is for broad UI/auth/routing changes or release;
-ordinary changes need focused checks. CI runs `check:dependencies`, `check` and the
-browser suite (Chromium desktop/mobile, plus Firefox and WebKit core flows) on every
-pull request.
+ordinary changes need focused checks. CI runs `check:dependencies` and `check`, and
+the browser suite (Chromium desktop/mobile, plus Firefox and WebKit core flows) in
+four parallel shards on every pull request.
 
 ## Provenance
 
