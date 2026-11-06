@@ -5,6 +5,7 @@ import {
   redirect,
 } from '@tanstack/react-router'
 import { rootRoute } from '@/shared/routing/root'
+import { basePath } from '@/shared/routing/base'
 import { PageSkeleton } from '@/shared/ui/page'
 import { RouteError, NotFound } from '@/shared/ui/route-feedback'
 import { requestSearch } from '@/modules/requests/public'
@@ -26,6 +27,8 @@ const index = createRoute({
 })
 export const router = createRouter({
   routeTree: rootRoute.addChildren([index, ...moduleRoutes]),
+  // Subpath hosting (for example GitHub Pages): VITE_BASE_PATH sets Vite's base.
+  basepath: basePath || '/',
   // Provided per session by <RouterProvider context> in bootstrap.tsx.
   context: { queryClient: undefined!, services: undefined! },
   defaultPreload: 'intent',

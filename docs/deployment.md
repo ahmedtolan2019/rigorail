@@ -24,7 +24,11 @@ serve a runtime config file if you need one artifact for several environments.
 - `index.html`, `theme-init.js` and `favicon.svg`: `Cache-Control: no-cache`, so a
   release is picked up on the next visit. Tabs left open on an old release reload
   once when a lazy chunk is gone (`shared/observability/stale-deploy.ts`).
-- Subpath hosting needs Vite `base` and the router `basepath` together.
+- Subpath hosting: build with `VITE_BASE_PATH=/your-path/`. Vite's `base`, the
+  router `basepath` and the sign-in screens all follow it (`shared/routing/base.ts`).
+- GitHub Pages: `.github/workflows/pages.yml` publishes the demo to
+  `https://<owner>.github.io/<repository>/` on every push to `main`, with
+  `404.html` as the SPA fallback. Enable Pages with "GitHub Actions" as the source.
 
 ## Security headers
 

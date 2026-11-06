@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { CircleAlert, CircleCheck, Info } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
+import { withBase } from '@/shared/routing/base'
 import type { AuthPath, Go } from './navigation'
 
 export function AuthHeader({
@@ -79,7 +80,7 @@ export function AuthLink({
   const href = search ? `${to}?${new URLSearchParams(search)}` : to
   return (
     <a
-      href={href}
+      href={withBase(href)}
       onClick={(event) => {
         if (
           event.metaKey ||

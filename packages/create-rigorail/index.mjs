@@ -9,6 +9,7 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  realpathSync,
   rmSync,
   writeFileSync,
 } from 'node:fs'
@@ -190,10 +191,13 @@ Then open it with your coding agent and start with:
 Prompts for common tasks: README.md#prompts-for-your-agent`)
 }
 
-if (
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
-)
+// npm runs bins through a node_modules/.bin symlink, so compare real paths.
+const isEntryPoint = (scriptPath) =>
+  Boolean(scriptPath) &&
+  existsSync(scriptPath) &&
+  realpathSync(scriptPath) === realpathSync(fileURLToPath(import.meta.url))
+
+if (isEntryPoint(process.argv[1]))
   main().catch((error) => {
     console.error(`\n${error instanceof Error ? error.message : error}`)
     process.exitCode = 1
