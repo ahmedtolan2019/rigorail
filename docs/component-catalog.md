@@ -66,3 +66,30 @@ Import individual files. Use the shadcn CLI to add or update registry components
 | [toggle-group](https://ui.shadcn.com/docs/components/radix/toggle-group) | [source](../src/shared/ui/toggle-group.tsx) | ToggleGroup, ToggleGroupItem |
 | [toggle](https://ui.shadcn.com/docs/components/radix/toggle) | [source](../src/shared/ui/toggle.tsx) | Toggle, toggleVariants |
 | [tooltip](https://ui.shadcn.com/docs/components/radix/tooltip) | [source](../src/shared/ui/tooltip.tsx) | Tooltip, TooltipTrigger, TooltipContent, TooltipProvider |
+
+## Application kits
+
+Built on the components above. Use these before writing new UI; the
+`/design-system` Components tab demonstrates them and `docs/screen-recipes.md`
+shows where each fits.
+
+| Purpose | Source | Exports |
+| --- | --- | --- |
+| Page layout and skeletons | [source](../src/shared/ui/page.tsx) | PageHeader, PageSkeleton, DetailSkeleton, backLinkClass, mutedTextClass |
+| Failure, not found and route errors | [source](../src/shared/ui/route-feedback.tsx) | Failure, RouteError, NotFound |
+| State illustrations | [source](../src/shared/ui/illustration.tsx) | illustrationNames, Illustration |
+| Confirm consequential actions | [source](../src/shared/ui/confirm-action.tsx) | ConfirmAction |
+| Date range with presets | [source](../src/shared/ui/date-range-picker.tsx) | fromIsoDate, presetRanges, toIsoDate, standardPresets, DateRangePicker |
+| Permission and capability gates | [source](../src/shared/auth/access.tsx) | AccessBoundary |
+| Server data table | [source](../src/shared/data-table/data-table.tsx) | DataTable, selectionColumn |
+| Sortable, pinnable column header | [source](../src/shared/data-table/column-header.tsx) | DataTableColumnHeader |
+| Filters panel and chips | [source](../src/shared/data-table/filters.tsx) | DataTableFilters, ActiveFilters |
+| Debounced table search | [source](../src/shared/data-table/search-input.tsx) | DataTableSearch |
+| Pagination | [source](../src/shared/data-table/pagination.tsx) | DataTablePagination |
+| Column visibility | [source](../src/shared/data-table/view-options.tsx) | DataTableViewOptions |
+| Cross-page selection and bulk bar | [source](../src/shared/data-table/selection.tsx) | useServerSelection, DataTableSelectionBar |
+| Saved views | [source](../src/shared/data-table/saved-views.tsx) | SavedViews |
+| Excel and CSV export menu | [source](../src/shared/export/export-menu.tsx) | ExportMenu |
+| File uploads with progress | [source](../src/shared/uploads/file-upload.tsx) | FileUpload |
+| Keyboard shortcuts | [source](../src/shared/shortcuts/registry.ts) | useShortcutRegistry, isApple, matches, useShortcut |
+| Dates, money and numbers | [source](../src/shared/lib/format.ts) | configureFormatting, getCurrency, configureTimeZone, getTimeZone, money, date, dateTime, normalizeNumber, relativeDate, compactNumber, compactMoney |

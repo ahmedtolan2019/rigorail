@@ -65,6 +65,7 @@ import { Spinner } from '@/shared/ui/spinner'
 import { Switch } from '@/shared/ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip'
 import { ns } from '../messages'
+import { ApplicationComponents } from './app-components'
 import { Showcase } from './section'
 
 const people = [
@@ -349,6 +350,7 @@ export default function Components() {
           </span>
         </div>
       </Showcase>
+      <ApplicationComponents />
     </div>
   )
 }

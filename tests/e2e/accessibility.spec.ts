@@ -63,3 +63,27 @@ for (const { path, ready } of screens.slice(0, 4))
     await page.waitForLoadState('networkidle')
     expect(await audit(page)).toEqual([])
   })
+
+// The design system is what agents copy from first, so it meets the same bar.
+for (const theme of ['light', 'dark'] as const)
+  for (const tab of [
+    'foundations',
+    'components',
+    'patterns',
+    'illustrations',
+    'catalog',
+  ])
+    test(`no automated accessibility violations: design system ${tab} (${theme})`, async ({
+      page,
+    }) => {
+      await page.addInitScript(
+        (value) => localStorage.setItem('foundation:theme', value),
+        theme,
+      )
+      await page.goto(`/design-system?tab=${tab}`)
+      await expect(
+        page.getByRole('heading', { name: 'Design system', level: 1 }),
+      ).toBeVisible()
+      await page.waitForLoadState('networkidle')
+      expect(await audit(page)).toEqual([])
+    })
