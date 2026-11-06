@@ -258,6 +258,7 @@ export default function Compositions() {
                   })
               }}
               placeholder={t('examples')}
+              aria-label={t('examples')}
               searchPlaceholder={t('patternSearch')}
               options={compositionGroups.flatMap((group) =>
                 group.views.map((item) => ({

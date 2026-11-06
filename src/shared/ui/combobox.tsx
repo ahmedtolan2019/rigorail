@@ -31,6 +31,8 @@ type Props = {
   className?: string
   id?: string
   'aria-invalid'?: boolean
+  /** Name when no visible <label htmlFor={id}> exists. */
+  'aria-label'?: string
 } & (
   | {
       multiple?: false
@@ -80,6 +82,7 @@ function Combobox(props: Props) {
           role="combobox"
           aria-expanded={open}
           aria-invalid={props['aria-invalid']}
+          aria-label={props['aria-label']}
           disabled={props.disabled}
           data-slot="combobox-trigger"
           className={cn(

@@ -153,6 +153,48 @@ then a local section from `sections/`, and create something new only when neithe
 fits. Check `npm run context -- compositions <view>` for the source of the
 closest screen before writing.
 
+## Use the platform, don't rebuild it
+
+New domains start with `npm run module:create -- <id>`, which already wires the
+contract, permissions, strings, queries, page and a browser test. Then reach for:
+
+| Need | Use | Not |
+| --- | --- | --- |
+| Server list with filters, sorting, paging, selection | `DataTable` + `DataTableFilters`/`ActiveFilters`/`DataTablePagination` from `@/shared/data-table` (see Requests) | A hand-built `<table>` with local filter state |
+| Named filter and column presets | `SavedViews` with the list's non-default search | A custom "favorites" store |
+| File attachments | `FileUpload` + `services.upload` (`@/shared/uploads`) | `fetch` with `FormData` to an API route |
+| XLSX/CSV export | `ExportMenu` + `@/shared/export` | Building files by string concatenation |
+| Consequential action | `ConfirmAction` with details/chips; Undo toast for reversible ones | `window.confirm`, bare dialogs |
+| Keyboard shortcut | `useShortcut` (listed in `?` help) | `window.addEventListener('keydown')` |
+| Dates and money | `date`, `dateTime`, `relativeDate`, `money` from `@/shared/lib/format` (workspace time zone) | `toLocaleString`, manual formatting |
+| Live refresh | Module `refreshOn` topics and query keys starting with the module id | Polling timers |
+| Printable record | `print:` utilities, `data-print="hide"` on controls, a Print action | A separate print page |
+| Product analytics | `track('event_name', props)` without personal data | Calling an analytics SDK from a view |
+| Contract types | `contracts/openapi.yaml` + `contract.check.ts` conformance | Types copied from backend code |
+
+## Accessibility rules learned from the audits
+
+`tests/e2e/composition-accessibility.spec.ts` audits every registered screen with
+axe (WCAG 2.2 AA) in light and dark on desktop and mobile; a new screen must pass.
+The failures it caught, and the fix each time:
+
+- **Colored text on tints:** use semantic tokens (`text-success` on `bg-success/12`);
+  they are tuned for 4.5:1. Chart colors are fills, not text: put dark text on
+  chart tints. Highlights (`<mark>`) use `text-foreground`.
+- **Text on data colors:** a label over a filled bar sits on a `bg-background/90`
+  chip. Heat cells cap intensity per mode (`[--heat:65%] dark:[--heat:35%]`) so one
+  text color passes everywhere. Use `text-background` on solid semantic fills.
+- **Names:** every `Progress`, meter and icon-only button has a name. Responsive
+  labels use `sr-only sm:not-sr-only`, never `hidden sm:inline`. A `Combobox`
+  without a visible label gets `aria-label`.
+- **Name matches what is visible:** do not override a button's visible text with a
+  different `aria-label`; add `sr-only` context inside it instead.
+- **Wide content:** a horizontally scrolling region gets `tabIndex={0}`,
+  `role="region"` and an `aria-label` so keyboard users can scroll it.
+- **Tabs that filter one panel:** every trigger gets `aria-controls` of the shared
+  `role="tabpanel"` element.
+- **Decorative charts:** `aria-hidden` plus `inert`, so their SVG is not focusable.
+
 ## Quality bar: avoid generic UI
 
 Generic, decorative output is the most common failure when agents build screens.
@@ -181,8 +223,8 @@ headers, orphan borders, unbalanced columns and dead space are defects.
 
 The user removed an earlier 60-pattern expansion because its design did not meet
 the standard of the original screens. Do not restore it or add bulk replacements.
-Twelve curated additions were later made at the user's explicit request, each
-reviewed against the quality bar below. Future gallery additions need explicit
+Curated additions were later made at the user's explicit request, each reviewed
+against the quality bar below; `views.ts` is the current inventory. Future gallery additions need explicit
 user scope and the same visual review. Product work may still compose sections
 within its scope.
 

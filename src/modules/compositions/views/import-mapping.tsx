@@ -343,7 +343,13 @@ export default function ImportMapping() {
             </span>
           )}
         </div>
-        <div className="overflow-x-auto">
+        {/* Focusable so keyboard users can scroll the wide preview. */}
+        <div
+          className="overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          tabIndex={0}
+          role="region"
+          aria-label={t('import-mapping')}
+        >
           <table className="w-full min-w-[40rem] text-sm">
             <thead className="bg-muted/40 text-xs text-muted-foreground">
               <tr>

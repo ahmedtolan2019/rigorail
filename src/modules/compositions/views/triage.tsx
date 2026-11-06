@@ -264,6 +264,7 @@ export default function Triage() {
                   'h-1.5',
                   current.budgetUsed > 0.8 && '[&>*]:bg-warning',
                 )}
+                aria-label={t('budgetAfter')}
               />
             </div>
             <div className="flex flex-wrap gap-2 border-t pt-4">

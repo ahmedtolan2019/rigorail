@@ -174,9 +174,6 @@ export default function CalendarView() {
                     <button
                       type="button"
                       onClick={() => setSelected(day)}
-                      aria-label={new Intl.DateTimeFormat(i18n.language, {
-                        dateStyle: 'full',
-                      }).format(day)}
                       className={cn(
                         'flex h-14 w-full flex-col items-stretch gap-0.5 p-1 text-start transition-colors hover:bg-muted/50 focus-visible:relative focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:h-24 md:p-1.5',
                         outside && 'bg-muted/30 text-muted-foreground',
@@ -191,7 +188,13 @@ export default function CalendarView() {
                           isSelected && !isToday && 'ring-1 ring-primary',
                         )}
                       >
-                        {day.getDate()}
+                        <span aria-hidden="true">{day.getDate()}</span>
+                        {/* Full date for screen readers; event names follow. */}
+                        <span className="sr-only">
+                          {new Intl.DateTimeFormat(i18n.language, {
+                            dateStyle: 'full',
+                          }).format(day)}
+                        </span>
                       </span>
                       {/* Phones show dots; wider screens show labelled pills. */}
                       <span className="flex justify-center gap-0.5 md:hidden">

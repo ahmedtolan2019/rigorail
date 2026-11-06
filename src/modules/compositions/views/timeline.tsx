@@ -161,7 +161,8 @@ export default function Timeline() {
                         )}
                         style={{ width: `${phase.progress * 100}%` }}
                       />
-                      <span className="absolute inset-0 flex items-center px-2 text-[0.6875rem] font-medium text-foreground tabular-nums">
+                      {/* A light chip keeps the label readable over any fill. */}
+                      <span className="absolute inset-y-0 start-1 my-auto h-fit rounded-sm bg-background/90 px-1 text-[0.6875rem] leading-4 font-medium text-foreground tabular-nums">
                         {Math.round(phase.progress * 100)}%
                       </span>
                     </div>
@@ -233,7 +234,7 @@ function Today({ label }: { label?: string }) {
       style={{ insetInlineStart: percent(TODAY) }}
     >
       {label && (
-        <span className="absolute bottom-1 start-1 rounded bg-destructive px-1 text-[0.625rem] font-medium whitespace-nowrap text-white">
+        <span className="absolute bottom-1 start-1 rounded bg-destructive px-1 text-[0.625rem] font-medium whitespace-nowrap text-background">
           {label}
         </span>
       )}

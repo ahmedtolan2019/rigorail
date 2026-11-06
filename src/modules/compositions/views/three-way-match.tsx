@@ -313,7 +313,12 @@ export default function ThreeWayMatch() {
             </h3>
             <p className="text-xs text-muted-foreground">{t('twTolerance')}</p>
           </div>
-          <div className="overflow-x-auto">
+          <div
+            className="overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            tabIndex={0}
+            role="region"
+            aria-label={t('three-way-match')}
+          >
             <table className="w-full min-w-[40rem] text-sm">
               <thead className="bg-muted/40 text-xs text-muted-foreground">
                 <tr>

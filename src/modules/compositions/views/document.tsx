@@ -131,7 +131,12 @@ export default function DocumentView() {
             </dd>
           </dl>
         </section>
-        <div className="overflow-x-auto">
+        <div
+          className="overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          tabIndex={0}
+          role="region"
+          aria-label={t('document')}
+        >
           <table className="w-full min-w-[30rem] text-sm">
             <thead>
               <tr className="border-b text-xs text-muted-foreground">

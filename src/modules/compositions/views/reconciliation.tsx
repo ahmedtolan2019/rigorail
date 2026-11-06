@@ -230,6 +230,10 @@ export default function Reconciliation() {
             <Progress
               value={(reconciled / statement.length) * 100}
               className="mt-2 h-1.5"
+              aria-label={t('reconciledOf', {
+                done: reconciled,
+                total: statement.length,
+              })}
             />
           </div>
           {/* Only offered while there is something safe to accept. */}

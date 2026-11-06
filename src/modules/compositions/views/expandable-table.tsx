@@ -240,6 +240,10 @@ export default function ExpandableTable() {
                             <Progress
                               value={(received / order.lines.length) * 100}
                               className="h-1.5 max-w-40"
+                              aria-label={t('receivedOf', {
+                                done: received,
+                                total: order.lines.length,
+                              })}
                             />
                           </div>
                           <table className="w-full text-sm">

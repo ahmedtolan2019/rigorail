@@ -233,7 +233,11 @@ export default function BinMap() {
             <span className="text-muted-foreground">{t('modeFill')}</span>
             <span className="font-medium tabular-nums">{bin.fill}%</span>
           </div>
-          <Progress value={bin.fill} className="h-1.5" />
+          <Progress
+            value={bin.fill}
+            className="h-1.5"
+            aria-label={t('modeFill')}
+          />
         </div>
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <div>

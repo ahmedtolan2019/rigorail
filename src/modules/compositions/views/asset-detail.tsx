@@ -375,8 +375,9 @@ export default function AssetDetail() {
               </p>
             </CardHeader>
             <CardContent>
+              {/* Max intensity per mode keeps the cell text at 4.5:1 or better. */}
               <ul
-                className="grid grid-cols-12 gap-1"
+                className="grid grid-cols-12 gap-1 [--heat:65%] dark:[--heat:35%]"
                 style={{ direction: 'ltr' }}
               >
                 {hours.map((value, index) => (
@@ -387,12 +388,8 @@ export default function AssetDetail() {
                     className="grid h-10 place-items-center rounded-md text-[0.625rem] font-medium tabular-nums"
                     style={{
                       background: value
-                        ? `color-mix(in oklch, var(--primary) ${Math.round((value / 41) * 80) + 10}%, transparent)`
+                        ? `color-mix(in oklch, var(--primary) calc(var(--heat) * ${(value / 41).toFixed(3)} + 10%), transparent)`
                         : 'repeating-linear-gradient(135deg, transparent 0 4px, var(--border) 4px 5px)',
-                      color:
-                        value / 41 > 0.6
-                          ? 'var(--primary-foreground)'
-                          : undefined,
                     }}
                   >
                     {value}

@@ -65,6 +65,8 @@ Report commands actually run and remaining gaps. Never hide failures.
 - Keep secrets out of source, logs, and `VITE_*` variables. Vite values reach browsers.
 - Frontend route guards are UX only. The external backend enforces authorization.
 - Use accessible controls, visible focus, and loading/error/empty/success states.
+  Keep the axe audits (`tests/e2e/*accessibility.spec.ts`) passing; the authoring
+  guide lists the recurring fixes.
 - Before implementing UI workflows, consult `docs/pattern-coverage.md` and
   `docs/composition-authoring.md`. Agents may reuse, adapt, combine or create
   patterns needed by the assigned task; the catalog is not a fixed limit.

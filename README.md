@@ -41,9 +41,10 @@ the email for the two-step code `123456`). These exist only in the demo transpor
   and a formatted multi-sheet Excel export. Aggregates come from the backend.
 - **Design system** (tokens, variants, patterns, advanced 10k-row grid with grouping,
   tree data, pinning and resizing, and the component catalog) and **Compositions**
-  (20 original screen examples, searchable by name or purpose). Includes dashboard,
-  master-detail, kanban, inbox, calendar, tables, forms, record details, timeline,
-  version comparison and scenario planning. See the
+  (42 screen examples, searchable by name or purpose, each passing WCAG AA audits
+  in light and dark). Includes dashboards, master-detail, kanban, inbox, calendar,
+  global search, approval and reconciliation workflows, data tables, forms, record
+  and customer pages, audit log, report builder and scenario planning. See the
   [full composition inventory](docs/pattern-coverage.md) and
   [agent guide for combining and creating patterns](docs/composition-authoring.md).
 - Replaceable action/resource authorization, feature flags, entitlements and quotas.
