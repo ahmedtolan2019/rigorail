@@ -314,6 +314,12 @@ the two-step code `123456`. These exist only in the local demo backend.
 | Components and kits | [Component catalog](docs/component-catalog.md) |
 | Hosting and release | [Deployment](docs/deployment.md) |
 
+## Support Rigorail
+
+Rigorail is free and MIT licensed. If it saves you or your agents time, you can
+help it grow: star the repository, share what you built with it, report issues, or
+sponsor ongoing work with the **Sponsor** button at the top of the repository.
+
 ## Contributing
 
 Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the

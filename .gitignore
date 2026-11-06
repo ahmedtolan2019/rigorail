@@ -39,3 +39,6 @@ test-results/
 
 !.env.development
 !.env.demo
+
+# Private launch notes and outreach contacts (never public)
+ai/outreach/

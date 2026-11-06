@@ -72,8 +72,26 @@ export function personalizePackage(manifest, name) {
     'keywords',
   ])
     delete next[key]
+  // The initializer is removed from new projects, so drop its test from the gate.
+  if (next.scripts)
+    next.scripts = Object.fromEntries(
+      Object.entries(next.scripts).map(([key, value]) => [
+        key,
+        value.replace(/\s+packages\/create-rigorail\/\S+/g, ''),
+      ]),
+    )
   return next
 }
+
+/** Template-maintainer files that would point a new project at the Rigorail repo. */
+export const MAINTAINER_FILES = [
+  'packages/create-rigorail',
+  '.github/workflows/publish-create.yml',
+  '.github/FUNDING.yml',
+  '.github/ISSUE_TEMPLATE/config.yml',
+  'SECURITY.md',
+  'CODE_OF_CONDUCT.md',
+]
 
 async function askDirectory() {
   const prompt = createInterface({
@@ -128,11 +146,10 @@ async function main() {
     if (!local) rmSync(archive, { force: true })
   }
 
-  // The initializer itself is not part of a new project.
-  rmSync(path.join(target, 'packages', 'create-rigorail'), {
-    recursive: true,
-    force: true,
-  })
+  // Maintainer-only files (initializer, sponsor button, publish workflow...) belong
+  // to the template, not to the new project.
+  for (const file of MAINTAINER_FILES)
+    rmSync(path.join(target, file), { recursive: true, force: true })
   if (
     existsSync(path.join(target, 'packages')) &&
     !readdirSync(path.join(target, 'packages')).length
@@ -160,11 +177,12 @@ async function main() {
   if (options.install) run('npm', ['install'], target)
 
   const relative = path.relative(process.cwd(), target) || '.'
+  const cd = /\s/.test(relative) ? `"${relative}"` : relative
   console.log(`
 Created ${relative}.
 
 Next steps:
-  cd ${relative}
+  cd ${cd}
   ${options.install ? '' : 'npm install\n  '}npm run dev          # http://localhost:5173, demo data, no backend needed
 
 Then open it with your coding agent and start with:

@@ -32,7 +32,11 @@ test('the manifest drops template identity and keeps scripts and dependencies', 
       description: 'x',
       author: 'Ahmed Tolan',
       repository: {},
-      scripts: { dev: 'vite' },
+      scripts: {
+        dev: 'vite',
+        'check:tooling':
+          'node --test scripts/a.test.mjs packages/create-rigorail/index.test.mjs',
+      },
       dependencies: { react: '^19' },
     },
     'my-app',
@@ -41,6 +45,9 @@ test('the manifest drops template identity and keeps scripts and dependencies', 
   assert.equal(next.version, '0.1.0')
   assert.equal(next.private, true)
   assert.equal(next.author, undefined)
-  assert.deepEqual(next.scripts, { dev: 'vite' })
+  assert.deepEqual(next.scripts, {
+    dev: 'vite',
+    'check:tooling': 'node --test scripts/a.test.mjs',
+  })
   assert.deepEqual(next.dependencies, { react: '^19' })
 })
