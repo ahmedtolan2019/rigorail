@@ -26,7 +26,11 @@ engineers and engineered frontends, and says "localization with RTL support".
 
 ## Copy
 
-**Hero:** Vibe code your next engineered frontend.
+**Hero:** We engineered your vibe coding.
+
+**Lines to use:** Make your AI coding agents work like real frontend engineers. ·
+No more AI spaghetti slop in the long run. · Vibe code the screens. Keep the
+engineering.
 
 **Sub-line:** A React frontend template that gives developers and AI agents
 modular architecture, working enterprise screens, and automated engineering
@@ -37,10 +41,10 @@ applications also need the engineering real engineers do: boundaries, contracts,
 failure handling and verified behavior. Rigorail puts that work into the starting
 point, with patterns to follow and checks that catch specific mistakes.
 
-**GitHub description:** Rigorail is a React frontend template for vibe coding with
-engineering discipline. Give developers and AI agents modular architecture, 40+
-enterprise screen compositions, automated checks, and localization with RTL
-support. Frontend only; connect your own backend.
+**GitHub description:** We engineered your vibe coding. A React frontend template
+that makes AI coding agents work like real frontend engineers: modular
+architecture, 40+ enterprise screens, automated checks that keep AI spaghetti slop
+out, and localization with RTL support. Frontend only.
 
 **GitHub topics:** `react`, `typescript`, `vite`, `tailwindcss`, `shadcn-ui`,
 `frontend-template`, `ai-agents`, `vibe-coding`, `enterprise`, `rtl`

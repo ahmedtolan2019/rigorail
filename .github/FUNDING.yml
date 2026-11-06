@@ -1,1 +1,9 @@
+# Shows the "Sponsor" button on GitHub. Uncomment the platforms you use.
 github: [ahmedtolan2019]
+# buy_me_a_coffee: your-username
+# ko_fi: your-username
+# open_collective: your-project
+# polar: your-org
+# patreon: your-username
+# liberapay: your-username
+# custom: ['https://your-site.example/donate']

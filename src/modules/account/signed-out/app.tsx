@@ -4,6 +4,7 @@ import { Check, Languages, Moon, Sun } from 'lucide-react'
 import type { ApiClient } from '@/shared/api/client'
 import { useTheme } from '@/shared/theme/theme-context'
 import { Button } from '@/shared/ui/button'
+import { BrandMark } from '@/shared/brand/brand-mark'
 import { ns } from '../messages'
 import { authPaths, safeRedirect } from '../schema'
 import { ForgotPassword, ResetPassword } from './recovery'
@@ -132,12 +133,7 @@ export default function SignedOutApp({
 function Brand({ name }: { name: string }) {
   return (
     <span className="flex items-center gap-2.5 text-sm font-semibold">
-      <span
-        aria-hidden="true"
-        className="grid size-8 place-items-center rounded-lg bg-primary font-bold text-primary-foreground shadow-sm"
-      >
-        {name.slice(0, 1)}
-      </span>
+      <BrandMark />
       {name}
     </span>
   )

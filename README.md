@@ -2,13 +2,14 @@
 
 <img src="docs/assets/readme/illustration-hero.webp" alt="" width="560" />
 
-# Rigorail
+<h1><img src="docs/assets/readme/logo.svg" alt="" width="40" align="center" />&nbsp;Rigorail</h1>
 
 ### Vibe coding. Engineered frontends.
 
-A React frontend template that gives developers and AI coding agents the architecture,
-patterns and automated checks real engineers expect, so fast-moving work still
-ships as an engineered frontend.
+**We engineered your vibe coding.** Rigorail is a React frontend template that makes
+AI coding agents work like real frontend engineers: clear architecture, proven
+patterns and automated checks, so your app stays clean instead of turning into AI
+spaghetti slop as it grows.
 
 [![CI](https://github.com/ahmedtolan2019/rigorail/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmedtolan2019/rigorail/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0a6f69.svg)](LICENSE)
@@ -30,14 +31,20 @@ ships as an engineered frontend.
 
 ## Why Rigorail
 
-Vibe coding makes it easy to get a screen working. Complex applications need more:
-module boundaries, agreed API contracts, permission and failure states, accessible
-markup, localization and tests. That is the engineering real engineers do, and it is
-what agents skip when nothing asks for it.
+Vibe coding makes it easy to get a screen working. The trouble starts later: every
+prompt adds another one-off component, another copy of the same fetch logic, another
+skipped error state. A few hundred prompts in, the codebase is AI spaghetti slop
+that neither you nor your agent can safely change.
 
-Rigorail puts that engineering into the starting point. Agents get focused
-instructions, working references for every common screen, and checks that fail when
-they cut corners. You keep the speed of vibe coding and get an engineered frontend.
+Real frontend engineers prevent that with module boundaries, agreed API contracts,
+shared patterns, permission and failure states, accessible markup, localization and
+tests. Agents skip all of it when nothing asks for it.
+
+Rigorail puts that engineering into the starting point, so your agents work like
+real frontend engineers from the first prompt to the thousandth. They get focused
+instructions, a working reference for every common screen, and checks that fail when
+they cut corners. You keep the speed of vibe coding; the frontend stays engineered
+in the long run.
 
 - **Frontend only.** Your backend stays a separate service behind an agreed contract.
 - **Agent ready.** One `AGENTS.md` entry point for Claude Code, Codex, Gemini,

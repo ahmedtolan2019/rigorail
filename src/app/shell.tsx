@@ -38,6 +38,7 @@ import {
   useSidebar,
 } from '@/shared/ui/sidebar'
 import { appConfig } from './config'
+import { BrandMark } from '@/shared/brand/brand-mark'
 import { dateTime } from '@/shared/lib/format'
 import { isApple, useShortcut } from '@/shared/shortcuts/registry'
 import { ShortcutsDialog } from '@/shared/shortcuts/shortcuts-dialog'
@@ -150,9 +151,7 @@ function Brand({
       onClick={onNavigate}
       className="flex min-w-0 items-center gap-2.5 rounded-md outline-none"
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm">
-        {appConfig.name.slice(0, 1)}
-      </span>
+      <BrandMark />
       {!compact && (
         <span className="grid min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
           <span className="truncate font-semibold">{appConfig.name}</span>
