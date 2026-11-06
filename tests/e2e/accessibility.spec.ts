@@ -40,8 +40,8 @@ test('no automated accessibility violations: Arabic dark sign-in', async ({
   page,
 }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('foundation:language', 'ar')
-    localStorage.setItem('foundation:theme', 'dark')
+    localStorage.setItem('rigorail:language', 'ar')
+    localStorage.setItem('rigorail:theme', 'dark')
     sessionStorage.setItem('demo:signed-out', '1')
   })
   await page.goto('/sign-in')
@@ -54,7 +54,7 @@ for (const { path, ready } of screens.slice(0, 4))
     page,
   }) => {
     await page.addInitScript(() =>
-      localStorage.setItem('foundation:theme', 'dark'),
+      localStorage.setItem('rigorail:theme', 'dark'),
     )
     await page.goto(path)
     await expect(
@@ -63,3 +63,27 @@ for (const { path, ready } of screens.slice(0, 4))
     await page.waitForLoadState('networkidle')
     expect(await audit(page)).toEqual([])
   })
+
+// The design system is what agents copy from first, so it meets the same bar.
+for (const theme of ['light', 'dark'] as const)
+  for (const tab of [
+    'foundations',
+    'components',
+    'patterns',
+    'illustrations',
+    'catalog',
+  ])
+    test(`no automated accessibility violations: design system ${tab} (${theme})`, async ({
+      page,
+    }) => {
+      await page.addInitScript(
+        (value) => localStorage.setItem('rigorail:theme', value),
+        theme,
+      )
+      await page.goto(`/design-system?tab=${tab}`)
+      await expect(
+        page.getByRole('heading', { name: 'Design system', level: 1 }),
+      ).toBeVisible()
+      await page.waitForLoadState('networkidle')
+      expect(await audit(page)).toEqual([])
+    })

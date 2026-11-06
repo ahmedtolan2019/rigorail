@@ -6,7 +6,7 @@ apps developed with AI coding agents. The backend is always another project.
 ## Agreed foundation
 
 Implemented: modular ownership and checks; portable agent context; lazy routing;
-API/query/form/table patterns; English/Arabic and RTL; customizable theme/shell;
+API/query/form/table patterns; localization with RTL support; customizable theme/shell;
 replaceable resource permissions; remote business configuration; flags,
 subscription entitlements and quotas; optional reviewed AI streaming; installed
 shadcn source catalog; Requests approval workflow and Reports; account/sign-in,
@@ -35,11 +35,11 @@ integration contracts without pretending sample data is production infrastructur
 | Input | Current value |
 | --- | --- |
 | Product/users/first workflow | Application-neutral reference only |
-| Brand, default currency and UI density | Foundation / USD / comfortable; change app config |
+| Brand, default currency and UI density | Rigorail (demo name) / USD / comfortable; change app config |
 | API/schema/auth/session/CORS/CSRF | Sample contract in docs/backend-contract.md; real service unset |
 | Permission and resource model | Sample workspace/own-record grants; replace as agreed |
 | Entitlements, plans, quotas and business rules | Backend-resolved; demo mappings are illustrative |
-| Locales | English and Arabic, RTL |
+| Locales | Localization with RTL support; ships English and Arabic (RTL) |
 | Timezone/currency precision/legal reporting | Workspace IANA zone from the session (browser fallback); precision and legal rules per application |
 | Browser/accessibility targets | Chromium desktop/mobile, Firefox and WebKit core flows; axe WCAG 2.2 AA on key screens |
 | Hosting and observability | `docs/deployment.md`; error/analytics sinks unset until configured in `main.tsx` |

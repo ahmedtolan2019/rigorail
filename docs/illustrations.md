@@ -1,6 +1,6 @@
 # Illustration library
 
-Browse `/design-system?tab=illustrations` for all 24 assets, English/Arabic names,
+Browse `/design-system?tab=illustrations` for all 24 assets, localized names,
 suggested uses, search and copyable JSX. The gallery is lazy-loaded. The shared
 registry is [`Illustration`](../src/shared/ui/illustration.tsx); import it directly:
 
@@ -75,7 +75,7 @@ Do not add random rotation, recurring animation or background asset preloading.
 4. Add an explicit import and name to `src/shared/ui/illustration.tsx`. Computed
    imports and glob discovery are not allowed. `IllustrationName` and
    `illustrationNames` derive from the registry.
-5. Add the English/Arabic name and suggested use in the Design system module's
+5. Add the localized name for every locale and suggested use in the Design system module's
    `illustration-messages.ts`; its keyed record requires coverage of every name.
    Update this inventory and prompt manifest. This application-owned component is
    separate from the generated shadcn catalog. Keep the gallery asset-count test

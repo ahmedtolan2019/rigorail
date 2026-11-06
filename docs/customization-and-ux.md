@@ -82,3 +82,12 @@ produce actual local files; comparison restore creates a new in-memory revision.
 Persistent drafts, backend downloads and authoritative version restoration still
 need their own contracts. See the [pattern coverage guide](pattern-coverage.md)
 before copying an example into a domain.
+
+## Logo
+
+The default mark is drawn by `BrandMark` (`src/shared/brand`) in the brand color, so
+it follows your tokens and dark mode. To use your own logo, put an image in
+`public/` (square SVG or PNG works best) and set `brand.logoUrl` in
+`src/app/config.ts`, for example `'/logo.svg'`. Also replace `public/favicon.svg`
+and the `theme-color` values in `index.html`. Sidebar, top bar, splash and sign-in
+screens all use the same component.

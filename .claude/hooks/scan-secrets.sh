@@ -1,30 +1,28 @@
 #!/usr/bin/env bash
-# Hook: scan-secrets.sh
-# Scans file content for potential secrets/credentials before write.
-# Receives tool input as JSON on stdin.
-
+# PreToolUse guard for Edit/Write: refuses text that looks like a live credential.
+# It reports only the credential type, never the matched value, so secrets do not
+# end up in logs. Frontend code must never hold secrets (VITE_* values are public).
 set -euo pipefail
 
-INPUT=$(cat)
-CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.new_string // .tool_input.newString // ""')
+text=$(jq -r '[.tool_input.content, .tool_input.new_string, .tool_input.newString] | map(select(. != null)) | join("\n")')
+[ -z "$text" ] && exit 0
 
-if [ -z "$CONTENT" ]; then
-  exit 0
-fi
-
-# Patterns that indicate secrets
-SECRET_PATTERNS=(
-  'AKIA[0-9A-Z]{16}'           # AWS Access Key
-  'sk-[a-zA-Z0-9]{20,}'        # OpenAI/Stripe secret key
-  'ghp_[a-zA-Z0-9]{36}'        # GitHub personal access token
-  'gho_[a-zA-Z0-9]{36}'        # GitHub OAuth token
-  'xox[baprs]-[a-zA-Z0-9-]+'   # Slack token
-  'eyJ[a-zA-Z0-9_-]*\.'        # JWT token (long enough to be real)
+# Each rule: credential type <TAB> extended regex.
+detectors=$(cat <<'DETECTORS'
+AWS access key	AKIA[0-9A-Z]{16}
+provider secret key (OpenAI, Stripe, Anthropic)	(sk|rk)-(ant-|live_|proj-)?[A-Za-z0-9_-]{20,}
+GitHub token	gh[pousr]_[A-Za-z0-9]{36,}
+Slack token	xox[abprs]-[A-Za-z0-9-]{10,}
+private key block	-----BEGIN ([A-Z]+ )?PRIVATE KEY-----
+JSON Web Token	eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.
+DETECTORS
 )
 
-for pattern in "${SECRET_PATTERNS[@]}"; do
-  if echo "$CONTENT" | grep -qE "$pattern"; then
-    echo "Potential secret/credential detected. Do not commit secrets to code." >&2
+while IFS=$'\t' read -r kind pattern; do
+  [ -z "$pattern" ] && continue
+  if printf '%s' "$text" | grep -qE -- "$pattern"; then
+    printf 'Blocked: this looks like a %s. Keep credentials out of source and VITE_* values.\n' "$kind" >&2
     exit 2
   fi
-done
+done <<< "$detectors"
+exit 0

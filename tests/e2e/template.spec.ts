@@ -115,7 +115,7 @@ test('enforces persona, quotas, subscription and flags across navigation', async
   ).toHaveCount(0)
   // The brand still routes to the module; the direct route is denied.
   // In-app navigation keeps the in-memory demo backend state.
-  await navigate(page, /Foundation/)
+  await navigate(page, /Rigorail/)
   await expect(
     page.getByText(
       'Your workspace subscription does not include this feature.',
@@ -124,7 +124,7 @@ test('enforces persona, quotas, subscription and flags across navigation', async
   await navigate(page, 'Access')
   await choose(page, 'Subscription and usage', 'Pro')
   await choose(page, 'Requests feature flag', 'Disabled')
-  await navigate(page, /Foundation/)
+  await navigate(page, /Rigorail/)
   await expect(
     page.getByText('This module is currently disabled.'),
   ).toBeVisible()

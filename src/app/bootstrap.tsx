@@ -2,6 +2,7 @@ import { ApiError } from '@/shared/api/client'
 import { Failure } from '@/shared/ui/route-feedback'
 import { Spinner } from '@/shared/ui/spinner'
 import { configureFormatting, configureTimeZone } from '@/shared/lib/format'
+import { BrandMark } from '@/shared/brand/brand-mark'
 import { useTranslation } from 'react-i18next'
 import {
   Suspense,
@@ -317,9 +318,7 @@ function Splash() {
       className="grid min-h-svh place-items-center bg-background"
     >
       <div className="flex animate-in flex-col items-center gap-4 delay-150 duration-500 fill-mode-backwards fade-in-0">
-        <span className="grid size-11 place-items-center rounded-xl bg-primary text-lg font-bold text-primary-foreground shadow-sm">
-          {appConfig.name.slice(0, 1)}
-        </span>
+        <BrandMark className="size-11 rounded-xl" />
         <Spinner className="size-4 text-muted-foreground" />
       </div>
     </div>

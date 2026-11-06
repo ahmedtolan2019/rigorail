@@ -1,0 +1,42 @@
+name: Bug report
+description: Something in the template does not work as documented.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. npm run dev
+        2. Open /requests
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Template version or commit
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - App shell, navigation or routing
+        - Data table, filters or export
+        - Forms, uploads or detail pages
+        - Compositions or design system
+        - Localization, RTL or accessibility
+        - Agent guidance, scripts or checks
+        - Other
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Browser, OS, Node and npm versions, and coding agent if relevant.

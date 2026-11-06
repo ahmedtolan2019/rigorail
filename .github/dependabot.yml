@@ -10,6 +10,11 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    # Major versions change APIs (TypeScript, TanStack, Vite): plan them as
+    # deliberate upgrades per docs/dependency-maintenance.md, not weekly PRs.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:

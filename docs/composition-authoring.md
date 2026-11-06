@@ -1,5 +1,9 @@
 # Reuse, combine and create compositions
 
+For the common product screens (list, detail, form, dashboard, settings) start with
+[screen recipes](screen-recipes.md); this guide covers composing and extending
+patterns.
+
 Agents may adapt, combine and create patterns needed by the assigned feature.
 The [composition inventory](pattern-coverage.md) is a starting set, not a closed
 list or a requirement to force every feature into an existing screen. Routine
@@ -235,7 +239,7 @@ within its scope.
    Label simulated jobs/sessions/AI explicitly. Never claim a toast performs an
    operation or that local grants provide production security.
 4. Register the slug/group in `views.ts`, an explicit literal lazy loader in
-   `page.tsx`, and English/Arabic labels and hints. Keep new work lazy. Keep each screen in its own lazy file.
+   `page.tsx`, and labels and hints in every locale. Keep new work lazy. Keep each screen in its own lazy file.
 5. Update `docs/pattern-coverage.md`, the module contract and `ai/plan.md` with the
    implementation, integration questions and actual validation results. Keep any
    stated counts current. The context lookup and RTL route sweep derive from source.

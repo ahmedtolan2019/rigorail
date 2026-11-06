@@ -5,6 +5,7 @@ import './index.css'
 import { configureLocale } from './shared/i18n'
 import { configureDocumentTitle } from './shared/hooks/use-document-title'
 import { appConfig } from './app/config'
+import { configureBrand } from './shared/brand/brand'
 import { Bootstrap } from './app/bootstrap'
 import { reportError, reportGlobalErrors } from './shared/observability/report'
 import { recoverFromStaleDeploys } from './shared/observability/stale-deploy'
@@ -16,6 +17,8 @@ reportWebVitals()
 recoverFromStaleDeploys()
 configureLocale(appConfig.id)
 configureDocumentTitle(appConfig.name)
+// Before the first render, so the splash already shows a custom logo.
+configureBrand(appConfig.brand)
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppErrorBoundary

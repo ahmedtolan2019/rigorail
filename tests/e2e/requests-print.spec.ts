@@ -16,7 +16,7 @@ test('a request prints as a clean document without navigation or controls', asyn
   await expect(
     page.getByRole('link', { name: 'Back to requests' }),
   ).toBeHidden()
-  await expect(page.getByText(/^Foundation · /)).toBeVisible()
+  await expect(page.getByText(/^Rigorail · /)).toBeVisible()
   await expect(page.getByText('REQ-1240')).toBeVisible()
   if (process.env.PRINT_PREVIEW)
     await page.pdf({ path: process.env.PRINT_PREVIEW, format: 'A4' })

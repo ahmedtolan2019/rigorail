@@ -1,0 +1,30 @@
+name: Publish create-rigorail
+
+# Publishes the `npm create rigorail` initializer when a tag like
+# create-rigorail@0.2.0 is pushed. Needs an NPM_TOKEN repository secret.
+on:
+  push:
+    tags: ['create-rigorail@*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+      - run: node --test packages/create-rigorail/index.test.mjs
+      - name: Check the tag matches the package version
+        run: |
+          version=$(node -p "require('./packages/create-rigorail/package.json').version")
+          test "${GITHUB_REF_NAME}" = "create-rigorail@${version}"
+      - run: npm publish --provenance --access public
+        working-directory: packages/create-rigorail
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

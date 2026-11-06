@@ -102,6 +102,7 @@ Report commands actually run and remaining gaps. Never hide failures.
 | UI patterns to copy (tokens, data tables, filters, exports, screens) | `/design-system`, `/compositions` routes and their module source |
 | Reusable artwork, ambient decoration and adding new illustrations | `/design-system?tab=illustrations`, `docs/illustrations.md` |
 | Composition inventory, find-by-need index and backend adaptation | `docs/pattern-coverage.md` |
+| Step-by-step list, detail, form, dashboard and settings screens | `docs/screen-recipes.md` |
 | Building a screen the template's way, quality bar, combining sections | `docs/composition-authoring.md` |
 | Task prompts and acceptance checklist | `ai/example-prompts.md` |
 

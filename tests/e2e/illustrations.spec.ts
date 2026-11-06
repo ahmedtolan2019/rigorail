@@ -53,10 +53,10 @@ test('Arabic dark library works when clipboard access is unavailable', async ({
   page,
 }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('foundation:language', 'ar')
-    localStorage.setItem('foundation:theme', 'dark')
+    localStorage.setItem('rigorail:language', 'ar')
+    localStorage.setItem('rigorail:theme', 'dark')
     localStorage.setItem(
-      'foundation:preferences:v1',
+      'rigorail:preferences:v1',
       JSON.stringify({
         brand: 'indigo',
         density: 'comfortable',
@@ -110,7 +110,7 @@ for (const language of ['en', 'ar'] as const) {
     isMobile,
   }) => {
     await page.addInitScript(
-      (lang) => localStorage.setItem('foundation:language', lang),
+      (lang) => localStorage.setItem('rigorail:language', lang),
       language,
     )
     await page.emulateMedia({ reducedMotion: 'reduce' })

@@ -42,6 +42,37 @@ export const ns = defineTranslations(
     overlays: 'Overlays',
     overlaysHint:
       'Dialogs for decisions, sheets for side tasks, menus for actions.',
+    appComponents: 'Application components',
+    appComponentsHint:
+      'Built on the primitives above. Product screens use these instead of rebuilding them.',
+    confirmations: 'Confirmations',
+    confirmationsHint:
+      'Say what happens, show what is affected, repeat the action on the button.',
+    confirmApproveTitle: 'Approve 3 requests?',
+    confirmApproveHint: 'Owners are notified and the amounts are committed.',
+    confirmTotal: 'Total',
+    confirmApprove: 'Approve 3 requests',
+    confirmApproveDone: '3 requests approved.',
+    confirmDeleteTitle: 'Delete this draft?',
+    confirmDeleteHint:
+      'The draft and its attachments are removed for everyone.',
+    confirmDelete: 'Delete draft',
+    confirmDeleteDone: 'Draft deleted.',
+    dateRange: 'Date range',
+    dateRangeHint: 'Presets plus a calendar; changes apply when confirmed.',
+    dateRangePlaceholder: 'Any date',
+    uploads: 'File upload',
+    uploadsTypes: 'PDF or images',
+    statusTints: 'Status tints',
+    statusTintsHint:
+      'Semantic text on its own 10-12% tint keeps 4.5:1 contrast in light and dark.',
+    tint_success: 'Approved',
+    tint_warning: 'Pending',
+    tint_info: 'In review',
+    tint_destructive: 'Rejected',
+    shortcutKeys: 'Keyboard shortcuts',
+    shortcutKeysHint:
+      'Register keys with useShortcut; they appear in the ? help automatically.',
     dataDisplay: 'Data display',
     dataDisplayHint:
       'Badges for status, progress for quotas, avatars for people.',
@@ -158,6 +189,35 @@ export const ns = defineTranslations(
     overlays: 'الطبقات المنبثقة',
     overlaysHint:
       'مربعات الحوار للقرارات، واللوحات الجانبية للمهام الفرعية، والقوائم للإجراءات.',
+    appComponents: 'مكونات التطبيق',
+    appComponentsHint:
+      'مبنية على المكونات الأساسية أعلاه. تستخدمها الشاشات بدلًا من إعادة بنائها.',
+    confirmations: 'التأكيدات',
+    confirmationsHint: 'قل ما سيحدث، واعرض ما سيتأثر، وكرّر الإجراء على الزر.',
+    confirmApproveTitle: 'اعتماد 3 طلبات؟',
+    confirmApproveHint: 'سيتم إبلاغ أصحاب الطلبات وتثبيت المبالغ.',
+    confirmTotal: 'الإجمالي',
+    confirmApprove: 'اعتماد 3 طلبات',
+    confirmApproveDone: 'تم اعتماد 3 طلبات.',
+    confirmDeleteTitle: 'حذف هذه المسودة؟',
+    confirmDeleteHint: 'ستُحذف المسودة ومرفقاتها لدى الجميع.',
+    confirmDelete: 'حذف المسودة',
+    confirmDeleteDone: 'تم حذف المسودة.',
+    dateRange: 'نطاق التاريخ',
+    dateRangeHint: 'نطاقات جاهزة مع تقويم، وتُطبّق التغييرات عند التأكيد.',
+    dateRangePlaceholder: 'أي تاريخ',
+    uploads: 'رفع الملفات',
+    uploadsTypes: 'PDF أو صور',
+    statusTints: 'ألوان الحالات',
+    statusTintsHint:
+      'النص الدلالي على درجته الفاتحة 10-12% يحافظ على تباين 4.5:1 في الوضعين.',
+    tint_success: 'معتمد',
+    tint_warning: 'معلّق',
+    tint_info: 'قيد المراجعة',
+    tint_destructive: 'مرفوض',
+    shortcutKeys: 'اختصارات لوحة المفاتيح',
+    shortcutKeysHint:
+      'سجّل المفاتيح عبر useShortcut لتظهر تلقائيًا في مساعدة ?.',
     dataDisplay: 'عرض البيانات',
     dataDisplayHint:
       'الشارات للحالة، وأشرطة التقدم للحصص، والصور الرمزية للأشخاص.',

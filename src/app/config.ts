@@ -1,8 +1,10 @@
 // Application identity and defaults. Domain modules must not import this file.
 export const appConfig = {
-  id: 'foundation',
-  name: 'Foundation',
+  id: 'rigorail',
+  name: 'Rigorail',
   currency: 'USD',
+  /** Your logo: an image in public/ (for example '/logo.svg'), or null for the default mark. */
+  brand: { logoUrl: null as string | null },
   /** Agree both with the backend before enabling; see docs/backend-contract.md. */
   api: {
     csrf: null as { cookie: string; header: string } | null,

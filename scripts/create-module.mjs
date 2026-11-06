@@ -19,10 +19,11 @@ export function moduleFiles(id) {
   return {
     'AGENTS.md': `# ${label}
 
-Read \`contract.md\` before source. Keep ${label.toLowerCase()} business rules here;
+Read \`contract.md\` before source. Build screens with \`docs/screen-recipes.md\`
+(list, detail, form) and keep ${label.toLowerCase()} business rules here;
 other modules consume only \`public.ts\`. Before building screens, find the nearest
 pattern in \`docs/pattern-coverage.md\` and follow \`docs/composition-authoring.md\`.
-Keep English/Arabic keys in sync. Focused checks: \`npm test -- src/modules/${id}\`
+Keep translation keys in sync across locales. Focused checks: \`npm test -- src/modules/${id}\`
 and \`npx playwright test tests/e2e/${id}.spec.ts\`.
 `,
     'contract.md': `# ${label} contract
@@ -247,7 +248,8 @@ test('${id} opens from navigation', async ({ page }) => {
   console.log(
     `Created src/modules/${id}, registered it and added tests/e2e/${id}.spec.ts.\n` +
       'Next: agree the API, update schema.ts/contract.md and contracts/openapi.yaml,\n' +
-      'then build the page from the nearest composition. Run npm run check:fast.',
+      'then follow docs/screen-recipes.md for the list, detail and form screens.\n' +
+      'Run npm run check:fast while editing.',
   )
 }
 

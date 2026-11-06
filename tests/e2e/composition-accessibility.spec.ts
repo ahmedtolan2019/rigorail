@@ -10,7 +10,7 @@ for (const theme of ['light', 'dark'] as const)
       page,
     }) => {
       await page.addInitScript(
-        (value) => localStorage.setItem('foundation:theme', value),
+        (value) => localStorage.setItem('rigorail:theme', value),
         theme,
       )
       await page.goto(`/compositions?view=${view}`)

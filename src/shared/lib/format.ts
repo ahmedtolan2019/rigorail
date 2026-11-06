@@ -23,8 +23,23 @@ export function configureTimeZone(zone?: string) {
   }
 }
 export const getTimeZone = () => applicationTimeZone
+/**
+ * In right-to-left languages a symbol such as "US$" ends with a neutral "$" that the
+ * bidi algorithm moves to the wrong side ("$US"). A left-to-right mark after the
+ * currency keeps it intact; other languages are formatted unchanged.
+ */
+function formatCurrency(format: Intl.NumberFormat, value: number) {
+  if (i18n.dir(i18n.language) !== 'rtl') return format.format(value)
+  return format
+    .formatToParts(value)
+    .map((part) =>
+      part.type === 'currency' ? `${part.value}\u200E` : part.value,
+    )
+    .join('')
+}
 export const money = (minor: number, currency = applicationCurrency) =>
-  new Intl.NumberFormat(i18n.language, { style: 'currency', currency }).format(
+  formatCurrency(
+    new Intl.NumberFormat(i18n.language, { style: 'currency', currency }),
     minor / 100,
   )
 export const date = (iso: string) =>
@@ -65,9 +80,12 @@ export const relativeDate = (iso: string, now = Date.now()) => {
 export const compactNumber = (value: number) =>
   new Intl.NumberFormat(i18n.language, { notation: 'compact' }).format(value)
 export const compactMoney = (minor: number, currency = applicationCurrency) =>
-  new Intl.NumberFormat(i18n.language, {
-    style: 'currency',
-    currency,
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(minor / 100)
+  formatCurrency(
+    new Intl.NumberFormat(i18n.language, {
+      style: 'currency',
+      currency,
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }),
+    minor / 100,
+  )

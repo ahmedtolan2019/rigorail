@@ -8,7 +8,7 @@ The source map (one entry per route) and adaptation checklist live in `docs/patt
 Build new screens with the anatomy in `docs/composition-authoring.md` ("Build it the
 same way") and meet its quality bar. Record pages reuse `sections/record.tsx`.
 Register a new route in `views.ts` and the explicit lazy map in `page.tsx`, provide
-English/Arabic copy, update the inventory and test its actual interaction. Keep local example utilities and fixtures inside Compositions; do not promote
+copy in every locale, update the inventory and test its actual interaction. Keep local example utilities and fixtures inside Compositions; do not promote
 fixtures into a shared business store. Label simulations and produce real local artifacts when an
 action promises a download.
 

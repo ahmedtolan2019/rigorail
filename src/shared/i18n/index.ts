@@ -2,7 +2,7 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { en, ar } from './common'
 
-let storageKey = 'foundation:language'
+let storageKey = 'rigorail:language'
 void i18n.use(initReactI18next).init({
   resources: { en: { common: en }, ar: { common: ar } },
   lng: 'en',
