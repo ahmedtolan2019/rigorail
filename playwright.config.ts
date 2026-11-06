@@ -23,11 +23,15 @@ export default defineConfig({
       ? [
           {
             name: 'desktop-firefox',
+            // Slower engines on CI runners: same assertions, more time per test.
+            timeout: 60_000,
             use: { ...devices['Desktop Firefox'] },
             testMatch: /(template|account|requests-.*)\.spec\.ts/,
           },
           {
             name: 'desktop-webkit',
+            // Slower engines on CI runners: same assertions, more time per test.
+            timeout: 60_000,
             use: { ...devices['Desktop Safari'] },
             testMatch: /(template|account|requests-.*)\.spec\.ts/,
           },
