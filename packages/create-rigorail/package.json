@@ -1,6 +1,6 @@
 {
   "name": "create-rigorail",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Create a Rigorail project: vibe coding with engineered React frontends for developers and AI coding agents.",
   "type": "module",
   "bin": {
