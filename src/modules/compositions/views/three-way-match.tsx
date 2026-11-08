@@ -314,7 +314,7 @@ export default function ThreeWayMatch() {
             <p className="text-xs text-muted-foreground">{t('twTolerance')}</p>
           </div>
           <div
-            className="overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            className="relative overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             tabIndex={0}
             role="region"
             aria-label={t('three-way-match')}

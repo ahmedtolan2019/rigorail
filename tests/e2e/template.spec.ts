@@ -312,6 +312,12 @@ test('table filters, sorting, page size and cross-page bulk approval', async ({
   await page.getByRole('option', { name: '20' }).click()
   await expect(rows).toHaveCount(20)
   await page.getByRole('tab', { name: /Pending/ }).click()
+  await expect(page).toHaveURL(/status=/)
+  // Select only once the filtered page has loaded; a refetch clears the selection.
+  await expect(page.locator('[data-slot="data-table"]')).toHaveAttribute(
+    'aria-busy',
+    'false',
+  )
   await expect(rows.first()).toContainText('Pending')
   await expect(
     page.getByRole('checkbox', { name: 'Select row' }).first(),
@@ -377,7 +383,7 @@ test('design system grid and command palette', async ({ page }) => {
     await page.getByRole('button', { name: 'Search or jump to…' }).click()
   else await page.keyboard.press('ControlOrMeta+k')
   await page.getByPlaceholder('Type a page or action…').fill('Reports')
-  await page.getByRole('option', { name: 'Reports' }).click()
+  await page.getByRole('option', { name: 'Reports', exact: true }).click()
   await expect(page).toHaveURL(/\/reports/)
   expect(errors).toEqual([])
 })

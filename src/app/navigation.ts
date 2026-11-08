@@ -1,14 +1,19 @@
 import { useCapability } from '@/shared/capabilities/hooks'
-import type { NavigationEntry } from '@/shared/routing/module'
+import type { NavigationEntry, NavigationSection } from '@/shared/routing/module'
 import { modules } from './modules'
 
-export const navigation = modules.flatMap((module) =>
-  module.navigation ? [module.navigation] : [],
+// A module contributes one entry, or several when it owns sub-modules.
+export const navigation: NavigationEntry[] = modules.flatMap((module) =>
+  module.navigation === undefined
+    ? []
+    : Array.isArray(module.navigation)
+      ? [...module.navigation]
+      : [module.navigation as NavigationEntry],
 )
 export const navigationSections = [
   { id: 'main', labelKey: 'navMain' },
   { id: 'system', labelKey: 'navSystem' },
-] as const
+] as const satisfies readonly { id: NavigationSection; labelKey: string }[]
 
 export function isActive(entry: NavigationEntry, pathname: string) {
   const to = entry.link.to ?? ''

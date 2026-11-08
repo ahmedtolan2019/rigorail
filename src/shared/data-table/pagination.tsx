@@ -5,6 +5,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
 import {
   Select,
@@ -14,7 +15,10 @@ import {
   SelectValue,
 } from '@/shared/ui/select'
 
-/** Server-pagination footer: range summary, rows-per-page and page navigation. */
+/**
+ * Server-pagination footer: range summary, rows-per-page and page navigation. It
+ * carries its own top margin so it never touches the table above it.
+ */
 export function DataTablePagination({
   page,
   pageSize,
@@ -22,6 +26,7 @@ export function DataTablePagination({
   pageSizes = [10, 20, 50],
   disabled = false,
   summary,
+  className,
   onPageChange,
   onPageSizeChange,
 }: {
@@ -32,6 +37,7 @@ export function DataTablePagination({
   disabled?: boolean
   /** Optional text shown before the range, such as a selection count. */
   summary?: string
+  className?: string
   onPageChange: (page: number) => void
   onPageSizeChange?: (size: number) => void
 }) {
@@ -57,7 +63,12 @@ export function DataTablePagination({
     </Button>
   )
   return (
-    <div className="flex flex-col-reverse gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+    <div
+      className={cn(
+        'mt-4 flex flex-col-reverse gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between',
+        className,
+      )}
+    >
       <p className="tabular-nums">
         {summary ? `${summary} · ` : ''}
         {t('rangeOf', { from, to, total })}

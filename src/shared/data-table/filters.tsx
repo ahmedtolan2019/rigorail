@@ -76,8 +76,7 @@ export function DataTableFilters({
   const trigger = (
     <Button
       variant="outline"
-      size="sm"
-      className="h-9 gap-1.5"
+      className="gap-1.5 px-3"
       onClick={mobile ? () => setOpen(true) : undefined}
       aria-label={active ? `${t('filters')} (${active})` : t('filters')}
     >

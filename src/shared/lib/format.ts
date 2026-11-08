@@ -77,6 +77,12 @@ export const relativeDate = (iso: string, now = Date.now()) => {
     unit,
   )
 }
+/**
+ * A quantity with its unit ("151 m3"), isolated so right-to-left text keeps the
+ * number before the unit instead of reversing them ("m3 151").
+ */
+export const quantity = (value: number, unit: string | null | undefined) =>
+  `\u2066${new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 3 }).format(value)}${unit ? ` ${unit}` : ''}\u2069`
 export const compactNumber = (value: number) =>
   new Intl.NumberFormat(i18n.language, { notation: 'compact' }).format(value)
 export const compactMoney = (minor: number, currency = applicationCurrency) =>

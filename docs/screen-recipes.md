@@ -124,8 +124,9 @@ Copy from the [Request form](../src/modules/requests/pages/form.tsx).
    record. Amounts are decimal strings in the form and minor units on records;
    normalize Arabic digits with `normalizeNumber`.
 3. **Fields**: `Field`, `FieldLabel`, `FieldError`, `FieldDescription`; `Select`
-   for short fixed lists and `Combobox` when users search, both through
-   `Controller`. Errors are linked with `aria-describedby` and focused on submit.
+   for short fixed lists, `Combobox` for small in-memory lists and
+   `RemoteCombobox` (or the owning module's picker) with server search for API
+   collections that grow; `DatePicker` for dates. All go through `Controller`. Errors are linked with `aria-describedby` and focused on submit.
 4. **Concurrency**: keep the record `version` the user started from and send it
    with the update; a 409 keeps the draft and explains the conflict.
 5. **Saving**: `saveRequest`-style write from `queries.ts`; map server field errors

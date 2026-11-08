@@ -22,7 +22,7 @@ export function DataTableViewOptions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 gap-1.5">
+        <Button variant="outline" className="gap-1.5 px-3">
           <Settings2 aria-hidden="true" />
           <span className="sr-only sm:not-sr-only">{t('view')}</span>
         </Button>

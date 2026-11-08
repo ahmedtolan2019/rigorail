@@ -7,6 +7,10 @@
 export interface BrandOptions {
   /** Your logo image. Shown as-is on the brand tile; square images work best. */
   logoUrl?: string | null
+  /** Product or organization name shown on printed documents. */
+  name?: string
+  /** Letterhead for printed documents: legal name and contact lines. */
+  letterhead?: { organization: string; lines: string[] } | null
 }
 let options: BrandOptions = {}
 export function configureBrand(next: BrandOptions) {

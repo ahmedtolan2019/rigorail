@@ -86,7 +86,7 @@ function Combobox(props: Props) {
           disabled={props.disabled}
           data-slot="combobox-trigger"
           className={cn(
-            'h-auto min-h-9 w-full justify-between gap-2 px-3 py-1.5 font-normal shadow-xs aria-invalid:border-destructive',
+            'h-auto min-h-9 w-full justify-between gap-2 bg-transparent px-3 py-1.5 font-normal shadow-xs hover:bg-muted/40 aria-invalid:border-destructive dark:bg-input/30',
             props.className,
           )}
         >
@@ -119,12 +119,12 @@ function Combobox(props: Props) {
                 </Badge>
               ))
             ) : (
-              <span className="flex min-w-0 items-center gap-2 truncate">
+              <span className="flex min-w-0 items-center gap-2">
                 {chosen[0]!.icon &&
                   React.createElement(chosen[0]!.icon, {
-                    className: 'size-4 text-muted-foreground',
+                    className: 'size-4 shrink-0 text-muted-foreground',
                   })}
-                {chosen[0]!.label}
+                <span className="truncate" title={chosen[0]!.label}>{chosen[0]!.label}</span>
               </span>
             )}
           </span>

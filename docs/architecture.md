@@ -88,8 +88,15 @@ local RTL/locale/theme adaptations, plus application primitives: `page.tsx` (pag
 header, skeletons), `combobox.tsx`, `date-range-picker.tsx` and `illustration.tsx`.
 Import individual files, never a catalog barrel. Fast Refresh export checking is
 disabled only for `shared/ui` and `shared/data-table` because they export helpers.
-Use Select for short fixed lists and Combobox when users need to search; never native
-selects in product screens. `/design-system` documents tokens, variants and patterns
+Choose pickers by where the options come from and how many there can be:
+`Select` for short fixed lists (statuses, types), `Combobox` for small lists held
+in memory, and `RemoteCombobox` with server search (`q`, `limit`) for any
+collection that comes from the API and grows with the business (projects,
+suppliers, employees, accounts, items). Never load a whole collection to fill a
+picker; the owning module exports a domain picker (for example `ProjectPicker`).
+Dates use `DatePicker` and ranges `DateRangePicker`; never native selects or
+`type="date"` inputs in product screens. Rows of chips, filters or tabs use
+`ScrollFade` instead of wrapping. Toolbar controls share the default 36px height. `/design-system` documents tokens, variants and patterns
 and `/compositions` shows complete screens. Start with those references; adapt,
 combine or create patterns when the feature needs different behavior.
 Compositions contains the 20 original local screens, each loaded individually

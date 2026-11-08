@@ -8,9 +8,15 @@ test('every enabled module is fully registered', () => {
   for (const module of modules) {
     for (const language of ['en', 'ar'])
       expect(i18n.hasResourceBundle(language, module.id), module.id).toBe(true)
-    if (!module.navigation) continue
-    expect(paths, module.id).toContain(module.navigation.link.to)
-    expect(i18n.exists(module.navigation.labelKey), module.id).toBe(true)
+    const entries = module.navigation
+      ? Array.isArray(module.navigation)
+        ? module.navigation
+        : [module.navigation]
+      : []
+    for (const entry of entries) {
+      expect(paths, module.id).toContain(entry.link.to)
+      expect(i18n.exists(entry.labelKey), module.id).toBe(true)
+    }
   }
 })
 

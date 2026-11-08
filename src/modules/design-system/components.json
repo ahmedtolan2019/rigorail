@@ -248,6 +248,7 @@
     "path": "src/shared/ui/dialog.tsx",
     "exports": [
       "Dialog",
+      "DialogBody",
       "DialogClose",
       "DialogContent",
       "DialogDescription",

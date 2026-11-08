@@ -112,7 +112,7 @@ export default function Timeline() {
         </span>
       </div>
       {/* Bars use inline-start offsets so the chart mirrors in right-to-left layouts. */}
-      <div className="overflow-x-auto">
+      <div className="relative overflow-x-auto">
         <div className="grid min-w-[44rem] grid-cols-[11rem_minmax(0,1fr)]">
           <div className="sticky start-0 z-20 border-e border-b bg-card px-4 py-2 text-xs font-medium text-muted-foreground">
             {t('phase')}

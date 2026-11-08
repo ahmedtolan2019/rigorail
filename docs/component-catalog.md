@@ -25,7 +25,7 @@ Import individual files. Use the shadcn CLI to add or update registry components
 | [combobox](https://ui.shadcn.com/docs/components/radix/combobox) | [source](../src/shared/ui/combobox.tsx) | Combobox |
 | [command](https://ui.shadcn.com/docs/components/radix/command) | [source](../src/shared/ui/command.tsx) | Command, CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, CommandSeparator |
 | [context-menu](https://ui.shadcn.com/docs/components/radix/context-menu) | [source](../src/shared/ui/context-menu.tsx) | ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuCheckboxItem, ContextMenuRadioItem, ContextMenuLabel, ContextMenuSeparator, ContextMenuShortcut, ContextMenuGroup, ContextMenuPortal, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger, ContextMenuRadioGroup |
-| [dialog](https://ui.shadcn.com/docs/components/radix/dialog) | [source](../src/shared/ui/dialog.tsx) | Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger |
+| [dialog](https://ui.shadcn.com/docs/components/radix/dialog) | [source](../src/shared/ui/dialog.tsx) | Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger |
 | [direction](https://ui.shadcn.com/docs/components/radix/direction) | [source](../src/shared/ui/direction.tsx) | DirectionProvider, useDirection |
 | [drawer](https://ui.shadcn.com/docs/components/radix/drawer) | [source](../src/shared/ui/drawer.tsx) | Drawer, DrawerPortal, DrawerOverlay, DrawerTrigger, DrawerClose, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription |
 | [dropdown-menu](https://ui.shadcn.com/docs/components/radix/dropdown-menu) | [source](../src/shared/ui/dropdown-menu.tsx) | DropdownMenu, DropdownMenuPortal, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent |
@@ -80,6 +80,10 @@ shows where each fits.
 | State illustrations | [source](../src/shared/ui/illustration.tsx) | illustrationNames, Illustration |
 | Confirm consequential actions | [source](../src/shared/ui/confirm-action.tsx) | ConfirmAction |
 | Date range with presets | [source](../src/shared/ui/date-range-picker.tsx) | fromIsoDate, presetRanges, toIsoDate, standardPresets, DateRangePicker |
+| Single date field | [source](../src/shared/ui/date-picker.tsx) | DatePicker |
+| Picker with server search | [source](../src/shared/ui/remote-combobox.tsx) | RemoteCombobox |
+| One-line row with edge fades | [source](../src/shared/ui/scroll-fade.tsx) | ScrollFade |
+| Spreadsheet-style line entry | [source](../src/shared/ui/grid-editor.tsx) | GridEditor |
 | Permission and capability gates | [source](../src/shared/auth/access.tsx) | AccessBoundary |
 | Server data table | [source](../src/shared/data-table/data-table.tsx) | DataTable, selectionColumn |
 | Sortable, pinnable column header | [source](../src/shared/data-table/column-header.tsx) | DataTableColumnHeader |
@@ -89,7 +93,12 @@ shows where each fits.
 | Column visibility | [source](../src/shared/data-table/view-options.tsx) | DataTableViewOptions |
 | Cross-page selection and bulk bar | [source](../src/shared/data-table/selection.tsx) | useServerSelection, DataTableSelectionBar |
 | Saved views | [source](../src/shared/data-table/saved-views.tsx) | SavedViews |
-| Excel and CSV export menu | [source](../src/shared/export/export-menu.tsx) | ExportMenu |
+| Excel, CSV and PDF export menu | [source](../src/shared/export/export-menu.tsx) | ExportMenu |
+| Report export and print actions | [source](../src/shared/print/report-actions.tsx) | ReportActions |
+| Print preview | [source](../src/shared/print/print-preview.tsx) | PrintPreview |
+| Printable document blocks | [source](../src/shared/print/print-document.tsx) | PrintDocument, PrintSection, PrintFields, PrintSignatures, PrintTable |
+| Financial statement table | [source](../src/shared/finance/statement.tsx) | FinancialStatement, CompositionBar |
+| Statement rows and accounting figures | [source](../src/shared/finance/model.ts) | accounting, statementSheet |
 | File uploads with progress | [source](../src/shared/uploads/file-upload.tsx) | FileUpload |
 | Keyboard shortcuts | [source](../src/shared/shortcuts/registry.ts) | useShortcutRegistry, isApple, matches, useShortcut |
-| Dates, money and numbers | [source](../src/shared/lib/format.ts) | configureFormatting, getCurrency, configureTimeZone, getTimeZone, money, date, dateTime, normalizeNumber, relativeDate, compactNumber, compactMoney |
+| Dates, money and numbers | [source](../src/shared/lib/format.ts) | configureFormatting, getCurrency, configureTimeZone, getTimeZone, money, date, dateTime, normalizeNumber, relativeDate, quantity, compactNumber, compactMoney |

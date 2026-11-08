@@ -565,7 +565,8 @@ export default function ReportBuilder() {
                   )}
                 </ChartContainer>
               )}
-              <div className="overflow-x-auto rounded-lg border">
+              {/* Focusable so keyboard users can scroll it on narrow screens. */}
+              <div className="relative overflow-x-auto rounded-lg border" role="region" tabIndex={0} aria-label={t('rbPreview')}>
                 <table className="w-full text-sm">
                   <thead className="bg-muted/40 text-xs text-muted-foreground">
                     <tr>
