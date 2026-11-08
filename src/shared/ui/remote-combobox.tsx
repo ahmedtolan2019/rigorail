@@ -107,10 +107,18 @@ export function RemoteCombobox({
   const choose = (next: ComboboxOption | null) => {
     onChange(next?.value ?? null, next)
     setOpen(false)
-    setText('')
+  }
+  // The search clears when the list opens, not when it closes, so the closing
+  // list keeps the matches it showed instead of flashing the full list.
+  const toggle = (next: boolean) => {
+    if (next) {
+      setText('')
+      setQuery('')
+    }
+    setOpen(next)
   }
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={toggle}>
       <PopoverTrigger asChild>
         <Button
           id={id}
@@ -195,7 +203,6 @@ export function RemoteCombobox({
                       onSelect={() => {
                         const typed = text.trim()
                         setOpen(false)
-                        setText('')
                         onCreate(typed)
                       }}
                     >
