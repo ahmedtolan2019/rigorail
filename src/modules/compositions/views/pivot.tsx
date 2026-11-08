@@ -155,7 +155,7 @@ export default function Pivot() {
         </ToggleGroup>
       </div>
       <Card className="min-w-0 gap-0 overflow-hidden py-0">
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full min-w-[36rem] text-sm">
             <caption className="sr-only">{t('pivotCaption')}</caption>
             <thead>

@@ -107,8 +107,7 @@ export function SavedViews({
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 sm:max-w-56"
+            className="gap-1.5 px-3 sm:max-w-56"
             aria-label={`${t('savedViews')}: ${label}`}
           >
             <Bookmark aria-hidden="true" />

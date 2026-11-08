@@ -223,6 +223,67 @@ Every gallery entry and every adapted screen must meet these rules.
 Review screenshots before calling a screen done: truncated key data, wrapped
 headers, orphan borders, unbalanced columns and dead space are defects.
 
+### Rules from product reviews
+
+Learned from owner reviews of products built on this template. Treat each as a
+requirement, not a suggestion.
+
+- **Link every entity.** Every name, reference, person, account or record shown links
+  to its page. If something has no page yet, that is the next gap to close.
+- **Detail pages at composition level.** Sticky `RecordHeader`, lifecycle stepper,
+  metrics with context, tabs in the URL, related records and history (see
+  `record-tabs`, `customer-360`, `profile`). A field grid alone is not a detail page.
+- **Dates and pickers.** `DatePicker` for one date, `DateRangePicker` for a range;
+  `RemoteCombobox` with server search for API collections, with `onCreate` when users
+  should add a missing record on the fly. Never `type="date"`, never a whole-list
+  Select for growing data.
+- **Entering many lines.** `GridEditor`: one row per line, headers once, Enter moves
+  down and adds a line, paste from Excel, per-cell errors, row and footer totals.
+  Never one card of labelled fields per line.
+- **Dialogs.** `DialogContent` with `size` and `sectioned` plus `DialogBody` for
+  anything longer than a few fields: an icon and context in the header, a scrolling
+  body, totals and the primary action in the footer, inline validation.
+- **Rows never wrap.** Table cells stay on one line; chip, filter and tab rows use
+  `ScrollFade`; toolbar controls share the default height (guarded by
+  `tests/e2e/toolbar-consistency.spec.ts`).
+- **Empty states use the illustration set** with a title, a hint and the next action.
+- **Print and export are real.** Reports use `ReportActions` (Excel, CSV, PDF and a
+  print preview from the same sheets). Records print through `PrintPreview` and
+  `PrintDocument` (letterhead, title, fields, tables with repeated headers, totals,
+  signatures, page numbers). Never `window.print()` of the screen.
+- **Financial statements look like statements.** `FinancialStatement` with sections,
+  ruled subtotals, a double-ruled total, accounting figures (negatives in
+  parentheses, dash for zero, red only for losses), a share column and a visual
+  summary; trees use the data table's tree support, not hand-made rows.
+- **No flicker.** Route loaders fetch what the first paint needs; a sticky header
+  must never change the page height in a way that loops (see `RecordHeader`).
+- **Brands are whole palettes.** A brand defines surfaces, text, borders, sidebar and
+  charts for light and dark, not only `--primary`.
+- **Phones never scroll sideways.** Wide content scrolls inside its own frame. Give
+  table scroll frames `relative` (an `sr-only` label in a far cell otherwise escapes
+  the clip and widens the page), and give grid children that hold nowrap text
+  `min-w-0` (as `RecordHeader` does). Check `innerWidth` against the configured
+  viewport: an overflowing page widens the layout viewport, so `scrollWidth` alone
+  cannot see it. A page grid that holds a wide table needs `grid-cols-[minmax(0,1fr)]`,
+  or the table's minimum width becomes the page's. Header action rows wrap (`flex-wrap`)
+  and titles keep a minimum width, so four actions never squeeze the title to one
+  letter per line. A card that is itself a `grid` (for example a link card in a card
+  grid) needs `grid-cols-[minmax(0,1fr)]` too: its implicit column is as wide as its
+  longest unbroken line.
+- **Class names are literals.** Tailwind only generates classes it finds written out
+  in source, so keep state variants in a map of complete strings
+  (`{ present: 'data-[state=on]:bg-success/15', ... }`), never built with template
+  strings.
+- **Wizards never swap a button in place.** Use one submit button that decides the
+  step in `onSubmit` (see `wizard`), or give "Continue" and the final submit distinct
+  `key`s. A reused element can turn into `type="submit"` before the browser handles
+  the click, so the last Continue submits and skips the review step.
+- **After a successful save, navigate with `ignoreBlocker: true`.** The unsaved-changes
+  guard reads state from the last render and would ask to discard what was just saved.
+- **Form pickers look like inputs.** `Combobox`, `RemoteCombobox` and `DatePicker`
+  triggers are transparent like `Input` and `Select`, so an enabled picker never
+  reads as disabled; a long chosen value truncates with a tooltip.
+
 ## Add or evolve the gallery
 
 The user removed an earlier 60-pattern expansion because its design did not meet

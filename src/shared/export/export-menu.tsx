@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Download, FileSpreadsheet, FileText } from 'lucide-react'
+import { Download, FileSpreadsheet, FileText, FileType } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import {
   DropdownMenu,
@@ -13,14 +13,19 @@ import { Spinner } from '@/shared/ui/spinner'
 
 export type ExportKind = 'xlsx' | 'csv'
 
-/** Export button with format choice and progress/success/failure toasts. */
+/**
+ * Export button with format choice and progress/success/failure toasts. Pass
+ * `onPdf` to offer a PDF, produced from the print preview (see `ReportActions`).
+ */
 export function ExportMenu({
   onExport,
+  onPdf,
   disabled = false,
   formats = ['xlsx', 'csv'],
   size = 'default',
 }: {
   onExport: (kind: ExportKind) => Promise<void>
+  onPdf?: () => void
   disabled?: boolean
   formats?: ExportKind[]
   size?: 'sm' | 'default'
@@ -64,6 +69,12 @@ export function ExportMenu({
           <DropdownMenuItem onClick={() => run('csv')}>
             <FileText />
             {t('exportCsv')}
+          </DropdownMenuItem>
+        )}
+        {onPdf && (
+          <DropdownMenuItem onClick={onPdf}>
+            <FileType />
+            {t('exportPdf')}
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

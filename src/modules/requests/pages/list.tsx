@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, getRouteApi } from '@tanstack/react-router'
+import { Link, getRouteApi, useRouterState } from '@tanstack/react-router'
 import {
   keepPreviousData,
   useMutation,
@@ -156,6 +156,10 @@ function ListContent() {
     ...listOptions(services.api, scope, search),
     placeholderData: keepPreviousData,
   })
+  // A filter change updates the URL at once but keeps the previous rows until the
+  // route loader settles; treat that window as loading so nothing acts on stale rows.
+  const navigating = useRouterState({ select: (state) => state.status === 'pending' })
+  const stale = query.isPlaceholderData || navigating
   const items = useMemo(() => query.data?.items ?? [], [query.data])
   // References of rows seen on any page, so confirmations can name selected records.
   const [references] = useState(() => new Map<string, string>())
@@ -495,7 +499,7 @@ function ListContent() {
     manualSorting: true,
     rowCount: total,
     // Rows from the previous query stay visible while fetching; never select those.
-    enableRowSelection: !query.isPlaceholderData,
+    enableRowSelection: !stale,
     state: {
       sorting,
       columnVisibility,
@@ -644,7 +648,6 @@ function ListContent() {
         <div className="ms-auto flex items-center gap-2">
           <DataTableViewOptions table={table} />
           <ExportMenu
-            size="sm"
             disabled={!total}
             onExport={(kind) => exportRequests(kind)}
           />
@@ -685,7 +688,7 @@ function ListContent() {
           <DataTable
             table={table}
             loading={query.isPending}
-            fetching={query.isFetching}
+            fetching={query.isFetching || navigating}
             skeletonRows={Math.min(search.size, 12)}
             caption={t('navigation')}
             fitViewport
@@ -723,22 +726,20 @@ function ListContent() {
           />
         )}
       </div>
-      <div className="mt-4">
-        <DataTablePagination
-          page={search.page}
-          pageSize={search.size}
-          total={total}
-          pageSizes={PAGE_SIZES}
-          disabled={query.isFetching}
-          onPageChange={(page) =>
-            void navigate({
-              search: (current) => ({ ...current, page }),
-              resetScroll: false,
-            })
-          }
-          onPageSizeChange={(size) => update({ size })}
-        />
-      </div>
+      <DataTablePagination
+        page={search.page}
+        pageSize={search.size}
+        total={total}
+        pageSizes={PAGE_SIZES}
+        disabled={query.isFetching}
+        onPageChange={(page) =>
+          void navigate({
+            search: (current) => ({ ...current, page }),
+            resetScroll: false,
+          })
+        }
+        onPageSizeChange={(size) => update({ size })}
+      />
       {services.mode === 'demo' && (
         <p className="mt-6 text-xs text-muted-foreground">{t('demoNote')}</p>
       )}

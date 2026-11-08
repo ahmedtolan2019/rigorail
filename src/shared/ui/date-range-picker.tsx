@@ -93,9 +93,9 @@ export function DateRangePicker({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
           className={cn(
-            'h-9 justify-start gap-2 font-normal',
+            // Default control height (h-9), the same as inputs, selects and toolbar buttons.
+            'justify-start gap-2 px-3 font-normal',
             !value.from && !preset && 'text-muted-foreground',
             className,
           )}

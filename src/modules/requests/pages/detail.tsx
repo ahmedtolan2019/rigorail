@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, getRouteApi } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -27,6 +28,13 @@ import {
 import { DetailSkeleton, backLinkClass } from '@/shared/ui/page'
 import { Failure } from '@/shared/ui/route-feedback'
 import { Spinner } from '@/shared/ui/spinner'
+import {
+  PrintDocument,
+  PrintFields,
+  PrintSection,
+  PrintSignatures,
+} from '@/shared/print/print-document'
+import { PrintPreview } from '@/shared/print/print-preview'
 import { ConfirmAction } from '@/shared/ui/confirm-action'
 import { FileUpload } from '@/shared/uploads/file-upload'
 import type { Attachment } from '@/shared/uploads/model'
@@ -78,6 +86,7 @@ function Detail() {
         void services.refreshSession()
     },
   })
+  const [printing, setPrinting] = useState(false)
   if (query.isPending) return <DetailSkeleton />
   if (query.isError)
     return (
@@ -135,7 +144,7 @@ function Detail() {
           role="group"
           data-print="hide"
         >
-          <Button variant="ghost" onClick={() => window.print()}>
+          <Button variant="ghost" onClick={() => setPrinting(true)}>
             <Printer data-icon="inline-start" />
             {t('common:print')}
           </Button>
@@ -204,6 +213,39 @@ function Detail() {
             }}
           />
         </div>
+      )}
+      {printing && (
+        <PrintPreview open onOpenChange={setPrinting} title={item.reference}>
+          <PrintDocument
+            title={item.title}
+            subtitle={t('navigation')}
+            reference={item.reference}
+            status={t(item.status)}
+          >
+            <PrintFields
+              columns={4}
+              fields={[
+                [t('category'), t(item.category)],
+                [t('amount'), money(item.amountMinor)],
+                [t('owner'), item.ownerName],
+                [t('updated'), date(item.updatedAt)],
+              ]}
+            />
+            <PrintSection title={t('description')}>
+              <p className="whitespace-pre-wrap">{item.description}</p>
+            </PrintSection>
+            {item.attachments.length > 0 && (
+              <PrintSection title={t('attachments')}>
+                <ul className="list-disc ps-5">
+                  {item.attachments.map((file) => (
+                    <li key={file.id}>{file.name}</li>
+                  ))}
+                </ul>
+              </PrintSection>
+            )}
+            <PrintSignatures roles={[t('owner'), t('approve')]} />
+          </PrintDocument>
+        </PrintPreview>
       )}
       <div className="grid gap-6 lg:grid-cols-3 print:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="flex flex-col gap-6 lg:col-span-2 print:col-span-1">

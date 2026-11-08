@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PrintPreview } from '@/shared/print/print-preview'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
@@ -60,9 +61,9 @@ export default function DocumentView() {
   const { t } = useTranslation(ns)
   const [paid, setPaid] = useState(false)
   const overdue = !paid
-  return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:gap-4 2xl:grid-cols-[minmax(0,1fr)_16rem]">
-      {/* Document typography on a paper surface; the same markup prints. */}
+  const [printing, setPrinting] = useState(false)
+  // Document typography on a paper surface; the print preview shows the same markup.
+  const invoice = (
       <article
         aria-label={t('invoiceLabel', { ref: 'INV-3301' })}
         className="min-w-0 rounded-xl border bg-card px-6 py-8 shadow-sm sm:px-10 sm:py-10 print:border-0 print:shadow-none"
@@ -132,7 +133,7 @@ export default function DocumentView() {
           </dl>
         </section>
         <div
-          className="overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="relative overflow-x-auto rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           tabIndex={0}
           role="region"
           aria-label={t('document')}
@@ -192,6 +193,10 @@ export default function DocumentView() {
           </p>
         </footer>
       </article>
+  )
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:gap-4 2xl:grid-cols-[minmax(0,1fr)_16rem]">
+      {invoice}
       <div className="order-first grid content-start gap-3 sm:grid-cols-2 2xl:sticky 2xl:top-20 2xl:order-none 2xl:grid-cols-1 2xl:self-start">
         <Card className="gap-2 px-4 py-4">
           {!paid && (
@@ -226,15 +231,12 @@ export default function DocumentView() {
             {t('sendReminder')}
           </Button>
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="ghost" size="sm" onClick={() => window.print()}>
+            <Button variant="ghost" size="sm" onClick={() => setPrinting(true)}>
               <Printer data-icon="inline-start" />
               {t('print')}
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => toast(t('downloadStarted'))}
-            >
+            {/* The print preview's "Save as PDF" produces the file. */}
+            <Button variant="ghost" size="sm" onClick={() => setPrinting(true)}>
               <Download data-icon="inline-start" />
               PDF
             </Button>
@@ -264,6 +266,11 @@ export default function DocumentView() {
           </ol>
         </Card>
       </div>
+      {printing && (
+        <PrintPreview open onOpenChange={setPrinting} title="INV-3301">
+          {invoice}
+        </PrintPreview>
+      )}
     </div>
   )
 }

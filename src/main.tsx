@@ -18,7 +18,7 @@ recoverFromStaleDeploys()
 configureLocale(appConfig.id)
 configureDocumentTitle(appConfig.name)
 // Before the first render, so the splash already shows a custom logo.
-configureBrand(appConfig.brand)
+configureBrand({ ...appConfig.brand, name: appConfig.name })
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppErrorBoundary

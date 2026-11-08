@@ -4,7 +4,14 @@ export const appConfig = {
   name: 'Rigorail',
   currency: 'USD',
   /** Your logo: an image in public/ (for example '/logo.svg'), or null for the default mark. */
-  brand: { logoUrl: null as string | null },
+  brand: {
+    logoUrl: null as string | null,
+    /**
+     * Letterhead on printed documents (reports, records): legal name and contact
+     * lines. Null prints the app name only.
+     */
+    letterhead: null as { organization: string; lines: string[] } | null,
+  },
   /** Agree both with the backend before enabling; see docs/backend-contract.md. */
   api: {
     csrf: null as { cookie: string; header: string } | null,

@@ -26,7 +26,10 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData, TValue> {
     /** Translated name for menus such as column visibility. */
     label?: string
-    /** Extra classes for this column's header and cells, e.g. `text-end`. */
+    /**
+     * Extra classes for this column's header and cells, e.g. `text-end`. Cells do
+     * not wrap by default; add `whitespace-normal` for long free text.
+     */
     className?: string
   }
 }
@@ -261,7 +264,10 @@ export function DataTable<TData>({
                             }
                           : {})}
                         className={cn(
-                          'border-b px-3 py-(--row-space) align-middle first:ps-4 last:pe-4 group-last/row:border-b-0',
+                          // Cells stay on one line (dates, amounts, statuses); the table
+                          // scrolls sideways instead. Opt a column into wrapping with
+                          // `meta.className: 'whitespace-normal'`.
+                          'border-b px-3 py-(--row-space) align-middle whitespace-nowrap first:ps-4 last:pe-4 group-last/row:border-b-0',
                           cell.column.id === 'select' && 'cursor-pointer',
                           resizable && 'truncate',
                           pinnedClass(cell.column, true),
@@ -564,6 +570,8 @@ export function selectionColumn<TData>(labels: { all: string; row: string }) {
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        // Nothing to select while rows are loading or locked.
+        disabled={!table.getRowModel().rows.some((row) => row.getCanSelect())}
         className="translate-y-0.5"
       />
     ),

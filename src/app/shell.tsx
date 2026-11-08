@@ -398,7 +398,7 @@ function TopNavigation({ pathname }: { pathname: string }) {
       <Brand compact />
       <nav
         aria-label={t('workspace')}
-        className="-my-2 flex min-w-0 items-center gap-1 overflow-x-auto py-2"
+        className="relative -my-2 flex min-w-0 items-center gap-1 overflow-x-auto py-2"
       >
         {navigation.map((entry) => (
           <TopNavigationLink

@@ -49,30 +49,60 @@ export function RecordHeader({
   children?: ReactNode
 }) {
   const sentinel = useRef<HTMLDivElement>(null)
+  const header = useRef<HTMLElement>(null)
   const [stuck, setStuck] = useState(false)
   useEffect(() => {
     const node = sentinel.current
-    if (!node) return
-    // The sentinel leaves the viewport under the 56px app bar when the header sticks.
-    const observer = new IntersectionObserver(
-      ([entry]) => setStuck(!entry!.isIntersecting),
-      { rootMargin: '-57px 0px 0px 0px' },
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
+    const box = header.current
+    if (!node || !box) return
+    // Compacting shortens the page. Near the bottom the browser then clamps the scroll
+    // position, which would un-compact the header and lengthen the page again: a
+    // flicker loop. Hysteresis fixes it: compact once the sentinel passes under the
+    // 56px app bar, expand only after scrolling back by more than the height saved.
+    let expanded = box.offsetHeight
+    let current = false
+    const measure = () => {
+      const top = node.getBoundingClientRect().top
+      // Height compacting would remove: everything below the header's first row.
+      const removable = box.offsetHeight - ((box.firstElementChild as HTMLElement | null)?.offsetHeight ?? 0)
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight
+      // A page that cannot scroll past that height would snap back and loop; it stays full.
+      if (!current && top < 57 && scrollable > removable + 8) {
+        expanded = box.offsetHeight
+        current = true
+        setStuck(true)
+      } else if (current) {
+        const saved = Math.max(0, expanded - box.offsetHeight)
+        // At the very top nothing can clamp, so expanding there is always stable.
+        if (top >= 57 + saved || window.scrollY <= 0) {
+          current = false
+          setStuck(false)
+        }
+      }
+    }
+    // One rect read per scroll event; state only changes when the mode flips.
+    measure()
+    window.addEventListener('scroll', measure, { passive: true })
+    window.addEventListener('resize', measure)
+    return () => {
+      window.removeEventListener('scroll', measure)
+      window.removeEventListener('resize', measure)
+    }
   }, [])
   return (
     <>
       <div ref={sentinel} aria-hidden="true" className="h-px" />
       <header
+        ref={header}
         data-stuck={stuck || undefined}
-        className="group/header sticky top-14 z-10 -mt-px rounded-xl border bg-card transition-shadow data-stuck:rounded-t-none data-stuck:shadow-md"
+        className="group/header sticky top-14 z-10 -mt-px min-w-0 rounded-xl border bg-card transition-shadow data-stuck:rounded-t-none data-stuck:shadow-md"
       >
         <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-5 group-data-stuck/header:py-2">
           <div className="shrink-0 transition-transform group-data-stuck/header:scale-90">
             {leading}
           </div>
-          <div className="min-w-0 flex-1">
+          {/* Never narrower than a short title: crowded actions wrap below it instead. */}
+          <div className="min-w-[min(100%,14rem)] flex-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <h3 className="text-lg font-semibold tracking-tight whitespace-nowrap group-data-stuck/header:text-base">
                 {title}
@@ -86,7 +116,7 @@ export function RecordHeader({
             )}
           </div>
           {actions && (
-            <div className="flex w-full items-center gap-2 sm:w-auto">
+            <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
               {actions}
             </div>
           )}
@@ -189,6 +219,8 @@ export function Sparkline({
   className?: string
 }) {
   const id = useId()
+  // A trend needs two points; a new record has none yet.
+  if (values.length < 2) return null
   const width = 100
   const height = 32
   const min = Math.min(...values)
@@ -437,7 +469,7 @@ export function RelatedRecord({
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{title}</p>
+        <p dir="auto" className="truncate text-start text-sm font-medium">{title}</p>
         <p
           dir="ltr"
           className="truncate text-start text-xs text-muted-foreground tabular-nums"

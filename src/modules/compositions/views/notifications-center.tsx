@@ -200,7 +200,7 @@ export default function NotificationsCenter() {
             <h3 className="text-sm font-semibold">{t('ncTitle')}</h3>
             <p className="text-xs text-muted-foreground">{t('ncHint')}</p>
           </div>
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[30rem] text-sm">
               <thead>
                 <tr className="border-b bg-muted/40 text-xs text-muted-foreground">

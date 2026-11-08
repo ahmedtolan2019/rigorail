@@ -1,7 +1,10 @@
 import type { Cell, Row as SheetRow, Sheet } from 'write-excel-file/browser'
 import {
   downloadBlob,
+  formatOf,
+  isNumeric,
   safeFileName,
+  sheetTotals,
   type ExportColumn,
   type ExportDocument,
   type ExportFormat,
@@ -10,15 +13,36 @@ import {
 } from './model'
 
 // Neutral palette mirroring the design tokens; Excel needs literal hex values.
-const brand = '#0B7A73',
-  border = '#D6DDE5',
+const border = '#D6DDE5',
   zebra = '#F6F8FA',
-  muted = '#5D6876'
+  muted = '#5D6876',
+  section = '#EEF0F3',
+  fallbackAccent = '#2B2F36'
+
+/**
+ * Header fill from the active brand's `--primary` when it is a hex color dark
+ * enough for white text (light themes); otherwise a neutral charcoal.
+ */
+function accent() {
+  if (typeof document === 'undefined') return fallbackAccent
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue('--primary')
+    .trim()
+  const match = /^#([0-9a-f]{6})$/i.exec(value)
+  if (!match) return fallbackAccent
+  const [r, g, b] = [0, 2, 4].map((index) =>
+    parseInt(match[1]!.slice(index, index + 2), 16),
+  )
+  const luminance = (0.2126 * r! + 0.7152 * g! + 0.0722 * b!) / 255
+  return luminance < 0.55 ? value.toUpperCase() : fallbackAccent
+}
 
 function numberFormat(format: ExportFormat | undefined, currency: string) {
   switch (format) {
     case 'integer':
       return '#,##0'
+    case 'accounting':
+      return '#,##0;(#,##0);"–"'
     case 'number':
       return '#,##0.00'
     case 'money':
@@ -55,17 +79,16 @@ function toCell(
   return { value, type: String, ...style } as Cell
 }
 
-function formatOf<Row>(column: ExportColumn<Row>, row: Row) {
-  return typeof column.format === 'function'
-    ? column.format(row)
-    : column.format
-}
-
-function width<Row>(column: ExportColumn<Row>, rows: Row[]) {
+function width<Row>(
+  column: ExportColumn<Row>,
+  rows: Row[],
+  indent?: (row: Row) => number,
+) {
   if (column.width) return column.width
   const sample = rows.slice(0, 500).map((row) => {
     const value = column.value(row)
-    return value instanceof Date ? 12 : String(value ?? '').length
+    const pad = indent ? indent(row) * 2 : 0
+    return value instanceof Date ? 12 : String(value ?? '').length + pad
   })
   return Math.min(
     48,
@@ -74,6 +97,7 @@ function width<Row>(column: ExportColumn<Row>, rows: Row[]) {
 }
 
 function sheetData<Row>(document: ExportDocument, sheet: ExportSheet<Row>) {
+  const brand = accent()
   const span = sheet.columns.length
   const blank = (): SheetRow => Array.from({ length: span }, () => null)
   const header: SheetRow[] = [
@@ -108,19 +132,47 @@ function sheetData<Row>(document: ExportDocument, sheet: ExportSheet<Row>) {
         backgroundColor: brand,
         alignVertical: 'center',
         height: 22,
-        align: column.format && column.format !== 'text' ? 'right' : undefined,
+        align:
+          typeof column.format === 'function' || isNumeric(column.format)
+            ? 'right'
+            : undefined,
       }) as Cell,
   )
-  const body: SheetRow[] = sheet.rows.map((row, index) =>
-    sheet.columns.map((column) =>
+  const structured = Boolean(sheet.rowKind)
+  const body: SheetRow[] = sheet.rows.map((row, index) => {
+    const kind = sheet.rowKind?.(row)
+    const level = sheet.indent?.(row) ?? 0
+    return sheet.columns.map((column, columnIndex) =>
       toCell(column.value(row), formatOf(column, row), document.currency, {
-        ...(index % 2 ? { backgroundColor: zebra } : {}),
-        bottomBorderColor: border,
-        bottomBorderStyle: 'thin',
+        // Statements read by structure; plain lists use zebra rows.
+        ...(kind === 'section'
+          ? { backgroundColor: section, fontWeight: 'bold' }
+          : kind === 'subtotal'
+            ? {
+                fontWeight: 'bold',
+                topBorderColor: '#8A97A6',
+                topBorderStyle: 'thin',
+              }
+            : kind === 'total'
+              ? {
+                  fontWeight: 'bold',
+                  topBorderColor: '#2B2F36',
+                  topBorderStyle: 'thin',
+                  bottomBorderColor: '#2B2F36',
+                  bottomBorderStyle: 'double',
+                }
+              : !structured && index % 2
+                ? { backgroundColor: zebra }
+                : {}),
+        ...(kind === 'total'
+          ? {}
+          : { bottomBorderColor: border, bottomBorderStyle: 'thin' }),
+        ...(columnIndex === 0 && level > 0 ? { indent: level } : {}),
       }),
-    ),
-  )
-  const totals = sheet.columns.some((column) => column.total)
+    )
+  })
+  const totalValues = sheetTotals(sheet)
+  const totals = totalValues
     ? [
         sheet.columns.map((column, index) => {
           const style = {
@@ -135,18 +187,8 @@ function sheetData<Row>(document: ExportDocument, sheet: ExportSheet<Row>) {
               document.currency,
               style,
             )
-          if (!column.total)
-            return toCell(null, 'text', document.currency, style)
-          const values = sheet.rows
-            .map((row) => column.value(row))
-            .filter((value): value is number => typeof value === 'number')
-          const sum = values.reduce((total, value) => total + value, 0)
           return toCell(
-            column.total === 'sum'
-              ? sum
-              : values.length
-                ? sum / values.length
-                : null,
+            totalValues[index],
             typeof column.format === 'function' ? undefined : column.format,
             document.currency,
             style,
@@ -176,7 +218,7 @@ export async function exportXlsx(
         data,
         sheet: sheet.name.slice(0, 31),
         columns: sheet.columns.map((column) => ({
-          width: width(column, sheet.rows),
+          width: width(column, sheet.rows, sheet.indent),
         })),
         stickyRowsCount: headerRows,
         stickyColumnsCount: 1,

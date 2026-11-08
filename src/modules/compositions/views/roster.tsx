@@ -148,7 +148,7 @@ export default function Roster() {
         </div>
       )}
       <Card className="min-w-0 gap-0 overflow-hidden py-0">
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full min-w-[46rem] border-separate border-spacing-0 text-sm">
             <caption className="sr-only">{t('rosterCaption')}</caption>
             <thead>

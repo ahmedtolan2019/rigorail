@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { getCurrency } from '@/shared/lib/format'
+import { PrintDocument, PrintSignatures, PrintTable } from '@/shared/print/print-document'
+import { PrintPreview } from '@/shared/print/print-preview'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
@@ -55,6 +58,17 @@ import {
 
 registerCopy({
   rtExport: ['Export order CSV', 'تصدير الطلب CSV'],
+  rtPrintTitle: ['Purchase order', 'أمر شراء'],
+  rtApproved: ['Approved', 'معتمد'],
+  rtPending: ['Pending approval', 'بانتظار الاعتماد'],
+  rtItem: ['Item', 'الصنف'],
+  rtQuantity: ['Quantity', 'الكمية'],
+  rtUnitPrice: ['Unit price', 'سعر الوحدة'],
+  rtLineTotal: ['Line total', 'الإجمالي'],
+  rtTotalWithTax: ['Total with tax', 'الإجمالي شامل الضريبة'],
+  rtRequestedBy: ['Requested by', 'مقدم الطلب'],
+  rtApprovedBy: ['Approved by', 'المعتمد'],
+  rtReceivedBy: ['Received by', 'المستلم'],
   rtSampleFile: ['Local sample file', 'ملف تجريبي محلي'],
   rtLifecycle: ['Order lifecycle', 'مراحل الطلب'],
   rtDraft: ['Draft', 'مسودة'],
@@ -177,6 +191,7 @@ export default function RecordTabs() {
   const [tab, setTab] = useState('overview')
   const [entries, setEntries] = useState(history)
   const [comment, setComment] = useState('')
+  const [printing, setPrinting] = useState(false)
   const left = budget.limit - budget.spent - budget.committed - total
   const percent = (value: number) =>
     new Intl.NumberFormat(i18n.language, { style: 'percent' }).format(value)
@@ -265,7 +280,7 @@ export default function RecordTabs() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => window.print()}>
+                <DropdownMenuItem onClick={() => setPrinting(true)}>
                   <Printer />
                   {t('print')}
                 </DropdownMenuItem>
@@ -390,7 +405,7 @@ export default function RecordTabs() {
       </Card>
 
       <Tabs value={tab} onValueChange={setTab} className="min-w-0">
-        <div className="-mx-(--page-space) overflow-x-auto px-(--page-space) lg:mx-0 lg:px-0">
+        <div className="relative -mx-(--page-space) overflow-x-auto px-(--page-space) lg:mx-0 lg:px-0">
           <TabsList>
             <TabsTrigger value="overview">{t('overview')}</TabsTrigger>
             <TabsTrigger value="lines" className="gap-1.5">
@@ -737,6 +752,32 @@ export default function RecordTabs() {
           </Card>
         </TabsContent>
       </Tabs>
+      {printing && (
+        <PrintPreview open onOpenChange={setPrinting} title={REF}>
+          <PrintDocument
+            title={t('rtPrintTitle')}
+            reference={REF}
+            status={approved ? t('rtApproved') : t('rtPending')}
+          >
+            <PrintTable
+              document={{ currency: getCurrency() }}
+              sheet={{
+                name: REF,
+                rows: lines,
+                totals: [null, null, null, total / 100],
+                totalsLabel: t('rtTotalWithTax'),
+                columns: [
+                  { header: t('rtItem'), value: (line) => line.item },
+                  { header: t('rtQuantity'), value: (line) => line.quantity, format: 'integer' },
+                  { header: t('rtUnitPrice'), value: (line) => line.price / 100, format: 'money' },
+                  { header: t('rtLineTotal'), value: (line) => (line.quantity * line.price) / 100, format: 'money' },
+                ],
+              }}
+            />
+            <PrintSignatures roles={[t('rtRequestedBy'), t('rtApprovedBy'), t('rtReceivedBy')]} />
+          </PrintDocument>
+        </PrintPreview>
+      )}
     </div>
   )
 }
