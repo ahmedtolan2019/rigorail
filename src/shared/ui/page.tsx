@@ -27,7 +27,8 @@ export function PageHeader({
         )}
       </div>
       {actions && (
-        <div data-print="hide" className="shrink-0">
+        // Several actions sit in a row with a gap and wrap on narrow screens.
+        <div data-print="hide" className="flex shrink-0 flex-wrap items-center gap-2">
           {actions}
         </div>
       )}
