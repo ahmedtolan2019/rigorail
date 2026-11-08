@@ -1,7 +1,9 @@
 name: Publish create-rigorail
 
 # Publishes the `npm create rigorail` initializer when a tag like
-# create-rigorail@0.2.0 is pushed. Needs an NPM_TOKEN repository secret.
+# create-rigorail@0.2.0 is pushed. Uses npm trusted publishing: npm checks this
+# repository and workflow through GitHub's OIDC token, so no npm token is stored.
+# Configure it on npmjs.com under create-rigorail > Settings > Trusted publishing.
 on:
   push:
     tags: ['create-rigorail@*']
@@ -38,5 +40,3 @@ jobs:
       - if: steps.published.outputs.exists != 'true'
         run: npm publish --provenance --access public
         working-directory: packages/create-rigorail
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
