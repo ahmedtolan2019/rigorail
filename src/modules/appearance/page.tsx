@@ -6,6 +6,8 @@ import {
   Moon,
   PanelLeft,
   PanelTop,
+  Pin,
+  PinOff,
   Rows2,
   Rows4,
   RotateCcw,
@@ -101,6 +103,32 @@ export default function Appearance() {
               options={[
                 { value: 'sidebar', label: t('sidebar'), icon: PanelLeft },
                 { value: 'topbar', label: t('topbar'), icon: PanelTop },
+              ]}
+            />
+          )}
+        </Setting>
+        <Setting title={t('tableHeader')} hint={t('tableHeaderHint')}>
+          {(labelledBy) => (
+            <Segmented
+              labelledBy={labelledBy}
+              value={value.tableHeader}
+              onChange={(tableHeader) => set({ tableHeader } as Partial<Preferences>)}
+              options={[
+                { value: 'pinned', label: t('pinned'), icon: Pin },
+                { value: 'scroll', label: t('scrollAway'), icon: PinOff },
+              ]}
+            />
+          )}
+        </Setting>
+        <Setting title={t('tablePagination')} hint={t('tablePaginationHint')}>
+          {(labelledBy) => (
+            <Segmented
+              labelledBy={labelledBy}
+              value={value.tablePagination}
+              onChange={(tablePagination) => set({ tablePagination } as Partial<Preferences>)}
+              options={[
+                { value: 'pinned', label: t('pinned'), icon: Pin },
+                { value: 'scroll', label: t('scrollAway'), icon: PinOff },
               ]}
             />
           )}

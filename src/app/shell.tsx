@@ -128,10 +128,8 @@ export function Shell() {
         </Suspense>
       )}
       <ShortcutsDialog open={helpOpen} onOpenChange={setHelpOpen} />
-      <Toaster
-        dir={dir}
-        position={dir === 'rtl' ? 'bottom-left' : 'bottom-right'}
-      />
+      {/* At the top so a toast never covers a primary action or a sticky action bar. */}
+      <Toaster dir={dir} position="top-center" />
     </DirectionProvider>
   )
 }
@@ -302,7 +300,7 @@ function AppHeader({
   const { resolvedTheme, setTheme } = useTheme()
   const section = navigation.find((entry) => isActive(entry, pathname))
   return (
-    <header className="sticky top-0 z-20 flex h-14 print:hidden shrink-0 items-center gap-2 border-b bg-background/95 px-(--page-space)">
+    <header data-slot="app-header" className="sticky top-0 z-20 flex h-(--app-header-height) print:hidden shrink-0 items-center gap-2 border-b bg-background/95 px-(--page-space)">
       {sidebar ? (
         <>
           <SidebarTrigger className="-ms-1.5" />

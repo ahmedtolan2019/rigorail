@@ -15,9 +15,12 @@ export const navigationSections = [
   { id: 'system', labelKey: 'navSystem' },
 ] as const satisfies readonly { id: NavigationSection; labelKey: string }[]
 
+const matches = (to: string, pathname: string) => pathname === to || pathname.startsWith(`${to}/`)
 export function isActive(entry: NavigationEntry, pathname: string) {
   const to = entry.link.to ?? ''
-  return pathname === to || pathname.startsWith(`${to}/`)
+  if (!matches(to, pathname)) return false
+  // A deeper entry under the same path (/engineering/drawings) wins over its parent (/engineering).
+  return !navigation.some((other) => (other.link.to ?? '').length > to.length && matches(other.link.to ?? '', pathname))
 }
 
 /** Hides entries the user cannot use. Direct routes still check access themselves. */

@@ -22,7 +22,12 @@ export default defineConfig({
   ],
   // Deploy under a subpath with VITE_BASE_PATH=/repo-name/ (GitHub Pages).
   base: process.env.VITE_BASE_PATH || '/',
-  build: { manifest: true },
+  build: {
+    manifest: true,
+    // zod builders (z.object, z.enum, …) only build schema objects, so a schema module whose
+    // exports nothing at startup uses is dropped from the startup bundle.
+    rolldownOptions: { treeshake: { manualPureFunctions: ['z'] } },
+  },
   // Scan every module, including lazy routes, so the dev server pre-bundles all
   // dependencies at startup instead of re-optimizing and reloading the page the
   // first time a lazy chunk (charts, grids, exports) needs a new package.

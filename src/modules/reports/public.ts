@@ -22,6 +22,7 @@ export const reportsModule = {
     },
   },
   permissions: reportPermissions,
+  permissionLabels: () => import('./permission-labels'),
   // Report aggregates are computed from requests, so request changes refresh them.
   refreshOn: ['requests'],
 } satisfies ModuleDefinition

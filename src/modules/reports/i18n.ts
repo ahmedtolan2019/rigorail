@@ -6,10 +6,8 @@ export const ns = defineTranslations(
   'reports',
   {
     navigation: 'Reports',
-    permissionRead: 'View reports',
   },
   {
     navigation: 'التقارير',
-    permissionRead: 'عرض التقارير',
   },
 )

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Check, Clock, Download, Minus, X, type LucideIcon } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
@@ -195,7 +195,13 @@ export function Stepper({ steps, label }: { steps: Step[]; label: string }) {
               </p>
               {step.meta && (
                 <p className="truncate text-xs text-muted-foreground">
-                  {step.meta}
+                  {/* Each part isolated, so a Latin name and an Arabic date ("Samy Serag · ١٢/١١") keep their own order. */}
+                  {step.meta.split(' · ').map((part, index) => (
+                    <Fragment key={index}>
+                      {index > 0 && ' · '}
+                      <bdi>{part}</bdi>
+                    </Fragment>
+                  ))}
                 </p>
               )}
             </div>

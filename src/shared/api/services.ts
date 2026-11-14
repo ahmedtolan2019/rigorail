@@ -11,6 +11,8 @@ export interface Services {
   session: Session
   access: AuthorizationAdapter
   catalog: readonly PermissionDefinition[]
+  /** Loads every module's permission labels; the access screens await it before rendering. */
+  loadPermissionLabels: () => Promise<void>
   mode: 'demo' | 'api'
   aiEnabled: boolean
   refreshSession: () => Promise<unknown>

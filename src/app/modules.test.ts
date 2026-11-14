@@ -20,7 +20,8 @@ test('every enabled module is fully registered', () => {
   }
 })
 
-test('every permission label resolves in each language', () => {
+test('every permission label resolves in each language once the access screens load them', async () => {
+  await Promise.all(modules.map((module) => module.permissionLabels?.()))
   for (const language of ['en', 'ar'])
     for (const { labelKey } of permissionCatalog)
       expect(i18n.exists(labelKey, { lng: language }), labelKey).toBe(true)

@@ -101,6 +101,7 @@ function SessionScope({
       session,
       access: createGrantAdapter(session, permissionCatalog),
       catalog: permissionCatalog,
+      loadPermissionLabels: () => Promise.all(modules.map((module) => module.permissionLabels?.())).then(() => undefined),
       mode: runtime.mode,
       aiEnabled: runtime.aiEnabled,
       refreshSession,

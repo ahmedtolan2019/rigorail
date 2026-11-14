@@ -691,7 +691,6 @@ function ListContent() {
             fetching={query.isFetching || navigating}
             skeletonRows={Math.min(search.size, 12)}
             caption={t('navigation')}
-            fitViewport
             onRowClick={(row) =>
               void navigate({
                 to: '/requests/$requestId',

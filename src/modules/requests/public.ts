@@ -34,6 +34,7 @@ export const requestsModule = {
     },
   },
   permissions: requestPermissions,
+  permissionLabels: () => import('./permission-labels'),
   // Server change events for requests refresh this module's cached lists and records.
   refreshOn: ['requests'],
 } satisfies ModuleDefinition

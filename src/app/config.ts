@@ -27,5 +27,7 @@ export const appConfig = {
     brand: 'teal' as const,
     density: 'comfortable' as const,
     shell: 'sidebar' as const,
+    tableHeader: 'pinned' as const,
+    tablePagination: 'pinned' as const,
   },
 }

@@ -5,7 +5,8 @@ import {
   type SearchSchemaInput,
 } from '@tanstack/react-router'
 import { rootRoute } from '@/shared/routing/root'
-import { reportOptions } from './queries'
+// Queries and their schemas load with the route, not at startup.
+const queries = () => import('./queries')
 import { resolveReportQuery } from './range'
 import { defaultReportSearch, reportSearch, type ReportSearch } from './schema'
 
@@ -18,9 +19,9 @@ export const reportRoutes = [
     search: { middlewares: [stripSearchParams(defaultReportSearch)] },
     // Only query fields are deps: switching metric or breakdown never refetches.
     loaderDeps: ({ search }) => resolveReportQuery(search),
-    loader: ({ context: { queryClient, services }, deps }) =>
+    loader: async ({ context: { queryClient, services }, deps }) =>
       queryClient.prefetchQuery(
-        reportOptions(services.api, services.session.workspace.id, deps),
+        (await queries()).reportOptions(services.api, services.session.workspace.id, deps),
       ),
     component: lazyRouteComponent(() => import('./page')),
   }),
