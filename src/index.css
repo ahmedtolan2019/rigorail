@@ -76,6 +76,8 @@
 }
 
 :root {
+  /* The app header's height: pinned table headers stick right under it. */
+  --app-header-height: 3.5rem;
   /* Text colors keep >= 4.5:1 on their own 10-12% tints over every light surface
      (badges, avatars, deltas); tests/e2e/accessibility.spec.ts guards it. */
   --radius: 0.625rem;

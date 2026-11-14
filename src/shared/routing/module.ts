@@ -29,6 +29,11 @@ export interface ModuleDefinition {
   navigation?: NavigationEntry | readonly NavigationEntry[]
   permissions?: readonly PermissionDefinition[]
   /**
+   * Loads the module's permission labels. They are read only on the access screens, so
+   * they stay out of the startup bundle; those routes load every module's labels first.
+   */
+  permissionLabels?: () => Promise<unknown>
+  /**
    * Realtime topics that make this module's queries stale. Query keys must start
    * with the module id; see `shared/realtime/events.ts`.
    */

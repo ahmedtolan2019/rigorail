@@ -37,6 +37,7 @@ test('permission labels belong to their domain and absent quotas are not called 
     },
     access: { decide: () => ({ status: 'allowed' }) },
     catalog: [{ action: 'invoices.read', labelKey: 'invoices:read' }],
+    loadPermissionLabels: async () => undefined,
     mode: 'api',
     aiEnabled: false,
     refreshSession: async () => undefined,

@@ -104,6 +104,18 @@ export function RemoteCombobox({
     : (allOption?.label ?? placeholder ?? t('selectOption'))
   const options = results.data?.options ?? []
   const more = results.data ? results.data.total - options.length : 0
+  // The list is filtered on the server, so cmdk cannot keep its own highlight:
+  // highlight the first result whenever the results change, so Enter picks it.
+  // Nothing is highlighted while the typed text has not been searched yet, so a
+  // quick Enter cannot pick a row from the previous, unfiltered list.
+  const settled = text.trim() === query && !results.isPlaceholderData
+  const first = !settled
+    ? ''
+    : allOption && !query
+      ? '__all'
+      : (options.find((option) => !option.disabled)?.value ?? '')
+  const [active, setActive] = React.useState(first)
+  React.useEffect(() => setActive(first), [first, results.data])
   const choose = (next: ComboboxOption | null) => {
     onChange(next?.value ?? null, next)
     setOpen(false)
@@ -145,7 +157,7 @@ export function RemoteCombobox({
         align="start"
       >
         {/* The server filters; the command list only handles keyboard navigation. */}
-        <Command shouldFilter={false}>
+        <Command shouldFilter={false} value={active} onValueChange={setActive}>
           <CommandInput
             value={text}
             onValueChange={setText}

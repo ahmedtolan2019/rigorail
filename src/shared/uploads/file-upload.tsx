@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
@@ -53,6 +53,7 @@ export function FileUpload({
   disabled = false,
   readOnly = false,
   label,
+  onBusyChange,
 }: {
   value: readonly Attachment[]
   onAdd: (attachment: Attachment) => Promise<unknown> | void
@@ -68,12 +69,16 @@ export function FileUpload({
   readOnly?: boolean
   /** Accessible name of the drop zone. */
   label: string
+  /** Told when uploads start and finish, so a form can wait instead of calling the file missing. */
+  onBusyChange?: (busy: boolean) => void
 }) {
   const { t, i18n } = useTranslation()
   const { upload } = useServices()
   const input = useRef<HTMLInputElement>(null)
   const hintId = useId()
   const [pending, setPending] = useState<Pending[]>([])
+  const busy = pending.some((item) => !item.failed)
+  useEffect(() => onBusyChange?.(busy), [busy, onBusyChange])
   const [over, setOver] = useState(false)
   const patch = (key: string, next: Partial<Pending>) =>
     setPending((list) =>

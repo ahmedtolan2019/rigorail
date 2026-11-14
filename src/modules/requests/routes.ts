@@ -5,7 +5,8 @@ import {
   type SearchSchemaInput,
 } from '@tanstack/react-router'
 import { rootRoute } from '@/shared/routing/root'
-import { detailOptions, listOptions } from './queries'
+// Queries and their schemas load with the route, not at startup.
+const queries = () => import('./queries')
 import {
   defaultRequestSearch,
   requestSearch,
@@ -29,9 +30,9 @@ const list = createRoute({
   getParentRoute: () => requests,
   path: '/',
   loaderDeps: ({ search }) => search,
-  loader: ({ context: { queryClient, services }, deps }) =>
+  loader: async ({ context: { queryClient, services }, deps }) =>
     queryClient.prefetchQuery(
-      listOptions(services.api, services.session.workspace.id, deps),
+      (await queries()).listOptions(services.api, services.session.workspace.id, deps),
     ),
   component: lazyRouteComponent(() => import('./pages/list')),
 })
@@ -43,9 +44,9 @@ const create = createRoute({
 const detail = createRoute({
   getParentRoute: () => requests,
   path: '$requestId',
-  loader: ({ context: { queryClient, services }, params }) =>
+  loader: async ({ context: { queryClient, services }, params }) =>
     queryClient.prefetchQuery(
-      detailOptions(
+      (await queries()).detailOptions(
         services.api,
         services.session.workspace.id,
         params.requestId,

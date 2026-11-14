@@ -43,7 +43,8 @@ A module owns everything it contributes and exposes it through `public.ts`:
 | --- | --- | --- |
 | Route tree, attached to `shared/routing/root.ts` | `routes.ts` | `moduleRoutes` in `app/modules.ts` |
 | Navigation entry, permissions (`ModuleDefinition`) | `public.ts` | `modules` in `app/modules.ts` |
-| Eager strings (navigation, permission labels) | `i18n.ts` | Self-registers via `public.ts` |
+| Eager strings (navigation) | `i18n.ts` | Self-registers via `public.ts` |
+| Permission labels | `permission-labels.ts` | `permissionLabels` on the module definition; the access screens load them |
 | Page strings, when large | `messages.ts` | Imported by the module's lazy pages |
 
 Pages read typed params and search through `getRouteApi('<route id>')`, never
@@ -52,6 +53,11 @@ validators take `Partial<Search> & SearchSchemaInput` so links set only what the
 need, and `stripSearchParams(defaults)` keeps URLs short. Route `loader`s only call
 `queryClient.prefetchQuery` (from the router context) with the page's query options,
 so hover preloading warms the cache while pages keep owning errors and access.
+`routes.ts` never imports `queries.ts` statically: loaders import it on demand
+(`const queries = () => import('./queries')`), so a module's schemas load with its
+route, not at startup. The build also treats zod builders as pure
+(`manualPureFunctions: ['z']` in `vite.config.ts`), so a schema module re-exported from
+`public.ts` is dropped from the startup bundle unless something at startup uses it.
 `composePermissionCatalog` rejects duplicate modules and actions, and actions or
 labels outside the module's `<id>.` / `<id>:` prefix. `app/modules.test.ts` fails
 when a module is half registered. Removing a module means deleting its folder and

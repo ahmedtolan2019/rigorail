@@ -4,6 +4,10 @@ export const preferencesSchema = z.object({
   brand: z.enum(['teal', 'indigo']),
   density: z.enum(['comfortable', 'compact']),
   shell: z.enum(['sidebar', 'topbar']),
+  /** Long tables keep their header row in view while the page scrolls. */
+  tableHeader: z.enum(['pinned', 'scroll']).default('pinned'),
+  /** The pagination bar stays at the bottom of the screen while long lists scroll. */
+  tablePagination: z.enum(['pinned', 'scroll']).default('pinned'),
 })
 export type Preferences = z.infer<typeof preferencesSchema>
 interface PreferenceStore {
@@ -17,6 +21,8 @@ let storageKey = '',
     brand: 'teal',
     density: 'comfortable',
     shell: 'sidebar',
+    tableHeader: 'pinned',
+    tablePagination: 'pinned',
   }
 export const usePreferences = create<PreferenceStore>((set, get) => ({
   value: initial,

@@ -1,22 +1,25 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { en, ar } from './common'
+import { bidiFormatter } from './formatter'
 
 let storageKey = 'rigorail:language'
-void i18n.use(initReactI18next).init({
+void i18n.use(initReactI18next).use(bidiFormatter()).init({
   resources: { en: { common: en }, ar: { common: ar } },
   lng: 'en',
   fallbackLng: 'en',
   defaultNS: 'common',
   // Module namespaces resolve shared vocabulary (loading, retry, errors) from common.
   fallbackNS: 'common',
-  interpolation: { escapeValue: false },
+  // Every value goes through the formatter, which keeps Latin references in order in Arabic.
+  interpolation: { escapeValue: false, alwaysFormat: true },
   initAsync: false,
 })
 
 /**
  * Registers a module-owned namespace and returns its name for useTranslation(ns).
- * Keep eager strings (navigation, permission labels) in the module's `i18n.ts` and
+ * Keep eager strings (navigation) in the module's `i18n.ts`, permission labels in its
+ * `permission-labels.ts` (loaded by the access screens), and
  * page-only strings in `messages.ts`, imported by its lazy pages.
  * The Arabic dictionary must contain exactly the English keys, checked at compile time.
  * Prefix keys with the namespace (`requests:navigation`) when read outside the module.
@@ -46,7 +49,7 @@ export function defineTranslations<
   if (namespace === 'common')
     throw new Error('The common namespace belongs to shared code.')
   // Deep-merge with overwrite: a module may register a small eager part (navigation,
-  // permission labels) and lazy page strings separately; HMR re-registers edits.
+  // permission labels, page strings) and lazy parts separately; HMR re-registers edits.
   i18n.addResourceBundle('en', namespace, english, true, true)
   i18n.addResourceBundle('ar', namespace, arabic, true, true)
   return namespace

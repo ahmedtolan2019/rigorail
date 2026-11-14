@@ -29,7 +29,7 @@ and \`npx playwright test tests/e2e/${id}.spec.ts\`.
     'contract.md': `# ${label} contract
 
 Route \`/${id}\`; \`public.ts\` exports \`${name}Module\` and \`${name}Routes\`.
-Strings: eager \`i18n.ts\` (navigation, permission labels), lazy \`messages.ts\`.
+Strings: eager \`i18n.ts\` (navigation), \`permission-labels.ts\` (loaded by the access screens), lazy \`messages.ts\`.
 Query keys start with \`'${id}'\`; \`refreshOn: ['${id}']\` refreshes them on live events.
 
 ## API
@@ -52,15 +52,26 @@ export const ${name}Permissions: readonly PermissionDefinition[] = [
 `,
     'i18n.ts': `import { defineTranslations } from '@/shared/i18n'
 
-// Eager strings: navigation and permission labels. Page strings live in messages.ts.
+// Eager strings: navigation only. Page strings live in messages.ts.
 export const ns = defineTranslations(
   '${id}',
   {
     navigation: '${label}',
-    permissionRead: 'View ${label.toLowerCase()}',
   },
   {
     navigation: '${label}',
+  },
+)
+`,
+    'permission-labels.ts': `import { defineTranslations } from '@/shared/i18n'
+
+// Permission labels, read only on the access screens; they load with them, not at startup.
+defineTranslations(
+  '${id}',
+  {
+    permissionRead: 'View ${label.toLowerCase()}',
+  },
+  {
     permissionRead: 'عرض ${label.toLowerCase()}',
   },
 )
@@ -115,10 +126,15 @@ export const ${name}ListOptions = (api: ApiClient, scope: string) =>
     'routes.ts': `import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 import { rootRoute } from '@/shared/routing/root'
 
+// Queries and their schemas load with the route, not at startup.
+const queries = () => import('./queries')
+
 export const ${name}Routes = [
   createRoute({
     getParentRoute: () => rootRoute,
     path: '${id}',
+    loader: async ({ context: { queryClient, services } }) =>
+      queryClient.prefetchQuery((await queries()).${name}ListOptions(services.api, services.session.workspace.id)),
     component: lazyRouteComponent(() => import('./pages/list')),
   }),
 ] as const
@@ -140,6 +156,7 @@ export const ${name}Module = {
     requires: { action: permissions.read },
   },
   permissions: ${name}Permissions,
+  permissionLabels: () => import('./permission-labels'),
   refreshOn: ['${id}'],
 } satisfies ModuleDefinition
 `,

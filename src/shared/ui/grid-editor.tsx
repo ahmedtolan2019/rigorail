@@ -11,7 +11,8 @@ export interface GridColumn<Row> {
   width?: string
   align?: 'start' | 'end'
   inputMode?: 'text' | 'decimal' | 'numeric'
-  placeholder?: string
+  /** Shown in an empty cell; a function can suggest a value from the rest of the row. */
+  placeholder?: string | ((row: Row) => string)
   /** Cleans typed or pasted text, for example Arabic digits to Latin. */
   normalize?: (value: string) => string
   /** Custom editor for the cell (a picker); receives the row and an updater. */
@@ -128,7 +129,11 @@ export function GridEditor<Row extends Record<string, string>>({
   return (
     <div className="grid gap-3">
       {/* `relative` clips the sr-only header label; inline-size containment keeps the wide table from widening its ancestors (and the page on phones). */}
-      <div className="relative overflow-x-auto rounded-lg border bg-card [contain:inline-size]">
+      {/* With no inputs inside (no rows, or read-only) the region itself takes focus, so the keyboard can still scroll it. */}
+      <div
+        className="relative overflow-x-auto rounded-lg border bg-card [contain:inline-size] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
+        {...(rows.length === 0 || disabled ? { tabIndex: 0, role: 'region', 'aria-label': caption } : {})}
+      >
         <table className="w-full table-fixed border-separate border-spacing-0 text-sm" style={{ minWidth }}>
           <caption className="sr-only">{caption}</caption>
           <colgroup>
@@ -176,7 +181,7 @@ export function GridEditor<Row extends Record<string, string>>({
                           value={row[column.key] ?? ''}
                           disabled={disabled}
                           inputMode={column.inputMode}
-                          placeholder={column.placeholder}
+                          placeholder={typeof column.placeholder === 'function' ? column.placeholder(row) : column.placeholder}
                           aria-label={`${column.header}, ${rowLabel(index)}`}
                           aria-invalid={Boolean(message) || undefined}
                           aria-describedby={message ? `${id}-error` : undefined}

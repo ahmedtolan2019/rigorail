@@ -51,6 +51,7 @@ test('background record transitions retain the draft and prevent an invalid save
     },
     access: { decide: () => ({ status: 'allowed' }) },
     catalog: [],
+    loadPermissionLabels: async () => undefined,
     mode: 'api',
     aiEnabled: false,
     refreshSession: async () => undefined,

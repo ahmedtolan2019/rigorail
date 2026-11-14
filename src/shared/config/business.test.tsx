@@ -32,6 +32,7 @@ test('only rerenders a limit consumer when its selected value changes', async ()
     },
     access: { decide: () => ({ status: 'denied', reason: 'deniedHint' }) },
     catalog: [],
+    loadPermissionLabels: async () => undefined,
     mode: 'api',
     aiEnabled: false,
     refreshSession: async () => undefined,
